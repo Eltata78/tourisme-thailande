@@ -70,8 +70,9 @@ def head(title, intro=''):
     return group(parts, {'layout': {'type': 'default'}}, 'tt-head')
 
 
-def grid(inner, minw='230px'):
-    return group(inner, {'layout': {'type': 'grid', 'minimumColumnWidth': minw}})
+def grid(inner, minw='230px', cols=4):
+    # columnCount + minimumColumnWidth : grille responsive plafonnée à `cols` colonnes (pas de colonne vide sur grand écran).
+    return group(inner, {'layout': {'type': 'grid', 'columnCount': cols, 'minimumColumnWidth': minw}})
 
 
 def button(label, url, outline=True):
@@ -133,9 +134,9 @@ home = '\n\n'.join([
                    card('Doi Inthanon : cascades, pagodes royales et rizières', 'inthanon', 'Chiang Mai', 'Journée', '4,9', '860', '10 heures · Guide francophone', '45', 'Doi Inthanon'),
                    card('Maya Bay et Phi Phi en speedboat', 'snorkel', 'Koh Phi Phi', 'Snorkeling', '4,6', '2 980', '7 heures · Départ de Phuket', '38', 'Phi Phi speedboat')]),
              button('Voir toutes les activités', '/activites-thailande/')]),
-    section([head('Choisis ta région', 'Montagnes du Nord, temples du Centre ou plages des deux côtes : chaque région a sa saison et son rythme.'), grid(regions)], mist=True),
+    section([head('Choisis ta région', 'Montagnes du Nord, temples du Centre ou plages des deux côtes : chaque région a sa saison et son rythme.'), grid(regions, '150px')], mist=True),
     section([head('La Thaïlande mois par mois', "Mousson, fêtes, affluence et prix changent beaucoup d'un mois à l'autre, et d'une côte à l'autre."),
-             group(months, {'layout': {'type': 'grid', 'minimumColumnWidth': '220px'}}, 'tt-months')]),
+             block('tt/months', {'align': 'wide'})]),
     section([head('Derniers guides'), latest, button('Tous les articles', '/blog/')], mist=True),
     section([team]),
 ])
@@ -186,8 +187,8 @@ for o in bkk:
 idx = next(n for n, b in enumerate(out) if 'Que visiter à Bangkok' in b)
 acts = grid([card('Temples et canaux en bateau longtail', 'box_watarun', 'Bangkok', 'Visite guidée', '4,8', '1 520', '4 heures · Guide francophone', '27', 'Bangkok temples', 'que-visiter'),
              card('Street food de Chinatown à la nuit tombée', 'box_marchechatuchak', 'Bangkok', 'Gastronomie', '4,9', '2 100', '3 heures · 10 dégustations', '39', 'Bangkok street food', 'que-visiter'),
-             card("Grand Palais et Wat Phra Kaew sans file d'attente", 'box_grandpalaisbangkok', 'Bangkok', 'Visite guidée', '4,7', '3 860', '3 heures · Billets inclus', '42', 'Grand Palais Bangkok', 'que-visiter')], '200px')
-out[idx + 1:idx + 1] = [group(must, {'layout': {'type': 'grid', 'minimumColumnWidth': '150px'}}, 'tt-must-grid'), heading('Les activités les plus réservées à Bangkok', 3), acts]
+             card("Grand Palais et Wat Phra Kaew sans file d'attente", 'box_grandpalaisbangkok', 'Bangkok', 'Visite guidée', '4,7', '3 860', '3 heures · Billets inclus', '42', 'Grand Palais Bangkok', 'que-visiter')], '200px', 3)
+out[idx + 1:idx + 1] = [group(must, {'layout': {'type': 'grid', 'columnCount': 4, 'minimumColumnWidth': '150px'}}, 'tt-must-grid'), heading('Les activités les plus réservées à Bangkok', 3), acts]
 
 bangkok = '\n\n'.join(out)
 

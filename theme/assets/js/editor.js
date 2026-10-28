@@ -15,7 +15,7 @@
 		price: 'Prix « dès » en €', url: 'Lien (fiche GetYourGuide ou lien court)', query: 'Requête GetYourGuide',
 		placement: 'Emplacement (pour le suivi cmp)', layout: 'Mise en page', city: 'Ville Trip.com (identifiant)',
 		choices: 'Choix « Envie de » (une ligne : Libellé | requête)', label: 'Libellé', sub: 'Sous-titre', button: 'Texte du bouton',
-		placeholder: 'Texte indicatif', trim: 'Mots à retirer des libellés (séparés par des virgules)'
+		placeholder: 'Texte indicatif', texts: 'Accroches (une ligne par mois, de janvier à décembre)', trim: 'Mots à retirer des libellés (séparés par des virgules)'
 	};
 	var SKIP = [ 'align', 'lock', 'metadata', 'className', 'style' ];
 
@@ -50,7 +50,7 @@
 		if ( 'number' === def.type ) {
 			return el( c.TextControl, { key: key, label: label, type: 'number', value: value || '', onChange: function ( v ) { onChange( v === '' ? 0 : Number( v ) ); } } );
 		}
-		if ( 'choices' === key || 'subtitle' === key ) {
+		if ( 'choices' === key || 'subtitle' === key || 'texts' === key ) {
 			return el( c.TextareaControl, { key: key, label: label, value: value, onChange: onChange } );
 		}
 		return el( c.TextControl, { key: key, label: label, value: value, onChange: onChange } );

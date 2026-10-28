@@ -291,3 +291,9 @@ b, strong { font-weight: 700; }
 .tt-cards .tt-cat { margin-top: 12px; }
 .tt-cards .wp-block-query-pagination { margin-top: 2.5rem; gap: 8px; font-weight: 600; }
 .tt-cards .wp-block-query-pagination a { color: var(--tt-indigo); }
+
+/* ---------- Alignements et marges globales ---------- */
+.wp-site-blocks > * + * { margin-block-start: 0; }
+.wp-block-post-content > .alignfull { margin-block: 0; }
+.tt-header__bar, .tt-hero__in, .tt-quick p, .tt-mega__in, .tt-layout, .tt-ahead { box-sizing: content-box; }
+.tt-layout { max-width: var(--tt-wide); }
