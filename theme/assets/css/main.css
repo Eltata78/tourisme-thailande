@@ -270,3 +270,15 @@ b, strong { font-weight: 700; }
 .tt-authorbox .wp-block-post-author__avatar img { border-radius: 50%; }
 .tt-authorbox .wp-block-post-author__name { font-size: 20px; font-weight: 800; font-stretch: 90%; color: var(--tt-indigo); }
 .tt-authorbox .wp-block-post-author__bio { font-size: 15px; color: #34314F; margin-top: 6px; }
+
+.tt-ahead .wp-block-post-title, .tt-ahead .tt-cat, .tt-ahead .tt-byline { margin-left: max(0px, calc((100% - 1240px) / 2)) !important; margin-right: auto !important; }
+.tt-byline .wp-block-post-author__byline { display: inline; font-size: inherit; margin: 0 4px 0 0; }
+.tt-byline .wp-block-post-author__content { display: flex; align-items: baseline; }
+.tt-byline .rmp-results-widget { margin: 0; font-size: 14px; }
+.tt-byline .rmp-results-widget__visual-rating { font-size: 14px; }
+.tt-byline .rmp-results-widget__avg-rating, .tt-byline .rmp-results-widget__vote-count { font-size: 14px; }
+.tt-rate { background: var(--tt-mist); border-radius: 12px; padding: 16px 18px; margin-top: 2rem !important; }
+.tt-rate .rmp-widgets-container { margin: 0; padding: 0; }
+.tt-rate .rmp-heading { font-size: 18px; font-stretch: 85%; color: var(--tt-indigo); }
+.tt-footer .wp-block-social-links { display: flex; gap: 10px; margin-top: 16px; }
+.tt-authorbox .wp-block-post-author__avatar { flex: none; }

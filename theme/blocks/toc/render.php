@@ -42,7 +42,8 @@ if ( $tt_ctx ) {
 	<p class="tt-toc__t"><?php echo esc_html( $attributes['title'] ); ?></p>
 	<?php foreach ( $tt_items as $tt_i => $tt_item ) : ?>
 		<?php
-		$tt_label = rtrim( str_ireplace( $tt_trim, '', $tt_item[1] ), " ?:" );
+		$tt_label = preg_replace( '/\s*:\s.*$/u', '', $tt_item[1] ); // « Logistique : où dormir… » -> « Logistique »
+		$tt_label = rtrim( str_ireplace( $tt_trim, '', $tt_label ), ' ?:' );
 		?>
 		<a href="#<?php echo esc_attr( $tt_item[0] ); ?>"<?php echo 0 === $tt_i ? ' class="is-on"' : ''; ?>><?php echo esc_html( $tt_label ); ?></a>
 	<?php endforeach; ?>

@@ -7,6 +7,9 @@
 <!-- wp:group {"className":"tt-byline","layout":{"type":"flex","flexWrap":"wrap"}} -->
 <div class="wp-block-group tt-byline"><!-- wp:post-author {"avatarSize":24,"showBio":false,"byline":"Par"} /-->
 <!-- wp:post-date {"displayType":"modified","format":"j F Y"} /-->
+<!-- wp:shortcode -->
+[ratemypost-result]
+<!-- /wp:shortcode -->
 <!-- wp:paragraph -->
 <p>Contient des liens partenaires</p>
 <!-- /wp:paragraph --></div>
@@ -22,6 +25,11 @@
 
 <!-- wp:group {"className":"tt-prose","layout":{"type":"default"}} -->
 <div class="wp-block-group tt-prose"><!-- wp:post-content {"layout":{"type":"default"}} /-->
+<!-- wp:group {"className":"tt-rate","layout":{"type":"default"}} -->
+<div class="wp-block-group tt-rate"><!-- wp:shortcode -->
+[ratemypost]
+<!-- /wp:shortcode --></div>
+<!-- /wp:group -->
 <!-- wp:post-author {"avatarSize":72,"showBio":true,"className":"tt-authorbox"} /--></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->
