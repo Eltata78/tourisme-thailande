@@ -1,0 +1,49 @@
+<?php
+/**
+ * Sommaire automatique (H2 du contenu).
+ *
+ * @package tt
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+$tt_post = get_post( $block->context['postId'] ?? null );
+if ( ! $tt_post ) {
+	return;
+}
+$tt_items = array();
+$tt_walk  = static function ( array $blocks ) use ( &$tt_walk, &$tt_items ) {
+	foreach ( $blocks as $b ) {
+		if ( 'core/heading' === $b['blockName'] && 2 === (int) ( $b['attrs']['level'] ?? 2 ) ) {
+			$text = trim( wp_strip_all_tags( $b['innerHTML'] ) );
+			$id   = preg_match( '/\sid="([^"]+)"/', $b['innerHTML'], $m ) ? $m[1] : tt_heading_id( $b['innerHTML'] );
+			if ( '' !== $text ) {
+				$tt_items[] = array( $id, html_entity_decode( $text ) );
+			}
+		}
+		if ( ! empty( $b['innerBlocks'] ) ) {
+			$tt_walk( $b['innerBlocks'] );
+		}
+	}
+};
+$tt_walk( parse_blocks( $tt_post->post_content ) );
+if ( count( $tt_items ) < 2 ) {
+	return;
+}
+// Libellés courts : on retire la fin de titre répétée (ex. « à Bangkok »).
+$tt_trim = array_filter( array_map( 'trim', explode( ',', $attributes['trim'] ) ) );
+$tt_ctx  = tt_destination_context( $tt_post->ID );
+if ( $tt_ctx ) {
+	$tt_trim[] = 'à ' . $tt_ctx['name'];
+	$tt_trim[] = 'dans ' . $tt_ctx['name'];
+}
+?>
+<nav <?php echo get_block_wrapper_attributes( array( 'class' => 'tt-toc' ) ); ?> aria-label="<?php echo esc_attr( $attributes['title'] ); ?>" data-tt-toc>
+	<p class="tt-toc__t"><?php echo esc_html( $attributes['title'] ); ?></p>
+	<?php foreach ( $tt_items as $tt_i => $tt_item ) : ?>
+		<?php
+		$tt_label = rtrim( str_ireplace( $tt_trim, '', $tt_item[1] ), " ?:" );
+		?>
+		<a href="#<?php echo esc_attr( $tt_item[0] ); ?>"<?php echo 0 === $tt_i ? ' class="is-on"' : ''; ?>><?php echo esc_html( $tt_label ); ?></a>
+	<?php endforeach; ?>
+</nav>
