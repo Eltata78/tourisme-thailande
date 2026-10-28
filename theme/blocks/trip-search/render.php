@@ -17,7 +17,7 @@ $tt_uid = sanitize_key( $attributes['placement'] ) . '-' . substr( md5( wp_json_
 		array(
 			'uid'     => $tt_uid,
 			'title'   => $attributes['title'] ?: ( $tt_ctx ? 'Trouve ton hôtel à ' . $tt_ctx['name'] : 'Trouve ton hôtel' ),
-			'city'    => (int) $attributes['city'] ?: ( $tt_ctx['trip'] ?? 0 ),
+			'dest'    => $attributes['city'] ? tt_trip_key( $attributes['city'] ) : ( $tt_ctx['trip'] ?? '' ),
 			'cmp'     => tt_cmp( $attributes['placement'], $tt_id ),
 			'compact' => 'compact' === $attributes['layout'],
 		)

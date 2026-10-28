@@ -18,12 +18,24 @@ from html2blocks import EMOJI, block, clean, details, heading, image, paragraph,
 
 EL, PAGES, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 
+# Destination : nom affiché, synonymes de recherche. La destination Trip.com est la clé du hub (voir tt_trip_destinations).
 HUB_META = {
-    'bangkok': ('Bangkok', 359, 'bkk, krung thep'), 'chiang-mai': ('Chiang Mai', 623, 'chiangmai, cnx'), 'pattaya': ('Pattaya', 622, ''),
-    'phuket': ('Phuket', 725, ''), 'ayutthaya': ('Ayutthaya', 1225, ''), 'chiang-rai': ('Chiang Rai', 1223, ''), 'koh-samui': ('Koh Samui', 1229, 'samui'),
-    'koh-phi-phi': ('Koh Phi Phi', 1240, 'phi phi, maya bay'), 'krabi': ('Krabi', 1240, 'ao nang'), 'koh-tao': ('Koh Tao', 1230, 'tao'), 'ban-krut': ('Ban Krut', 0, 'ban krood'),
+    'bangkok': ('Bangkok', 'bkk, krung thep'), 'chiang-mai': ('Chiang Mai', 'chiangmai, cnx'), 'pattaya': ('Pattaya', ''),
+    'phuket': ('Phuket', ''), 'ayutthaya': ('Ayutthaya', ''), 'chiang-rai': ('Chiang Rai', ''), 'koh-samui': ('Koh Samui', 'samui'),
+    'koh-phi-phi': ('Koh Phi Phi', 'phi phi, maya bay'), 'krabi': ('Krabi', 'ao nang'), 'koh-tao': ('Koh Tao', 'tao'), 'ban-krut': ('Ban Krut', 'ban krood'),
 }
 GYG = 'https://www.getyourguide.fr/s/?q={q}&partner_id=YADMZ9Q&cmp={cmp}'
+GEO = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'geo.json')))  # lat, lng géocodés (OpenStreetMap)
+# Lieux cités par les guides des hubs sans sous-page : [titre, requête activités, lat, lng] -> repères de la carte.
+GEO_PINS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'geo_pins.json')))
+# Liens courts gyg.me du site, déroulés : on garde la page cible, le tag est remis à l'affichage (cmp par emplacement).
+GYG_LINKS = {
+    'https://gyg.me/YdEyJ7Ug': ('https://www.getyourguide.fr/pattaya-l182/', ''),
+    'https://gyg.me/U5rhK83e': ('https://www.getyourguide.fr/ko-samui-l898/koh-samui-ile-aux-cochons-et-snorkeling-a-koh-tan-en-bateau-a-moteur-t297705/',
+                                'Île aux cochons et snorkeling à Koh Tan en bateau à moteur'),
+    'https://gyg.me/45NlTF0h': ('https://www.getyourguide.fr/bangkok-l169/excursion-privee-d-une-journee-a-ayutthaya-et-au-temple-des-singes-de-lopburi-t193538/',
+                                'Excursion privée à Ayutthaya et au temple des singes de Lopburi'),
+}
 
 
 def txt(s):
@@ -38,12 +50,8 @@ def norm_title(s):
 
 
 def lead_blocks(h):
-    """Premier paragraphe en style « chapeau », la suite en paragraphes normaux."""
-    blocks = to_blocks(clean(h))
-    if blocks and blocks[0].startswith('<!-- wp:paragraph -->'):
-        inner = re.search(r'<p>(.*)</p>', blocks[0], re.S).group(1)
-        blocks[0] = '<!-- wp:paragraph {"className":"is-style-tt-lead"} -->\n<p class="is-style-tt-lead">' + inner + '</p>\n<!-- /wp:paragraph -->'
-    return blocks
+    """Texte d'introduction : paragraphes normaux (même typographie que le reste du contenu)."""
+    return to_blocks(clean(h))
 
 
 def gallery(items):
@@ -112,6 +120,26 @@ def related(blocks):
     return out
 
 
+def cta(**a):
+    """Carte de réservation tt/cta-card ; imageId « __gal__ » = une photo de la galerie, choisie en fin de conversion."""
+    return block('tt/cta-card', {k: v for k, v in a.items() if v})
+
+
+def activity_cta(is_hub, dest, subject, query, url=''):
+    """CTA vers les activités : la destination (hub) ou la visite (sous-page), ou l'offre précise d'un lien gyg.me."""
+    if url:
+        full, product = GYG_LINKS.get(url.rstrip('/'), (url, ''))
+        if product:
+            return cta(kicker=dest, title=product, text='Vérifie les disponibilités et le prix à tes dates.', label='Voir les disponibilités', url=full)
+        return cta(title=f'Les activités à faire à {dest}', text='Visites, excursions et sorties à réserver en ligne, la plupart avec annulation gratuite.',
+                   url=full, imageId='__gal__')
+    if is_hub:
+        return cta(title=f'Les activités à faire à {dest}', text='Visites, excursions et sorties à réserver en ligne, la plupart avec annulation gratuite.',
+                   query=query, imageId='__gal__')
+    return cta(title=re.sub(r'^(.+?) ' + re.escape(dest) + '$', r'\1 à ' + dest, query) if query != subject else subject, text='Billets, visites guidées et excursions à réserver en ligne.',
+               label='Voir les offres', query=query, imageId='__gal__')
+
+
 def widgets(data):
     out = []
 
@@ -127,8 +155,9 @@ def widgets(data):
 def convert(page, hub, data, demo=None):
     is_hub = hub is None
     dest = HUB_META[page['slug']][0] if is_hub else HUB_META[hub['slug']][0]
-    subject = re.sub(r'\s+(à|de|sur)\s+' + re.escape(dest) + r'\b.*$', '', txt(page['title'])).strip()
-    query = dest if is_hub else f'{subject} {dest}'
+    subject = re.split(r' : |, ', re.sub(r'\s*\([^)]*\)', '', txt(page['title'])))[0]
+    subject = re.sub(r'\s+(à|de|sur)\s+' + re.escape(dest) + r'\b.*$', '', subject).strip()
+    query = dest if is_hub or not subject else (subject if dest.lower() in subject.lower() else f'{subject} {dest}')
     w = widgets(data)
     blocks, log, meta = [], [], {}
     gallery_items, address, intro_done = [], '', False
@@ -168,13 +197,13 @@ def convert(page, hub, data, demo=None):
                     log.append('encart hôtel -> formulaire Trip.com')
                 elif 'gyg.me' in burl or 'getyourguide' in burl:
                     blocks.append(heading(f'Réserver {subject}' if not is_hub else f'Réserver une activité à {dest}'))
-                    blocks.append(buttons('Voir les disponibilités', burl))
-                    log.append('encart activité GYG -> bouton GYG conservé')
+                    blocks.append(activity_cta(is_hub, dest, subject, query, burl))
+                    log.append('encart activité GYG -> carte de réservation')
                 else:
                     blocks.append(block('tt/gyg-search', {'placement': 'activites', 'layout': 'band',
                                                           'title': f'Réserve ta visite : {subject}' if not is_hub else f'Les activités à réserver à {dest}',
                                                           'choices': (f'{subject}|{query}\nToutes les activités à {dest}|{dest}' if not is_hub else '')}))
-                    log.append('encart activité Trip.com -> formulaire GetYourGuide')
+                    log.append('encart activité Trip.com -> formulaire activités')
                 i = j
                 continue
             if low.startswith('visites') and 'activit' in low:
@@ -186,7 +215,7 @@ def convert(page, hub, data, demo=None):
                 else:
                     blocks.append(block('tt/gyg-search', {'placement': 'que-visiter', 'layout': 'band', 'title': f'Les activités à réserver à {dest}'}))
                 if address:
-                    blocks.append(block('tt/map', {'address': address if address.lower() != dest.lower() else dest, 'zoom': 12}))
+                    blocks.append(block('tt/map', {}))
                     address = ''
                 i += 1
                 while i < len(w) and w[i]['widgetType'] == 'image-box':
@@ -206,7 +235,7 @@ def convert(page, hub, data, demo=None):
             if low.startswith('faq'):
                 faq_title = 'Questions fréquentes' + (f' sur {subject}' if subject else '')
                 if address and not is_hub:
-                    blocks.append(block('tt/map', {'address': f'{subject}, {dest}', 'zoom': 15}))
+                    blocks.append(block('tt/map', {}))
                     address = ''
                 blocks.append(heading(faq_title))
                 i += 1
@@ -214,7 +243,7 @@ def convert(page, hub, data, demo=None):
             if 'comment se rendre' in low and not is_hub:
                 pending_map = True
             elif pending_map and address:
-                blocks.append(block('tt/map', {'address': f'{subject}, {dest}', 'zoom': 15}))
+                blocks.append(block('tt/map', {}))
                 address, pending_map = '', False
             if dest == 'Phuket' and 'koh tao' in low:
                 title = title.replace('Koh Tao', 'Phuket')
@@ -242,8 +271,8 @@ def convert(page, hub, data, demo=None):
                 for n, b in enumerate(tb):
                     lone = re.fullmatch(r'<!-- wp:paragraph -->\n<p><a href="([^"]*trip\.com[^"]*)">([^<]+)</a></p>\n<!-- /wp:paragraph -->', b)
                     if lone and 'hôtel' not in lone.group(2).lower():
-                        tb[n] = buttons('Voir les activités sur GetYourGuide', GYG.format(q=query.replace(' ', '%20'), cmp=f"tt-{page['slug']}-bouton"))
-                        log.append(f'lien Trip.com « {lone.group(2)} » -> GetYourGuide')
+                        tb[n] = activity_cta(is_hub, dest, subject, query)
+                        log.append(f'lien Trip.com « {lone.group(2)} » -> carte de réservation')
                 blocks.extend(tb)
         elif t == 'image-carousel':
             gallery_items = [{'id': c.get('id'), 'url': c.get('url')} for c in s.get('carousel', [])]
@@ -271,13 +300,12 @@ def convert(page, hub, data, demo=None):
         elif t == 'button':
             url, label = s.get('link', {}).get('url', ''), txt(s.get('text', ''))
             if 'gyg.me' in url or 'getyourguide' in url:
-                blocks.append(buttons('Voir les disponibilités', url))
+                blocks.append(activity_cta(is_hub, dest, subject, query, url))
             elif 'trip.com' in url and 'hôtel' in label.lower():
                 blocks.append(block('tt/trip-search', {'placement': 'hotel', 'layout': 'band'}))
             elif 'trip.com' in url:
-                generic = not label or re.match(r'^(clique[zr]? ici|ici)$', label.lower())
-                blocks.append(buttons('Voir les activités sur GetYourGuide' if generic else label, GYG.format(q=query.replace(' ', '%20'), cmp=f"tt-{page['slug']}-bouton")))
-                log.append(f'bouton Trip.com « {label} » -> GetYourGuide')
+                blocks.append(activity_cta(is_hub, dest, subject, query))
+                log.append(f'bouton Trip.com « {label} » -> carte de réservation')
             elif url:
                 blocks.append(buttons(label, url))
         elif t == 'elementskit-accordion':
@@ -288,15 +316,21 @@ def convert(page, hub, data, demo=None):
                 blocks.append(details(txt(it.get('acc_title', '')), clean(it.get('acc_content', '')), n == 0))
         i += 1
     if address:
-        blocks.append(block('tt/map', {'address': address, 'zoom': 13}))
+        blocks.append(block('tt/map', {}))
+    if page['slug'] in GEO:
+        meta['tt_geo'] = ','.join(str(c) for c in GEO[page['slug']])
+    if page['slug'] in GEO_PINS:
+        meta['tt_map_pins'] = json.dumps([{'t': t, 'q': q, 'lat': la, 'lng': ln} for t, q, la, ln in GEO_PINS[page['slug']]], ensure_ascii=False)
     if is_hub:
-        name, city, syn = HUB_META[page['slug']]
-        meta.update({'tt_destination': name, 'tt_gyg_query': name, 'tt_trip_city': city, 'tt_synonyms': syn})
+        name, syn = HUB_META[page['slug']]
+        meta.update({'tt_destination': name, 'tt_gyg_query': name, 'tt_trip_city': page['slug'], 'tt_synonyms': syn})
         meta['tt_card_title'] = name
     else:
         meta['tt_gyg_query'] = query
         meta['tt_card_title'] = (subject or norm_title(page['title'])).split(' : ')[0]
     content = '\n\n'.join(tipify(b) for b in related(blocks))
+    gal = [g['id'] for g in gallery_items if g.get('id')]
+    content = content.replace('"imageId": "__gal__"', f'"imageId": {gal[1 if len(gal) > 1 else 0]}' if gal else '"imageId": 0')
     return content.replace('https://preprod.tourisme-thailande.fr', 'https://tourisme-thailande.fr'), meta, gallery_items, log
 
 

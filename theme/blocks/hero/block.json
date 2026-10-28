@@ -5,17 +5,54 @@
 	"title": "Hero",
 	"category": "tt-layout",
 	"description": "Grande image avec le titre H1, une accroche et un formulaire (recherche, hôtels Trip.com ou activités GetYourGuide). Par défaut : image à la une, titre et extrait de la page.",
-	"supports": { "html": false, "align": [ "full" ] },
-	"usesContext": [ "postId" ],
+	"supports": {
+		"html": false,
+		"align": [
+			"full"
+		]
+	},
+	"usesContext": [
+		"postId"
+	],
 	"attributes": {
-		"align": { "type": "string", "default": "full" },
-		"variant": { "type": "string", "enum": [ "home", "page" ], "default": "page" },
-		"title": { "type": "string", "default": "" },
-		"subtitle": { "type": "string", "default": "" },
-		"imageId": { "type": "number", "default": 0 },
-		"widget": { "type": "string", "enum": [ "none", "search", "trip", "gyg" ], "default": "trip" },
-		"widgetTitle": { "type": "string", "default": "" },
-		"photos": { "type": "number", "default": 0 }
+		"align": {
+			"type": "string",
+			"default": "full"
+		},
+		"variant": {
+			"type": "string",
+			"enum": [
+				"home",
+				"page"
+			],
+			"default": "page"
+		},
+		"title": {
+			"type": "string",
+			"default": ""
+		},
+		"subtitle": {
+			"type": "string",
+			"default": ""
+		},
+		"imageId": {
+			"type": "number",
+			"default": 0
+		},
+		"widget": {
+			"type": "string",
+			"enum": [
+				"none",
+				"search",
+				"trip",
+				"gyg"
+			],
+			"default": "trip"
+		},
+		"widgetTitle": {
+			"type": "string",
+			"default": ""
+		}
 	},
 	"render": "file:./render.php"
 }

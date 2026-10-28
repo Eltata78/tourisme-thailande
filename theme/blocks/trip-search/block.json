@@ -4,12 +4,12 @@
 	"name": "tt/trip-search",
 	"title": "Recherche d'hôtels Trip.com",
 	"category": "tt-affiliation",
-	"description": "Formulaire destination, dates et voyageurs qui ouvre Trip.com filtré, avec les identifiants partenaires. Sans réglage, la ville est celle de la destination de la page.",
+	"description": "Formulaire destination, dates et voyageurs qui ouvre Trip.com filtré, avec les identifiants partenaires. Sans réglage, la destination est celle de la page (clés possibles : bangkok, phuket, krabi, koh-samui…).",
 	"supports": { "html": false },
 	"usesContext": [ "postId" ],
 	"attributes": {
 		"title": { "type": "string", "default": "" },
-		"city": { "type": "number", "default": 0 },
+		"city": { "type": "string", "default": "" },
 		"placement": { "type": "string", "default": "inline" },
 		"layout": { "type": "string", "enum": [ "card", "band", "compact" ], "default": "band" }
 	},

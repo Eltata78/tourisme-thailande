@@ -1,8 +1,26 @@
-.tt-map { position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 7; min-height: 220px; background-color: #E9EEF2; background-image: linear-gradient(90deg, rgba(45, 42, 74, .06) 1px, transparent 1px), linear-gradient(0deg, rgba(45, 42, 74, .06) 1px, transparent 1px), radial-gradient(circle at 30% 60%, #CFE3EE 0 18%, transparent 19%), radial-gradient(circle at 75% 30%, #DCEBD8 0 22%, transparent 23%); background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%; border: 1px solid var(--tt-line, #E5E3EE); }
-.tt-map__face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px; text-align: center; }
-.tt-map__pin { width: 36px; height: 36px; color: var(--tt-red, #A51931); }
-.tt-map__t { margin: 0; font-weight: 700; color: var(--tt-indigo, #2D2A4A); font-size: 17px; }
-.tt-map__actions { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: center; }
-.tt-map__ext { font-size: 14px; color: var(--tt-indigo, #2D2A4A); }
-.tt-map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-@media (max-width: 700px) { .tt-map { aspect-ratio: 4 / 3; } }
+.tt-map { position: relative; z-index: 0; border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 9; min-height: 260px; background: #F6F5F0; border: 1px solid var(--tt-line, #E5E3EE); font: inherit; }
+.tt-map:not(.is-ready) { background-image: linear-gradient(90deg, rgba(45, 42, 74, .05) 1px, transparent 1px), linear-gradient(0deg, rgba(45, 42, 74, .05) 1px, transparent 1px); background-size: 32px 32px; }
+.tt-map .maplibregl-ctrl-group { border-radius: 8px; box-shadow: 0 4px 14px -6px rgba(30, 27, 54, .45); }
+.tt-map .maplibregl-ctrl-attrib { font-size: 10px; }
+.tt-map .maplibregl-cooperative-gesture-screen { font: inherit; font-size: 15px; font-weight: 600; }
+@media (max-width: 700px) { .tt-map { aspect-ratio: 4 / 3.6; } }
+
+/* Repères : point rouge, nom au survol ; la page en cours est marquée et nommée en permanence */
+.tt-map .tt-pin { position: relative; width: 18px; height: 18px; padding: 0; border: 0; background: none; cursor: pointer; }
+.tt-pin__dot { display: block; width: 100%; height: 100%; border-radius: 50%; background: var(--tt-red, #A51931); border: 3px solid #fff; box-shadow: 0 2px 8px rgba(30, 27, 54, .45); transition: transform .15s ease; }
+.tt-pin:hover .tt-pin__dot, .tt-pin:focus-visible .tt-pin__dot { transform: scale(1.25); }
+.tt-map .tt-pin.is-cur { width: 26px; height: 26px; z-index: 2; }
+.tt-pin.is-cur .tt-pin__dot { background: var(--tt-indigo, #2D2A4A); box-shadow: 0 0 0 7px rgba(165, 25, 49, .22), 0 2px 8px rgba(30, 27, 54, .45); }
+.tt-pin__label { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; background: #fff; color: var(--tt-indigo, #2D2A4A); font-size: 13px; font-weight: 600; line-height: 1.2; padding: 5px 9px; border-radius: 8px; box-shadow: 0 6px 16px -8px rgba(30, 27, 54, .6); opacity: 0; pointer-events: none; transition: opacity .15s ease; }
+.tt-pin:hover .tt-pin__label, .tt-pin:focus-visible .tt-pin__label, .tt-pin.is-cur .tt-pin__label { opacity: 1; }
+
+/* Fiche au clic : toujours au-dessus des repères et de leurs noms */
+.tt-map .maplibregl-popup { z-index: 5; }
+.tt-map .tt-popup .maplibregl-popup-content { padding: 0; width: 230px; border-radius: 12px; overflow: hidden; box-shadow: 0 18px 36px -18px rgba(30, 27, 54, .6); font: inherit; line-height: 1.35; }
+.tt-map .tt-popup .maplibregl-popup-close-button { width: 28px; height: 28px; font-size: 20px; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .6); }
+.tt-pop img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; max-width: none; }
+.tt-pop__b { padding: 12px 14px 14px; }
+.tt-pop__b b { display: block; font-size: 16px; font-weight: 800; font-stretch: 85%; color: var(--tt-indigo, #2D2A4A); }
+.tt-pop__a { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.tt-map .tt-pop .tt-btn { padding: 9px 14px; font-size: 14px; color: var(--tt-ink, #1E1B36); }
+.tt-map .tt-pop .tt-pop__guide { font-size: 14px; font-weight: 600; color: var(--tt-red, #A51931); }

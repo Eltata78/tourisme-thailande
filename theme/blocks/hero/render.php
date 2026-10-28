@@ -26,17 +26,7 @@ if ( '' === $attributes['subtitle'] && '' !== $tt_sub && $tt_post ) {
 $tt_ctx  = tt_destination_context( $tt_id );
 $tt_home = 'home' === $attributes['variant'];
 
-// Nombre de photos : celles de la première galerie du contenu (ancre #galerie).
-$tt_photos = (int) $attributes['photos'];
-if ( ! $tt_photos && $tt_post && has_block( 'core/gallery', $tt_post ) ) {
-	foreach ( parse_blocks( $tt_post->post_content ) as $tt_b ) {
-		if ( 'core/gallery' === $tt_b['blockName'] ) {
-			$tt_photos = count( $tt_b['innerBlocks'] );
-			break;
-		}
-	}
-}
-// Pas d'identifiant de ville Trip.com connu : on propose les activités GetYourGuide à la place.
+// Pas de destination hôtels connue : on propose les activités à la place.
 $tt_widget_type = $attributes['widget'];
 if ( 'trip' === $tt_widget_type && $tt_ctx && ! $tt_ctx['trip'] ) {
 	$tt_widget_type = 'gyg';
@@ -52,7 +42,7 @@ switch ( $tt_widget_type ) {
 			array(
 				'uid'   => 'hero',
 				'title' => $attributes['widgetTitle'] ?: ( $tt_ctx ? 'Ton hôtel à ' . $tt_ctx['name'] : 'Ton hôtel en Thaïlande' ),
-				'city'  => $tt_ctx['trip'] ?? 0,
+				'dest'  => $tt_ctx['trip'] ?? '',
 				'cmp'   => tt_cmp( 'hero', $tt_id ),
 			)
 		);
@@ -101,7 +91,6 @@ $tt_classes = 'tt-hero tt-hero--' . ( $tt_home ? 'home' : 'page' );
 				<?php else : ?>
 					<h1<?php echo mb_strlen( $tt_title ) > 26 ? ' class="is-long"' : ''; ?>><?php echo esc_html( $tt_title ); ?></h1>
 					<?php if ( $tt_sub ) : ?><p><?php echo esc_html( $tt_sub ); ?></p><?php endif; ?>
-					<?php if ( $tt_photos > 1 ) : ?><a class="tt-hero__photos" href="#galerie">Voir les <?php echo (int) $tt_photos; ?> photos</a><?php endif; ?>
 				<?php endif; ?>
 			</div>
 			<?php if ( $tt_widget && ! $tt_home ) : ?>

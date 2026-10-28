@@ -9,8 +9,7 @@
 	var SSR = wp.serverSideRender;
 
 	var LABELS = {
-		title: 'Titre', subtitle: 'Accroche', variant: 'Variante', widget: 'Formulaire', widgetTitle: 'Titre du formulaire',
-		photos: 'Nombre de photos', imageId: 'Image', imageUrl: 'URL d\'image (si pas dans la médiathèque)', place: 'Lieu',
+		title: 'Titre', subtitle: 'Accroche', variant: 'Variante', widget: 'Formulaire', widgetTitle: 'Titre du formulaire', imageId: 'Image', imageUrl: 'URL d\'image (si pas dans la médiathèque)', place: 'Lieu',
 		kind: 'Type d\'activité', rating: 'Note (ex. 4,8)', reviews: 'Nombre d\'avis', meta: 'Infos (durée, départ…)',
 		price: 'Prix « dès » en €', url: 'Lien (fiche GetYourGuide ou lien court)', query: 'Requête GetYourGuide',
 		placement: 'Emplacement (pour le suivi cmp)', layout: 'Mise en page', city: 'Ville Trip.com (identifiant)',

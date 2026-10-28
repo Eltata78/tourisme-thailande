@@ -5,6 +5,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+const TT_TRIP_HOTELS = 'https://fr.trip.com/hotels/list';
+
 /**
  * Réglages partenaires, surchargeables via l'option `tt_partners`.
  */
@@ -60,46 +62,72 @@ function tt_gyg_tag( string $url, string $cmp ): string {
 }
 
 /**
- * Lien de liste d'hôtels Trip.com avec les identifiants partenaires.
+ * Destinations hôtels Trip.com : paramètres de recherche repris des liens générés dans l'espace partenaire.
+ * Krabi se cherche à l'échelle de la province, Ban Krut comme un lieu (plage) rattaché à Bang Saphan.
+ *
+ * @return array<string,array{0:string,1:array<string,scalar>}> clé => [libellé, paramètres]
  */
-function tt_trip_url( int $city, string $sub, array $stay = array() ): string {
-	$p    = tt_partners();
-	$args = array_filter(
+function tt_trip_destinations(): array {
+	return apply_filters(
+		'tt_trip_destinations',
 		array(
-			'city'       => $city,
-			'checkin'    => $stay['checkin'] ?? '',
-			'checkout'   => $stay['checkout'] ?? '',
+			'bangkok'     => array( 'Bangkok', array( 'city' => 359 ) ),
+			'ayutthaya'   => array( 'Ayutthaya', array( 'city' => 36030 ) ),
+			'pattaya'     => array( 'Pattaya', array( 'city' => 622 ) ),
+			'chiang-mai'  => array( 'Chiang Mai', array( 'city' => 623 ) ),
+			'chiang-rai'  => array( 'Chiang Rai', array( 'city' => 647 ) ),
+			'phuket'      => array( 'Phuket', array( 'city' => 725 ) ),
+			'krabi'       => array( 'Krabi', array( 'city' => -1, 'provinceId' => 10129, 'countryId' => 4, 'searchType' => 'P', 'searchWord' => 'Krabi', 'searchValue' => '39|10129*39*10129*1' ) ),
+			'koh-phi-phi' => array( 'Koh Phi Phi', array( 'city' => 1228 ) ),
+			'koh-samui'   => array( 'Koh Samui', array( 'city' => 1229 ) ),
+			'koh-tao'     => array( 'Koh Tao', array( 'city' => 19957 ) ),
+			'ban-krut'    => array( 'Ban Krut', array( 'cityId' => 62158, 'provinceId' => 11042, 'countryId' => 4, 'searchType' => 'LM', 'optionId' => 8248394, 'searchValue' => '13|8248394*13*11.3451418|99.5644769|Ban Krut Beach|8248394|1', 'old' => 1 ) ),
+		)
+	);
+}
+
+/**
+ * Clé de destination Trip à partir d'une clé, d'un nom (« Koh Samui ») ou d'un ancien identifiant de ville.
+ */
+function tt_trip_key( $value ): string {
+	$dests = tt_trip_destinations();
+	$key   = sanitize_title( (string) $value );
+	if ( isset( $dests[ $key ] ) ) {
+		return $key;
+	}
+	foreach ( $dests as $k => $d ) {
+		if ( is_numeric( $value ) && (int) $value === (int) ( $d[1]['city'] ?? 0 ) ) {
+			return $k;
+		}
+	}
+	return '';
+}
+
+/**
+ * Lien hôtels Trip.com (version française, prix en euros) avec les identifiants partenaires.
+ *
+ * @param array{checkin?:string,checkout?:string,adult?:int,children?:int} $stay
+ */
+function tt_trip_url( string $dest, string $sub, array $stay = array() ): string {
+	$p     = tt_partners();
+	$key   = tt_trip_key( $dest );
+	$extra = $key ? tt_trip_destinations()[ $key ][1] : array();
+	$args  = array_filter(
+		$extra + array(
+			'checkin'    => isset( $stay['checkin'] ) ? str_replace( '-', '/', $stay['checkin'] ) : '',
+			'checkout'   => isset( $stay['checkout'] ) ? str_replace( '-', '/', $stay['checkout'] ) : '',
 			'adult'      => $stay['adult'] ?? '',
 			'children'   => $stay['children'] ?? '',
 			'crn'        => 1,
+			'locale'     => 'fr-FR',
+			'curr'       => 'EUR',
 			'Allianceid' => $p['trip_alliance_id'],
 			'SID'        => $p['trip_sid'],
 			'trip_sub1'  => $sub,
 		),
 		static fn( $v ) => '' !== $v
 	);
-	return add_query_arg( $args, 'https://www.trip.com/hotels/list' );
-}
-
-/**
- * Villes Trip.com proposées dans les formulaires (identifiants à confirmer dans l'outil partenaire).
- */
-function tt_trip_cities(): array {
-	return apply_filters(
-		'tt_trip_cities',
-		array(
-			'Bangkok'     => 359,
-			'Phuket'      => 725,
-			'Chiang Mai'  => 623,
-			'Krabi'       => 1240,
-			'Koh Samui'   => 1229,
-			'Koh Phangan' => 1231,
-			'Koh Tao'     => 1230,
-			'Pattaya'     => 622,
-			'Chiang Rai'  => 1223,
-			'Ayutthaya'   => 1225,
-		)
-	);
+	return add_query_arg( array_map( 'rawurlencode', $args ), TT_TRIP_HOTELS );
 }
 
 /**

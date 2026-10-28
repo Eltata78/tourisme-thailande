@@ -79,7 +79,7 @@
 			if ( places.length ) html += '<p class="h">Destinations et visites</p>' + places.map( row ).join( '' );
 			if ( guides.length ) html += '<p class="h">Guides</p>' + guides.map( row ).join( '' );
 			if ( cfg.gyg ) {
-				html += '<a class="gyg" role="option" target="_blank" rel="sponsored nofollow noopener" href="' + esc( cfg.gyg.domain + '/s/?q=' + encodeURIComponent( q ) + '&partner_id=' + cfg.gyg.partner + '&cmp=tt-search' ) + '"><span>Activités « ' + esc( q ) + ' » sur GetYourGuide</span></a>';
+				html += '<a class="gyg" role="option" target="_blank" rel="sponsored nofollow noopener" href="' + esc( cfg.gyg.domain + '/s/?q=' + encodeURIComponent( q ) + '&partner_id=' + cfg.gyg.partner + '&cmp=tt-search' ) + '"><span>Activités « ' + esc( q ) + ' » à réserver</span></a>';
 			}
 			box.innerHTML = html;
 			box.hidden = false;
@@ -156,6 +156,17 @@
 			} else if ( hidden ) {
 				hidden.remove();
 			}
+			// Destinations Trip qui ne sont pas des villes (province, plage) : paramètres de recherche complémentaires.
+			$$( '[data-tt-extra]', form ).forEach( function ( el ) { el.remove(); } );
+			var opt = form.elements.city && form.elements.city.selectedOptions[ 0 ];
+			if ( opt && opt.dataset.ttQ ) {
+				var q = JSON.parse( opt.dataset.ttQ );
+				Object.keys( q ).forEach( function ( k ) {
+					var h = document.createElement( 'input' );
+					h.type = 'hidden'; h.name = k; h.value = q[ k ]; h.setAttribute( 'data-tt-extra', '' );
+					form.appendChild( h );
+				} );
+			}
 			if ( window.gtag ) window.gtag( 'event', 'tt_partner_form', { partner: form.getAttribute( 'data-tt-wdg' ), form_id: form.id } );
 		} );
 	} );
@@ -184,21 +195,103 @@
 	} );
 
 
-	/* ---------- Carte : iframe chargée seulement à la demande ---------- */
-	$$( '[data-tt-map]' ).forEach( function ( box ) {
-		var btn = $( '[data-tt-map-load]', box );
-		if ( ! btn ) return;
-		btn.addEventListener( 'click', function () {
-			var f = document.createElement( 'iframe' );
-			f.src = box.getAttribute( 'data-tt-map' );
-			f.title = 'Carte';
-			f.loading = 'lazy';
-			f.referrerPolicy = 'no-referrer-when-downgrade';
-			f.setAttribute( 'allowfullscreen', '' );
-			box.appendChild( f );
-			var face = $( '.tt-map__face', box );
-			if ( face ) face.remove();
+	/* ---------- Carte des visites : MapLibre chargé à l'approche du bloc ---------- */
+	var mapLib;
+	function loadMapLib() {
+		if ( window.maplibregl ) return Promise.resolve();
+		if ( ! mapLib ) {
+			mapLib = new Promise( function ( ok, ko ) {
+				var css = document.createElement( 'link' ), js = document.createElement( 'script' );
+				css.rel = 'stylesheet';
+				css.href = cfg.maplib + 'maplibre-gl.css';
+				js.src = cfg.maplib + 'maplibre-gl.js';
+				js.onload = ok;
+				js.onerror = ko;
+				document.head.appendChild( css );
+				document.head.appendChild( js );
+			} );
+		}
+		return mapLib;
+	}
+	function pinPopup( p ) {
+		return '<div class="tt-pop">' + ( p.i ? '<img src="' + esc( p.i ) + '" alt="" loading="lazy">' : '' ) +
+			'<div class="tt-pop__b"><b>' + esc( p.t ) + '</b><span class="tt-pop__a">' +
+			'<a class="tt-btn tt-btn--gold" href="' + esc( p.g ) + '" target="_blank" rel="sponsored nofollow noopener">' + esc( p.b ) + '</a>' +
+			( p.u ? '<a class="tt-pop__guide" href="' + esc( p.u ) + '">Le guide</a>' : '' ) + '</span></div></div>';
+	}
+	function km( a, b ) {
+		var r = Math.PI / 180, dLat = ( b[ 1 ] - a[ 1 ] ) * r, dLng = ( b[ 0 ] - a[ 0 ] ) * r;
+		var h = Math.pow( Math.sin( dLat / 2 ), 2 ) + Math.cos( a[ 1 ] * r ) * Math.cos( b[ 1 ] * r ) * Math.pow( Math.sin( dLng / 2 ), 2 );
+		return 12742 * Math.asin( Math.sqrt( h ) );
+	}
+	function styleMap( map ) {
+		// Noms en français quand OpenStreetMap les connaît, sinon en anglais ou translittérés : jamais d'écriture thaïe seule.
+		var name = [ 'coalesce', [ 'get', 'name:fr' ], [ 'get', 'name:en' ], [ 'get', 'name:latin' ], [ 'get', 'name' ] ];
+		map.getStyle().layers.forEach( function ( l ) {
+			var tf = l.layout && l.layout[ 'text-field' ];
+			if ( 'symbol' === l.type && tf && JSON.stringify( tf ).indexOf( 'name' ) > -1 ) map.setLayoutProperty( l.id, 'text-field', name );
 		} );
+		[ [ 'background', 'background-color', '#F6F5F0' ], [ 'water', 'fill-color', '#C7DCE7' ], [ 'park', 'fill-color', '#DCE8D3' ], [ 'landcover_wood', 'fill-color', '#D6E3CE' ] ].forEach( function ( c ) {
+			if ( map.getLayer( c[ 0 ] ) ) map.setPaintProperty( c[ 0 ], c[ 1 ], c[ 2 ] );
+		} );
+	}
+	function drawMap( box ) {
+		var data = JSON.parse( box.getAttribute( 'data-tt-map' ) ), ml = window.maplibregl;
+		var pts = data.pins.map( function ( p ) { return [ p.lng, p.lat ]; } );
+		var cur = data.pins.filter( function ( p ) { return p.c; } )[ 0 ];
+		var map = new ml.Map( {
+			container: box, style: data.style, center: pts[ 0 ], zoom: 10, attributionControl: false,
+			cooperativeGestures: true, dragRotate: false, pitchWithRotate: false, touchPitch: false,
+			locale: {
+				'CooperativeGesturesHandler.WindowsHelpText': 'Ctrl + molette pour zoomer sur la carte',
+				'CooperativeGesturesHandler.MacHelpText': '⌘ + molette pour zoomer sur la carte',
+				'CooperativeGesturesHandler.MobileHelpText': 'Deux doigts pour déplacer la carte',
+				'NavigationControl.ZoomIn': 'Zoomer', 'NavigationControl.ZoomOut': 'Dézoomer'
+			}
+		} );
+		map.touchZoomRotate.disableRotation();
+		map.addControl( new ml.NavigationControl( { showCompass: false } ), 'top-left' );
+		map.addControl( new ml.AttributionControl( { compact: true } ), 'bottom-right' );
+		map.on( 'style.load', function () { styleMap( map ); } );
+		map.once( 'load', function () {
+			var attrib = box.querySelector( '.maplibregl-compact-show' );
+			if ( attrib ) attrib.classList.remove( 'maplibregl-compact-show' );
+		} );
+		data.pins.forEach( function ( p ) {
+			var el = document.createElement( 'button' );
+			el.type = 'button';
+			el.className = 'tt-pin' + ( p.c ? ' is-cur' : '' );
+			el.setAttribute( 'aria-label', p.t );
+			el.innerHTML = '<span class="tt-pin__dot"></span><span class="tt-pin__label">' + esc( p.t ) + '</span>';
+			var pop = new ml.Popup( { offset: 16, anchor: 'bottom', maxWidth: '240px', className: 'tt-popup', focusAfterOpen: false } ).setHTML( pinPopup( p ) );
+			pop.on( 'open', function () {
+				// Le repère descend vers le bas de la carte pour que la fiche, au-dessus, tienne entièrement.
+				map.easeTo( { center: [ p.lng, p.lat ], offset: [ 0, Math.max( 0, box.clientHeight / 2 - 40 ) ], duration: 350 } );
+				if ( window.gtag ) window.gtag( 'event', 'tt_map_pin', { pin: p.t } );
+			} );
+			new ml.Marker( { element: el, anchor: 'center' } ).setLngLat( [ p.lng, p.lat ] ).setPopup( pop ).addTo( map );
+			el.setAttribute( 'aria-label', p.t ); // MapLibre pose « Map marker » par défaut
+		} );
+		if ( cur && pts.length > 1 && ! data.fit ) {
+			map.jumpTo( { center: [ cur.lng, cur.lat ], zoom: data.zoom || 11.5 } );
+		} else if ( 1 === pts.length ) {
+			map.jumpTo( { center: pts[ 0 ], zoom: data.zoom || 9.5 } );
+		} else {
+			// Les lieux proches du centre de la destination cadrent la carte ; les excursions lointaines restent visibles en dézoomant.
+			var near = data.center ? pts.filter( function ( pt ) { return km( pt, [ data.center[ 1 ], data.center[ 0 ] ] ) < 60; } ) : pts;
+			var bounds = new ml.LngLatBounds();
+			( near.length > 1 ? near : pts ).forEach( function ( pt ) { bounds.extend( pt ); } );
+			map.fitBounds( bounds, { padding: 48, maxZoom: 13, duration: 0 } );
+		}
+		box.classList.add( 'is-ready' );
+	}
+	$$( '[data-tt-map]' ).forEach( function ( box ) {
+		var go = function () { loadMapLib().then( function () { drawMap( box ); } ); };
+		if ( ! ( 'IntersectionObserver' in window ) ) return go();
+		var io = new IntersectionObserver( function ( es ) {
+			if ( es.some( function ( e ) { return e.isIntersecting; } ) ) { io.disconnect(); go(); }
+		}, { rootMargin: '400px 0px' } );
+		io.observe( box );
 	} );
 
 	/* ---------- Barre mobile : visible une fois le hero passé ---------- */

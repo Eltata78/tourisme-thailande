@@ -39,6 +39,7 @@ add_action(
 			'ttFront',
 			array(
 				'searchIndex' => rest_url( 'tt/v1/search-index' ),
+				'maplib'      => get_theme_file_uri( 'assets/vendor/maplibre/' ),
 				'gyg'         => array(
 					'domain'  => tt_partners()['gyg_domain'],
 					'partner' => tt_partners()['gyg_partner_id'],

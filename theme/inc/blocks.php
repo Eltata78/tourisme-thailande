@@ -30,8 +30,7 @@ add_action(
 add_action(
 	'init',
 	static function () {
-		register_block_style( 'core/paragraph', array( 'name' => 'tt-lead', 'label' => 'Chapeau' ) );
-	register_block_style( 'core/paragraph', array( 'name' => 'tt-tip', 'label' => 'Astuce' ) );
+		register_block_style( 'core/paragraph', array( 'name' => 'tt-tip', 'label' => 'Astuce' ) );
 	}
 );
 

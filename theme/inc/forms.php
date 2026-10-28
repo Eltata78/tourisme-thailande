@@ -9,20 +9,29 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Formulaire hôtels Trip.com.
+ * Formulaire hôtels Trip.com (fr.trip.com, prix en euros).
  *
- * @param array{uid:string,title:string,city:int,cmp:string,compact?:bool} $o
+ * @param array{uid:string,title:string,dest:string,cmp:string,compact?:bool} $o
  */
 function tt_trip_form( array $o ): string {
 	$p    = tt_partners();
 	$uid  = 'tt-trip-' . sanitize_key( $o['uid'] );
+	$key  = tt_trip_key( $o['dest'] ?? '' );
 	$opts = '';
-	foreach ( tt_trip_cities() as $name => $id ) {
-		$opts .= sprintf( '<option value="%d"%s>%s</option>', $id, selected( $id, (int) $o['city'], false ), esc_html( $name ) );
+	foreach ( tt_trip_destinations() as $k => $d ) {
+		// La ville part dans le formulaire même sans JavaScript ; les autres paramètres sont ajoutés à l'envoi par front.js.
+		$extra = array_diff_key( $d[1], array( 'city' => 1 ) );
+		$opts .= sprintf(
+			'<option value="%s"%s%s>%s</option>',
+			esc_attr( (string) ( $d[1]['city'] ?? '' ) ),
+			$extra ? ' data-tt-q="' . esc_attr( wp_json_encode( $extra ) ) . '"' : '',
+			selected( $k, $key, false ),
+			esc_html( $d[0] )
+		);
 	}
 	ob_start();
 	?>
-	<form class="tt-wdg<?php echo ! empty( $o['compact'] ) ? ' is-compact' : ''; ?>" id="<?php echo esc_attr( $uid ); ?>" action="https://www.trip.com/hotels/list" method="get" target="_blank" data-tt-wdg="trip">
+	<form class="tt-wdg<?php echo ! empty( $o['compact'] ) ? ' is-compact' : ''; ?>" id="<?php echo esc_attr( $uid ); ?>" action="<?php echo esc_url( TT_TRIP_HOTELS ); ?>" method="get" target="_blank" data-tt-wdg="trip">
 		<p class="tt-wdg__t"><?php echo esc_html( $o['title'] ); ?></p>
 		<label class="tt-f is-full">Destination<select name="city" id="<?php echo esc_attr( $uid ); ?>-city"><?php echo $opts; // phpcs:ignore ?></select></label>
 		<label class="tt-f is-date">Arrivée<input type="date" name="checkin" id="<?php echo esc_attr( $uid ); ?>-in" data-tt-date="30" required></label>
@@ -31,6 +40,8 @@ function tt_trip_form( array $o ): string {
 		<label class="tt-f">Enfants<input type="number" name="children" id="<?php echo esc_attr( $uid ); ?>-ch" value="0" min="0" max="6" data-tt-step data-tt-children></label>
 		<div class="tt-wdg__ages is-full" data-tt-ages></div>
 		<input type="hidden" name="crn" value="1">
+		<input type="hidden" name="locale" value="fr-FR">
+		<input type="hidden" name="curr" value="EUR">
 		<input type="hidden" name="Allianceid" value="<?php echo esc_attr( $p['trip_alliance_id'] ); ?>">
 		<input type="hidden" name="SID" value="<?php echo esc_attr( $p['trip_sid'] ); ?>">
 		<input type="hidden" name="trip_sub1" value="<?php echo esc_attr( $o['cmp'] ); ?>">
