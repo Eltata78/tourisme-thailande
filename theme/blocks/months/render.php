@@ -36,7 +36,6 @@ $tt_now    = (int) wp_date( 'n' ) - 1;
 		<?php foreach ( $tt_seasons as $tt_key => $tt_s ) : ?>
 			<span class="is-<?php echo esc_attr( $tt_key ); ?>"><b><?php echo esc_html( $tt_s[0] ); ?></b> <?php echo esc_html( $tt_s[1] ); ?></span>
 		<?php endforeach; ?>
-		<span class="tt-months2__note">Golfe de Thaïlande (Koh Samui, Koh Tao) : pluies d'octobre à décembre</span>
 	</div>
 	<div class="tt-months2__grid">
 		<?php
@@ -48,9 +47,9 @@ $tt_now    = (int) wp_date( 'n' ) - 1;
 			?>
 			<a class="tt-month is-<?php echo esc_attr( $tt_m[2] ); ?><?php echo $tt_i === $tt_now ? ' is-now' : ''; ?>" href="<?php echo esc_url( $tt_url ); ?>">
 				<span class="tt-month__media"><?php echo $tt_img; // phpcs:ignore ?></span>
+				<span class="tt-month__season"><?php echo esc_html( $tt_seasons[ $tt_m[2] ][0] ); ?></span>
 				<?php if ( $tt_i === $tt_now ) : ?><span class="tt-month__now">Ce mois-ci</span><?php endif; ?>
 				<span class="tt-month__body">
-					<span class="tt-month__season"><?php echo esc_html( $tt_seasons[ $tt_m[2] ][0] ); ?></span>
 					<b><?php echo esc_html( $tt_m[1] ); ?></b>
 					<span class="tt-month__txt"><?php echo esc_html( $tt_text ); ?></span>
 				</span>

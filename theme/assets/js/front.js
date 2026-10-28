@@ -143,6 +143,29 @@
 		} );
 	} );
 
+
+	/* ---------- Bandeau des destinations : défilement en boucle ---------- */
+	$$( '.tt-quick p' ).forEach( function ( p ) {
+		var label = $( 'strong', p ), links = $$( 'a', p );
+		if ( ! links.length ) return;
+		var set = document.createElement( 'span' );
+		set.className = 'tt-marquee__set';
+		links.forEach( function ( a ) { set.appendChild( a ); } );
+		var copy = set.cloneNode( true );
+		copy.setAttribute( 'aria-hidden', 'true' );
+		$$( 'a', copy ).forEach( function ( a ) { a.tabIndex = -1; } );
+		var track = document.createElement( 'span' ), box = document.createElement( 'span' );
+		track.className = 'tt-marquee__track';
+		box.className = 'tt-marquee';
+		track.appendChild( set );
+		track.appendChild( copy );
+		box.appendChild( track );
+		p.textContent = '';
+		if ( label ) { label.className = 'tt-marquee__label'; p.appendChild( label ); }
+		p.appendChild( box );
+		p.closest( '.tt-quick' ).classList.add( 'is-marquee' );
+	} );
+
 	/* ---------- Barre mobile : visible une fois le hero passé ---------- */
 	var bar = $( '[data-tt-mbar]' ), hero = $( '.tt-hero' ) || $( 'h1' );
 	if ( bar && hero && 'IntersectionObserver' in window ) {
