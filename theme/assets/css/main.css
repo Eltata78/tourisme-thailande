@@ -282,3 +282,12 @@ b, strong { font-weight: 700; }
 .tt-rate .rmp-heading { font-size: 18px; font-stretch: 85%; color: var(--tt-indigo); }
 .tt-footer .wp-block-social-links { display: flex; gap: 10px; margin-top: 16px; }
 .tt-authorbox .wp-block-post-author__avatar { flex: none; }
+
+/* ---------- Listes d'articles (blog, catégories, recherche) ---------- */
+.tt-cards { margin-top: 2rem !important; }
+.tt-cards .wp-block-post-title { margin: 6px 0 0; font-stretch: 90%; }
+.tt-cards .wp-block-post-title a { color: var(--tt-indigo); text-decoration: none; }
+.tt-cards .wp-block-post-title a:hover { color: var(--tt-red); }
+.tt-cards .tt-cat { margin-top: 12px; }
+.tt-cards .wp-block-query-pagination { margin-top: 2.5rem; gap: 8px; font-weight: 600; }
+.tt-cards .wp-block-query-pagination a { color: var(--tt-indigo); }
