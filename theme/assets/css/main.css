@@ -302,3 +302,6 @@ b, strong { font-weight: 700; }
 	.is-layout-grid:has(> .tt-act) { grid-template-columns: none !important; grid-auto-flow: column; grid-auto-columns: 80%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
 	.is-layout-grid:has(> .tt-act) > .tt-act { scroll-snap-align: start; }
 }
+.tt-hero__grid > * { min-width: 0; }
+.tt-hero .tt-search, .tt-hero .tt-search__bar { width: 100%; box-sizing: border-box; }
+.tt-prose img, .wp-block-post-content img { max-width: 100%; height: auto; }
