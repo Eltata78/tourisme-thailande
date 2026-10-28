@@ -10,16 +10,40 @@ defined( 'ABSPATH' ) || exit;
 $tt_post  = get_post( $block->context['postId'] ?? null );
 $tt_id    = $tt_post ? $tt_post->ID : 0;
 $tt_img   = (int) $attributes['imageId'] ?: (int) get_post_thumbnail_id( $tt_id );
-$tt_title = '' !== $attributes['title'] ? $attributes['title'] : ( $tt_post ? get_the_title( $tt_post ) : '' );
+$tt_title = '' !== $attributes['title'] ? $attributes['title'] : ( $tt_post ? ( (string) get_post_meta( $tt_id, 'tt_h1', true ) ?: get_the_title( $tt_post ) ) : '' );
 $tt_sub   = '' !== $attributes['subtitle'] ? $attributes['subtitle'] : (string) get_post_meta( $tt_id, 'tt_intro', true );
 if ( '' === $tt_sub && $tt_post && has_excerpt( $tt_post ) ) {
 	$tt_sub = get_the_excerpt( $tt_post );
 }
+// L'accroche reprend souvent la première phrase du chapeau : inutile de la lire deux fois de suite.
+if ( '' === $attributes['subtitle'] && '' !== $tt_sub && $tt_post ) {
+	$tt_norm  = static fn( $s ) => preg_replace( '/\s+/u', ' ', html_entity_decode( wp_strip_all_tags( $s ), ENT_QUOTES, 'UTF-8' ) );
+	$tt_start = $tt_norm( mb_substr( $tt_post->post_content, 0, 2500 ) );
+	if ( false !== mb_strpos( $tt_start, mb_substr( $tt_norm( $tt_sub ), 0, 40 ) ) ) {
+		$tt_sub = '';
+	}
+}
 $tt_ctx  = tt_destination_context( $tt_id );
 $tt_home = 'home' === $attributes['variant'];
 
+// Nombre de photos : celles de la première galerie du contenu (ancre #galerie).
+$tt_photos = (int) $attributes['photos'];
+if ( ! $tt_photos && $tt_post && has_block( 'core/gallery', $tt_post ) ) {
+	foreach ( parse_blocks( $tt_post->post_content ) as $tt_b ) {
+		if ( 'core/gallery' === $tt_b['blockName'] ) {
+			$tt_photos = count( $tt_b['innerBlocks'] );
+			break;
+		}
+	}
+}
+// Pas d'identifiant de ville Trip.com connu : on propose les activités GetYourGuide à la place.
+$tt_widget_type = $attributes['widget'];
+if ( 'trip' === $tt_widget_type && $tt_ctx && ! $tt_ctx['trip'] ) {
+	$tt_widget_type = 'gyg';
+}
+
 $tt_widget = '';
-switch ( $attributes['widget'] ) {
+switch ( $tt_widget_type ) {
 	case 'search':
 		$tt_widget = tt_search_form( 'hero' );
 		break;
@@ -75,9 +99,9 @@ $tt_classes = 'tt-hero tt-hero--' . ( $tt_home ? 'home' : 'page' );
 					<h1><?php echo esc_html( $tt_title ); ?><?php if ( $tt_sub ) : ?> <span><?php echo esc_html( $tt_sub ); ?></span><?php endif; ?></h1>
 					<?php echo $tt_widget; // phpcs:ignore ?>
 				<?php else : ?>
-					<h1><?php echo esc_html( $tt_title ); ?></h1>
+					<h1<?php echo mb_strlen( $tt_title ) > 26 ? ' class="is-long"' : ''; ?>><?php echo esc_html( $tt_title ); ?></h1>
 					<?php if ( $tt_sub ) : ?><p><?php echo esc_html( $tt_sub ); ?></p><?php endif; ?>
-					<?php if ( $attributes['photos'] ) : ?><a class="tt-hero__photos" href="#galerie">Voir les <?php echo (int) $attributes['photos']; ?> photos</a><?php endif; ?>
+					<?php if ( $tt_photos > 1 ) : ?><a class="tt-hero__photos" href="#galerie">Voir les <?php echo (int) $tt_photos; ?> photos</a><?php endif; ?>
 				<?php endif; ?>
 			</div>
 			<?php if ( $tt_widget && ! $tt_home ) : ?>

@@ -116,6 +116,7 @@ b, strong { font-weight: 700; }
 .tt-hero__grid.has-widget { grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); }
 .tt-hero h1 { color: #fff; font-stretch: 75%; margin: 0; max-width: 14ch; font-size: clamp(2.5rem, 6.4vw, 4.75rem); line-height: .94; }
 .tt-hero--home h1 { font-size: clamp(2.75rem, 8vw, 6rem); max-width: 11ch; }
+.tt-hero h1.is-long { max-width: 19ch; font-size: clamp(2.125rem, 4.6vw, 3.625rem); line-height: 1; }
 .tt-hero h1 span { display: block; font-stretch: 100%; font-weight: 500; font-size: clamp(1.125rem, 2vw, 1.5rem); line-height: 1.3; margin-top: 14px; max-width: 30ch; color: #E9E7F5; letter-spacing: 0; }
 .tt-hero__txt p { margin: 14px 0 0; font-size: 18px; color: #ECEAF7; max-width: 44ch; }
 .tt-hero .tt-search { max-width: 580px; margin-top: 28px; }
@@ -170,22 +171,32 @@ b, strong { font-weight: 700; }
 .tt-act__foot a { color: var(--tt-red); font-weight: 700; text-decoration: none; }
 
 /* ---------- Mise en page des pages longues : sommaire + contenu ---------- */
-.tt-layout { max-width: var(--tt-wide); margin-inline: auto; padding: 36px var(--tt-gutter); display: grid !important; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; }
-.tt-rail { position: sticky; top: 16px; align-self: start; display: flex; flex-direction: column; gap: 20px; }
+/* Sommaire à gauche, contenu au centre, réservation à droite. Sous 1180px, la réservation passe sous le sommaire. */
+.tt-layout { max-width: var(--tt-wide); margin-inline: auto; padding: 36px var(--tt-gutter); display: grid !important; grid-template-columns: 220px minmax(0, 1fr) 270px; gap: 44px; }
+.tt-rail { grid-column: 1; grid-row: 1; position: sticky; top: 16px; align-self: start; display: flex; flex-direction: column; gap: 20px; }
+.tt-side { grid-column: 3; grid-row: 1; position: sticky; top: 16px; align-self: start; }
+.tt-side .tt-wdg-wrap { border: 1px solid var(--tt-line); border-radius: 14px; padding: 16px; background: #fff; box-shadow: 0 14px 30px -24px rgba(30, 27, 54, .5); }
 .tt-toc { font-size: 14px; display: flex; flex-direction: column; border-left: 2px solid var(--tt-line); }
 .tt-toc__t { margin: 0 0 8px; padding-left: 14px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--tt-indigo); }
 .tt-toc a { padding: 5px 0 5px 14px; margin-left: -2px; border-left: 2px solid transparent; color: var(--tt-muted); text-decoration: none; line-height: 1.35; }
 .tt-toc a.is-on { border-left-color: var(--tt-red); color: var(--tt-indigo); font-weight: 600; }
-.tt-prose { max-width: 70ch; min-width: 0; }
+.tt-prose { grid-column: 2; grid-row: 1; max-width: 760px; min-width: 0; }
 .tt-prose > * + * { margin-block-start: 1rem; }
 .tt-prose h2 { margin-top: 2.25rem; scroll-margin-top: 16px; }
 .tt-prose h3 { margin-top: 1.5rem; scroll-margin-top: 16px; }
 .tt-prose p, .tt-prose li { color: #34314F; }
 .tt-prose strong { color: var(--tt-ink); }
 .tt-prose p a, .tt-prose li a { color: var(--tt-red); text-underline-offset: 3px; }
+@media (max-width: 1180px) {
+	.tt-layout { grid-template-columns: 220px minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 40px; row-gap: 28px; }
+	.tt-prose { grid-row: 1 / span 2; }
+	.tt-rail { position: static; }
+	.tt-side { grid-column: 1; grid-row: 2; }
+}
 @media (max-width: 900px) {
-	.tt-layout { grid-template-columns: 1fr; gap: 0; }
-	.tt-rail { display: none; }
+	.tt-layout { grid-template-columns: 1fr; grid-template-rows: none; gap: 0; }
+	.tt-prose { grid-column: 1; grid-row: auto; }
+	.tt-rail, .tt-side { display: none; }
 }
 
 /* ---------- Tableaux et FAQ ---------- */
@@ -197,6 +208,14 @@ b, strong { font-weight: 700; }
 .wp-block-table td { padding: 10px 14px; border: 0; border-top: 1px solid var(--tt-line); vertical-align: top; }
 .wp-block-table tbody tr:nth-child(even) td { background: #FAFAFC; }
 .wp-block-table td:first-child { font-weight: 600; color: var(--tt-ink); }
+.wp-block-table table.has-fixed-layout { table-layout: auto; }
+.wp-block-table .has-fixed-layout td, .wp-block-table .has-fixed-layout th { word-break: normal; overflow-wrap: normal; hyphens: manual; }
+@media (max-width: 700px) { .wp-block-table:has(tr > :nth-child(4)) table { min-width: 620px; } }
+mark.tt-st { display: inline-flex; align-items: baseline; gap: 6px; padding: 2px 9px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.4; }
+mark.tt-st::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: currentColor; transform: translateY(-1px); }
+mark.tt-st.is-good { background: #E6F3EB; color: #1E6B42; }
+mark.tt-st.is-ok { background: #FBF0DA; color: #8A5200; }
+mark.tt-st.is-bad { background: #FAE8EB; color: var(--tt-red); }
 .schema-faq-section, .wp-block-details { border-bottom: 1px solid var(--tt-line); padding-block: 12px; }
 .schema-faq-question, .wp-block-details summary { display: block; font-weight: 600; color: var(--tt-indigo); cursor: pointer; }
 .schema-faq-answer { margin: 6px 0 0; }
@@ -344,3 +363,44 @@ b, strong { font-weight: 700; }
 @media (max-width: 700px) {
 	.tt-hero--home .tt-hero__in { min-height: 0; padding-block: 56px 48px; }
 }
+.tt-btn--out { background: transparent; color: var(--tt-indigo); border: 1.5px solid var(--tt-indigo); }
+.tt-btn--out:hover { background: var(--tt-indigo); color: #fff; }
+
+/* ---------- Contenu des guides (destinations, lieux) ---------- */
+.tt-prose .is-style-tt-tip { background: var(--tt-gold-soft); border-radius: 12px; padding: 14px 18px; color: var(--tt-ink); }
+.tt-prose .is-style-tt-tip > strong:first-child { color: var(--tt-indigo); }
+.tt-prose .is-style-tt-lead { font-size: 1.1875rem; line-height: 1.6; color: var(--tt-ink); }
+.tt-prose h2 { padding-top: .25rem; }
+.tt-prose > .wp-block-buttons { margin-block: 1.25rem; }
+.tt-prose .wp-block-button__link { background: var(--tt-gold); color: var(--tt-ink); font-weight: 700; font-size: 16px; padding: 14px 26px; border-radius: 10px; text-decoration: none; box-shadow: 0 10px 22px -16px rgba(30, 27, 54, .7); }
+@media (max-width: 700px) { .tt-prose .wp-block-buttons, .tt-prose .wp-block-button, .tt-prose .wp-block-button__link { width: 100%; text-align: center; } }
+.tt-prose .wp-block-button__link:hover { background: var(--tt-indigo); color: #fff; }
+.tt-prose > .tt-wdg-wrap, .tt-prose > .tt-map, .tt-prose > .tt-cards2, .tt-prose > .tt-spot, .tt-prose > .tt-cmp { margin-block: 1.5rem; }
+.tt-prose > .is-layout-grid:has(> .tt-act) { margin-block: 1rem 1.5rem; }
+/* Galerie : bande de photos défilante, agrandissement au clic. */
+.tt-prose .tt-gallery.wp-block-gallery { display: grid !important; grid-auto-flow: column; grid-auto-columns: minmax(220px, 32%); gap: 10px !important; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; margin-block: 1.5rem; scroll-margin-top: 16px; }
+.tt-prose .tt-gallery .wp-block-image { margin: 0 !important; width: auto !important; scroll-snap-align: start; }
+.tt-prose .tt-gallery .wp-block-image img { aspect-ratio: 4 / 3; object-fit: cover; width: 100%; height: 100%; border-radius: 12px; }
+.tt-prose figure.wp-block-image:not(.tt-gallery figure) img { border-radius: 14px; }
+/* FAQ en blocs Détails */
+.tt-prose .wp-block-details { border-bottom: 1px solid var(--tt-line); padding-block: 14px; margin: 0 !important; }
+.tt-prose .wp-block-details summary { font-weight: 600; color: var(--tt-indigo); cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.tt-prose .wp-block-details summary::-webkit-details-marker { display: none; }
+.tt-prose .wp-block-details summary::after { content: "+"; color: var(--tt-muted); font-weight: 400; font-size: 20px; line-height: 1; }
+.tt-prose .wp-block-details[open] summary::after { content: "–"; }
+.tt-prose .wp-block-details > :not(summary) { margin-top: 8px; }
+@media (max-width: 700px) {
+	.tt-prose .tt-gallery.wp-block-gallery { grid-auto-columns: 78%; }
+	.tt-prose .is-style-tt-tip { background: var(--tt-gold-soft); border-radius: 12px; padding: 14px 18px; color: var(--tt-ink); }
+.tt-prose .is-style-tt-tip > strong:first-child { color: var(--tt-indigo); }
+.tt-prose .is-style-tt-lead { font-size: 1.0625rem; }
+}
+
+/* Encadré « À lire aussi » */
+.tt-prose .tt-related { border-left: 3px solid var(--tt-gold); background: var(--tt-mist); border-radius: 0 12px 12px 0; padding: 14px 18px; }
+.tt-prose .tt-related > * + * { margin-block-start: 6px; }
+.tt-prose .tt-related p { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+.tt-prose .tt-related p strong { color: var(--tt-indigo); }
+.tt-prose .tt-related ul { margin: 0; padding-left: 18px; }
+.tt-prose .tt-related li { margin: 2px 0; }
+.tt-prose .tt-related li a { font-weight: 600; }

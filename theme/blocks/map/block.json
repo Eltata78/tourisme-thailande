@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/map",
+	"title": "Carte (chargée au clic)",
+	"category": "tt-layout",
+	"description": "Carte Google Maps affichée seulement quand le visiteur la demande : aucun script tiers au chargement de la page.",
+	"supports": { "html": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"address": { "type": "string", "default": "" },
+		"zoom": { "type": "number", "default": 13 },
+		"label": { "type": "string", "default": "" }
+	},
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

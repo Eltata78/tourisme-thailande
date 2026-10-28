@@ -183,6 +183,24 @@
 		p.closest( '.tt-quick' ).classList.add( 'is-marquee' );
 	} );
 
+
+	/* ---------- Carte : iframe chargée seulement à la demande ---------- */
+	$$( '[data-tt-map]' ).forEach( function ( box ) {
+		var btn = $( '[data-tt-map-load]', box );
+		if ( ! btn ) return;
+		btn.addEventListener( 'click', function () {
+			var f = document.createElement( 'iframe' );
+			f.src = box.getAttribute( 'data-tt-map' );
+			f.title = 'Carte';
+			f.loading = 'lazy';
+			f.referrerPolicy = 'no-referrer-when-downgrade';
+			f.setAttribute( 'allowfullscreen', '' );
+			box.appendChild( f );
+			var face = $( '.tt-map__face', box );
+			if ( face ) face.remove();
+		} );
+	} );
+
 	/* ---------- Barre mobile : visible une fois le hero passé ---------- */
 	var bar = $( '[data-tt-mbar]' ), hero = $( '.tt-hero' ) || $( 'h1' );
 	if ( bar && hero && 'IntersectionObserver' in window ) {

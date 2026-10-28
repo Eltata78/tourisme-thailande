@@ -1,0 +1,26 @@
+.tt-spot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); border: 1px solid var(--tt-line, #E5E3EE); border-radius: 16px; overflow: hidden; background: #fff; }
+.tt-spot__media { position: relative; min-height: 300px; background: var(--tt-mist, #F4F3F8); }
+.tt-spot .tt-spot__media img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.tt-spot__badge { position: absolute; top: 12px; left: 12px; background: var(--tt-red, #A51931); color: #fff; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 4px 9px; }
+.tt-spot__body { padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; }
+.tt-spot__title { margin: 0; font-stretch: 85%; font-weight: 800; font-size: 22px; line-height: 1.15; color: var(--tt-indigo, #2D2A4A); }
+.tt-check { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tt-check li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; font-size: 15px; color: #34314F; }
+.tt-check svg { width: 16px; height: 16px; color: var(--tt-green, #1E7A4B); margin-top: 4px; }
+.tt-spot__facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 10px 0; border-block: 1px solid var(--tt-line, #E5E3EE); }
+.tt-spot__facts dt { font-size: 11px; color: var(--tt-muted, #5F5B78); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+.tt-spot__facts dd { margin: 0; font-size: 14px; font-weight: 700; color: var(--tt-ink, #1E1B36); }
+.tt-spot__foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: auto; }
+.tt-spot__price { margin: 0; font-size: 14px; color: var(--tt-muted, #5F5B78); }
+.tt-spot__price b { font-size: 26px; font-stretch: 85%; font-weight: 800; color: var(--tt-indigo, #2D2A4A); }
+.tt-spot__btns { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.tt-spot__guide { font-size: 14px; color: var(--tt-indigo, #2D2A4A); text-underline-offset: 3px; }
+@media (max-width: 900px) {
+	.tt-spot { grid-template-columns: 1fr; }
+	.tt-spot__media { min-height: 220px; }
+}
+@media (max-width: 520px) {
+	.tt-spot__facts { grid-template-columns: 1fr 1fr; }
+	.tt-spot__btns { align-items: stretch; width: 100%; }
+	.tt-spot__btns .tt-btn { width: 100%; }
+}

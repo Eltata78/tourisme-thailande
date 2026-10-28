@@ -1,0 +1,13 @@
+.tt-cards2 { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 14px; }
+.tt-card2 { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--tt-ink, #1E1B36); }
+.tt-card2__media { position: relative; display: block; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: var(--tt-mist, #F4F3F8); }
+.tt-cards2 .tt-card2__media img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; transition: transform .35s ease; }
+.tt-card2:hover .tt-card2__media img { transform: scale(1.04); }
+.tt-card2 b { font-size: 15px; line-height: 1.3; font-weight: 700; }
+.tt-card2:hover b { color: var(--tt-red, #A51931); }
+@media (max-width: 1100px) { .tt-cards2 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px) {
+	.tt-cards2 { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 42%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+	.tt-card2 { scroll-snap-align: start; }
+}
+@media (prefers-reduced-motion: reduce) { .tt-cards2 .tt-card2__media img { transition: none; } }

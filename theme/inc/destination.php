@@ -16,6 +16,8 @@ function tt_page_meta_fields(): array {
 		'tt_gyg_query'   => array( 'type' => 'string', 'description' => 'Requête GetYourGuide par défaut (ex. Bangkok).' ),
 		'tt_trip_city'   => array( 'type' => 'integer', 'description' => 'Identifiant de ville Trip.com.' ),
 		'tt_intro'       => array( 'type' => 'string', 'description' => 'Accroche courte affichée dans le hero.' ),
+		'tt_h1'          => array( 'type' => 'string', 'description' => 'Titre H1 affiché dans le hero (le titre de la page reste court pour les menus et le fil d\'Ariane).' ),
+		'tt_card_title'  => array( 'type' => 'string', 'description' => 'Titre court utilisé sur les cartes (grilles de pages).' ),
 		'tt_price_from'  => array( 'type' => 'number', 'description' => 'Prix « dès » affiché dans la barre mobile.' ),
 	);
 }

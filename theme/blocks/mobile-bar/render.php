@@ -19,7 +19,7 @@ if ( $attributes['url'] ) {
 	$tt_url = tt_header_cta()['url'];
 }
 $tt_label = $attributes['label'] ?: ( $tt_ctx ? 'Activités à ' . $tt_ctx['name'] : tt_partners()['cta_default_label'] );
-$tt_sub   = $attributes['sub'] ?: ( $tt_ctx && $tt_ctx['price'] ? sprintf( 'Annulation gratuite · dès %s €', number_format_i18n( $tt_ctx['price'] ) ) : 'Annulation gratuite sur la plupart des activités' );
+$tt_sub   = $attributes['sub'] ?: ( $tt_ctx && $tt_ctx['price'] ? sprintf( 'Annulation gratuite · dès %s €', number_format_i18n( $tt_ctx['price'] ) ) : 'Annulation gratuite possible' );
 $tt_btn   = $attributes['button'] ?: 'Voir les activités';
 $tt_ext   = ! str_starts_with( $tt_url, home_url() );
 ?>

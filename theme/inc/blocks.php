@@ -26,6 +26,15 @@ add_action(
 	}
 );
 
+// Style de paragraphe « chapeau » (introduction des guides).
+add_action(
+	'init',
+	static function () {
+		register_block_style( 'core/paragraph', array( 'name' => 'tt-lead', 'label' => 'Chapeau' ) );
+	register_block_style( 'core/paragraph', array( 'name' => 'tt-tip', 'label' => 'Astuce' ) );
+	}
+);
+
 add_action(
 	'enqueue_block_editor_assets',
 	static function () {

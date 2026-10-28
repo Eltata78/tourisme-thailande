@@ -21,6 +21,10 @@
 | `tt/trip-search` | Formulaire hôtels Trip.com (dates, voyageurs, âges des enfants) |
 | `tt/gyg-search` | Formulaire activités GetYourGuide (envie + date) |
 | `tt/gyg-card` | Carte activité GetYourGuide |
+| `tt/gyg-spotlight` | Mise en avant d'une activité (points forts, infos pratiques, prix, lien) |
+| `tt/gyg-compare` | Comparatif de 2 à 4 activités sur les mêmes critères |
+| `tt/card-grid` | Grille de cartes : sous-pages, pages sœurs, destinations ou sélection d'IDs |
+| `tt/map` | Carte Google Maps chargée au clic (aucun script tiers au chargement) |
 | `tt/toc` | Sommaire automatique (H2 du contenu) |
 | `tt/mobile-bar` | Barre de réservation mobile |
 
@@ -32,10 +36,20 @@ Tous les blocs sont rendus côté serveur. Syntaxe pour le MCP, par exemple :
 
 ## Métadonnées de page (API REST)
 
-`tt_destination`, `tt_gyg_query`, `tt_trip_city`, `tt_intro`, `tt_price_from`, `tt_synonyms`.
-Une sous-page hérite de la destination de son hub parent.
+`tt_h1`, `tt_destination`, `tt_gyg_query`, `tt_trip_city`, `tt_intro`, `tt_price_from`, `tt_synonyms`, `tt_card_title`.
+Une sous-page hérite de la destination de son hub parent. `tt_h1` remplace le titre dans le hero, `tt_card_title` sur les cartes.
+
+Styles de paragraphe : « Chapeau » (`is-style-tt-lead`) et « Astuce » (`is-style-tt-tip`).
 
 ## Réglages partenaires
 
 Option `tt_partners` : `gyg_partner_id`, `gyg_domain`, `trip_alliance_id`, `trip_sid`, `cta_default_label`, `cta_default_url`.
 Chaque lien porte un identifiant de campagne `tt-{slug}-{emplacement}` (`cmp` chez GetYourGuide, `trip_sub1` chez Trip.com).
+
+## Migration des pages destination
+
+1. `python3 -I migration/elementor2blocks.py <dossier _elementor_data> <pages.json> <sortie.json>` :
+   convertit les pages Elementor (hubs et sous-pages) en blocs natifs et calcule les métadonnées.
+2. `migration/apply_destinations.php` (via execute-php, variable `$tt_rows`) : applique le contenu,
+   le template `page-destination` et les métadonnées. Le contenu Elementor d'origine est gardé
+   dans `_tt_backup_content`, `_tt_backup_elementor_mode`, `_tt_backup_template` et `_tt_backup_title`.
