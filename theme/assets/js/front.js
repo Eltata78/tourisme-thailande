@@ -27,6 +27,23 @@
 		$$( '[data-tt-toggle]' ).forEach( function ( b ) { b.setAttribute( 'aria-expanded', 'false' ); } );
 	} );
 
+
+	/* ---------- Méga-menu : ouverture au clic (tactile, clavier) et fermeture en cliquant ailleurs ---------- */
+	$$( '.tt-nav__item.has-mega > .tt-nav__top' ).forEach( function ( link ) {
+		var item = link.parentNode;
+		link.addEventListener( 'click', function ( e ) {
+			// Sur écran tactile, le premier toucher ouvre le panneau au lieu de suivre le lien.
+			if ( window.matchMedia( '(hover: none)' ).matches && ! item.classList.contains( 'is-open' ) ) {
+				e.preventDefault();
+				$$( '.tt-nav__item.is-open' ).forEach( function ( o ) { o.classList.remove( 'is-open' ); } );
+				item.classList.add( 'is-open' );
+			}
+		} );
+	} );
+	document.addEventListener( 'click', function ( e ) {
+		if ( ! e.target.closest( '.tt-nav__item' ) ) $$( '.tt-nav__item.is-open' ).forEach( function ( o ) { o.classList.remove( 'is-open' ); } );
+	} );
+
 	/* ---------- Recherche instantanée ---------- */
 	var index = null, loading = null;
 	var norm = function ( s ) { return ( s || '' ).normalize( 'NFD' ).replace( /[̀-ͯ]/g, '' ).toLowerCase(); };

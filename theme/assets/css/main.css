@@ -47,8 +47,14 @@ b, strong { font-weight: 700; }
 .tt-nav__top { display: flex; align-items: center; gap: 5px; padding: 9px 10px; border-radius: 8px; color: var(--tt-ink); text-decoration: none; font-weight: 500; white-space: nowrap; }
 .tt-nav__top svg { width: 11px; height: 11px; opacity: .55; }
 .tt-nav__item:hover > .tt-nav__top, .tt-nav__item:focus-within > .tt-nav__top { background: var(--tt-mist); color: var(--tt-indigo); }
-.tt-mega { display: none; position: absolute; left: 0; right: 0; top: 100%; background: #fff; border-top: 1px solid var(--tt-line); border-bottom: 1px solid var(--tt-line); box-shadow: var(--tt-shadow); }
-.tt-nav__item:hover .tt-mega, .tt-nav__item:focus-within .tt-mega { display: block; }
+.tt-nav { align-self: stretch; }
+.tt-nav__item { display: flex; align-items: center; }
+/* Panneau : reste ouvert 0,2 s après la sortie de la souris, pour tolérer un trajet imprécis. */
+.tt-mega { position: absolute; left: 0; right: 0; top: 100%; background: #fff; border-top: 1px solid var(--tt-line); border-bottom: 1px solid var(--tt-line); box-shadow: var(--tt-shadow); visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity .15s ease, transform .15s ease, visibility 0s linear .2s; }
+/* Pont invisible entre le lien et le panneau : la souris ne « tombe » plus dans le vide. */
+.tt-mega::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 36px; }
+.tt-nav__item:hover .tt-mega, .tt-nav__item:focus-within .tt-mega, .tt-nav__item.is-open .tt-mega { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; }
+@media (prefers-reduced-motion: reduce) { .tt-mega { transition: visibility 0s linear .2s; transform: none; } }
 .tt-mega__in { max-width: var(--tt-wide); margin-inline: auto; padding: 26px var(--tt-gutter) 30px; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 28px; }
 .tt-mega__h { margin: 0 0 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--tt-muted); }
 .tt-mega ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 15px; }
