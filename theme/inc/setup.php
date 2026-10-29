@@ -65,3 +65,25 @@ add_action(
 	},
 	1
 );
+
+/**
+ * Titre et description SEO de Yoast ouverts à l'API REST (articles), pour que Content Machine
+ * les écrive à la publication comme ceux des articles écrits à la main.
+ */
+add_action(
+	'init',
+	static function () {
+		foreach ( array( '_yoast_wpseo_title', '_yoast_wpseo_metadesc' ) as $key ) {
+			register_post_meta(
+				'post',
+				$key,
+				array(
+					'type'          => 'string',
+					'single'        => true,
+					'show_in_rest'  => true,
+					'auth_callback' => static fn() => current_user_can( 'edit_posts' ),
+				)
+			);
+		}
+	}
+);
