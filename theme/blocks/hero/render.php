@@ -24,6 +24,7 @@ if ( '' === $attributes['subtitle'] && '' !== $tt_sub && $tt_post ) {
 	}
 }
 $tt_ctx  = tt_destination_context( $tt_id );
+$tt_act  = $tt_ctx ? null : tt_activity_context( $tt_id );
 $tt_home = 'home' === $attributes['variant'];
 
 // Pas de destination hôtels connue : on propose les activités à la place.
@@ -51,9 +52,10 @@ switch ( $tt_widget_type ) {
 		$tt_widget = tt_gyg_form(
 			array(
 				'uid'   => 'hero',
-				'title' => $attributes['widgetTitle'] ?: ( $tt_ctx ? 'Que faire à ' . $tt_ctx['name'] . ' ?' : 'Trouve ton activité' ),
-				'query' => $tt_ctx['gyg'] ?? get_the_title( $tt_id ),
-				'cmp'   => tt_cmp( 'hero', $tt_id ),
+				'title'   => $attributes['widgetTitle'] ?: ( $tt_ctx ? 'Que faire à ' . $tt_ctx['name'] . ' ?' : 'Trouve ton activité' ),
+				'query'   => $tt_ctx['gyg'] ?? ( $tt_act['gyg'] ?? get_the_title( $tt_id ) ),
+				'choices' => $tt_act ? tt_activity_choices( $tt_post ) : array(),
+				'cmp'     => tt_cmp( 'hero', $tt_id ),
 			)
 		);
 		break;

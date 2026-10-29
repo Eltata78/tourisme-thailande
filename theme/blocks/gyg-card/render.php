@@ -31,7 +31,7 @@ $tt_img = $attributes['imageId']
 		<?php if ( $attributes['meta'] ) : ?><span class="tt-act__meta"><?php echo esc_html( $attributes['meta'] ); ?></span><?php endif; ?>
 		<div class="tt-act__foot">
 			<span><?php echo $attributes['price'] ? 'dès <b>' . esc_html( $attributes['price'] ) . ' €</b>' : 'Prix du jour'; ?></span>
-			<a href="<?php echo esc_url( $tt_url ); ?>" target="_blank" rel="sponsored nofollow noopener">Voir l'offre</a>
+			<a href="<?php echo esc_url( $tt_url ); ?>" target="_blank" rel="sponsored nofollow noopener"><?php echo '' !== $attributes['url'] ? "Voir l'offre" : 'Voir les offres'; ?></a>
 		</div>
 	</div>
 </article>

@@ -30,6 +30,12 @@ switch ( $attributes['mode'] ) {
 		$tt_args['meta_compare'] = 'EXISTS';
 		$tt_args['post__not_in'] = array( $tt_post->ID, $tt_post->post_parent );
 		break;
+	case 'activities':
+		$tt_args['post_parent']  = 0;
+		$tt_args['meta_key']     = '_wp_page_template'; // phpcs:ignore WordPress.DB.SlowDBQuery
+		$tt_args['meta_value']   = 'page-activite'; // phpcs:ignore WordPress.DB.SlowDBQuery
+		$tt_args['post__not_in'] = array( $tt_post->ID, $tt_post->post_parent );
+		break;
 	case 'ids':
 		$tt_args['post__in'] = array_filter( array_map( 'absint', explode( ',', $attributes['ids'] ) ) );
 		$tt_args['orderby']  = 'post__in';

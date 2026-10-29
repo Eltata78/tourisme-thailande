@@ -84,6 +84,47 @@ function tt_destination_context( ?int $post_id = null ): ?array {
 }
 
 /**
+ * Contexte d'une page activité (gabarit Activité) : son libellé, la requête d'offres et la destination hôtels.
+ * « Plongée à Phuket » -> offres « plongée Phuket », hôtels à Phuket ; une page Thaïlande n'a pas de destination hôtels.
+ *
+ * @return array{label:string,gyg:string,trip:string,place:string}|null
+ */
+function tt_activity_context( ?int $post_id = null ): ?array {
+	$post = get_post( $post_id );
+	if ( ! $post || 'page' !== $post->post_type || 'page-activite' !== get_page_template_slug( $post ) ) {
+		return null;
+	}
+	$label = (string) get_post_meta( $post->ID, 'tt_card_title', true ) ?: wp_strip_all_tags( get_the_title( $post ) );
+	$trip  = tt_trip_key( get_post_meta( $post->ID, 'tt_trip_city', true ) );
+	return array(
+		'label' => $label,
+		'gyg'   => (string) get_post_meta( $post->ID, 'tt_gyg_query', true ) ?: $label,
+		'trip'  => $trip,
+		'place' => $trip ? tt_trip_destinations()[ $trip ][0] : 'Thaïlande',
+	);
+}
+
+/**
+ * Choix « Envie de » d'une page activité : elle, puis ses sous-pages (Plongée en Thaïlande -> Koh Tao, Phuket…).
+ *
+ * @return array<string,string> libellé => requête
+ */
+function tt_activity_choices( WP_Post $post ): array {
+	$act = tt_activity_context( $post->ID );
+	if ( ! $act ) {
+		return array();
+	}
+	$out = array( $act['label'] => $act['gyg'] );
+	foreach ( get_pages( array( 'parent' => $post->ID, 'sort_column' => 'menu_order,post_title' ) ) as $kid ) {
+		$k = tt_activity_context( $kid->ID );
+		if ( $k ) {
+			$out[ $k['label'] ] = $k['gyg'];
+		}
+	}
+	return $out;
+}
+
+/**
  * Bouton de réservation du header : contextuel sur les pages destination, générique ailleurs.
  *
  * @return array{label:string,url:string}
@@ -94,6 +135,13 @@ function tt_header_cta(): array {
 		return array(
 			'label' => sprintf( 'Activités à %s', $ctx['name'] ),
 			'url'   => tt_gyg_url( $ctx['gyg'], tt_cmp( 'header' ) ),
+		);
+	}
+	$act = is_page() ? tt_activity_context() : null;
+	if ( $act ) {
+		return array(
+			'label' => $act['label'],
+			'url'   => tt_gyg_url( $act['gyg'], tt_cmp( 'header' ) ),
 		);
 	}
 	// Article qui parle d'une destination : ses activités ; sinon le lien par défaut des réglages.

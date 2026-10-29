@@ -33,9 +33,11 @@ if ( count( $tt_items ) < 2 ) {
 // Libellés courts : on retire la fin de titre répétée (ex. « à Bangkok »).
 $tt_trim = array_filter( array_map( 'trim', explode( ',', $attributes['trim'] ) ) );
 $tt_ctx  = tt_destination_context( $tt_post->ID );
-if ( $tt_ctx ) {
-	$tt_trim[] = 'à ' . $tt_ctx['name'];
-	$tt_trim[] = 'dans ' . $tt_ctx['name'];
+$tt_act  = $tt_ctx ? null : tt_activity_context( $tt_post->ID );
+if ( $tt_ctx || $tt_act ) {
+	$tt_place  = $tt_ctx ? $tt_ctx['name'] : $tt_act['place'];
+	$tt_trim[] = 'Thaïlande' === $tt_place ? 'en Thaïlande' : 'à ' . $tt_place;
+	$tt_trim[] = 'dans ' . $tt_place;
 }
 // Sur une fiche, le nom du lieu aussi : « Comment se rendre à Wat Pho » -> « Comment se rendre ».
 $tt_name = (string) get_post_meta( $tt_post->ID, 'tt_card_title', true );

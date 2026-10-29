@@ -16,8 +16,6 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from html2blocks import EMOJI, block, clean, details, heading, image, paragraph, table, to_blocks  # noqa: E402
 
-EL, PAGES, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
-
 # Destination : nom affiché, synonymes de recherche. La destination Trip.com est la clé du hub (voir tt_trip_destinations).
 HUB_META = {
     'bangkok': ('Bangkok', 'bkk, krung thep'), 'chiang-mai': ('Chiang Mai', 'chiangmai, cnx'), 'pattaya': ('Pattaya', ''),
@@ -362,27 +360,32 @@ def place_before(content, slots):
     return content
 
 
-idx = json.load(open(os.path.join(EL, 'index.json')))
-feat = {p['id']: p['featured_media'] for p in json.load(open(PAGES))}
-by_id = {x['id']: x for x in idx}
-# Formats d'affiliation de démonstration (données d'exemple) : images des visites tirées de la page Bangkok.
-boxes = {}
-bkk = next(p for p in idx if p['slug'] == 'bangkok')
-for e in widgets(json.load(open(os.path.join(EL, f"{bkk['id']}.json")))):
-    if e['widgetType'] == 'image-box':
-        boxes[e['settings'].get('link', {}).get('url', '').rstrip('/').split('/')[-1]] = e['settings'].get('image', {}).get('id')
-demo_hub, demo_damnoen = demo_bangkok(boxes)
-result = []
-for page in idx:
-    hub = by_id.get(page['parent'])
-    data = json.load(open(os.path.join(EL, f"{page['id']}.json")))
-    content, meta, gal, log = convert(page, hub, data, demo_hub if page['slug'] == 'bangkok' else None)
-    if page['slug'] == 'damnoen-saduak':
-        content = place_before(content, demo_damnoen)
-    result.append({'id': page['id'], 'slug': page['slug'], 'hub': page['parent'] == 0, 'content': content, 'meta': meta,
-                   'set_thumbnail': (gal[0]['id'] if (not feat.get(page['id']) and gal) else 0), 'log': log,
-                   'title': (HUB_META[page['slug']][0] if page['parent'] == 0 else None)})
-json.dump(result, open(OUT, 'w'), ensure_ascii=False)
-print(len(result), 'pages,', sum(r['content'].count('<!-- wp:') for r in result), 'blocs')
-for r in result[:3] + [x for x in result if x['hub']][:2]:
-    print(r['slug'], r['meta'].get('tt_h1'), '|', r['meta'].get('tt_intro', '')[:80], '|', r['log'][:4])
+def main(el, pages, out):
+    idx = json.load(open(os.path.join(el, 'index.json')))
+    feat = {p['id']: p['featured_media'] for p in json.load(open(pages))}
+    by_id = {x['id']: x for x in idx}
+    # Formats d'affiliation de démonstration (données d'exemple) : images des visites tirées de la page Bangkok.
+    boxes = {}
+    bkk = next(p for p in idx if p['slug'] == 'bangkok')
+    for e in widgets(json.load(open(os.path.join(el, f"{bkk['id']}.json")))):
+        if e['widgetType'] == 'image-box':
+            boxes[e['settings'].get('link', {}).get('url', '').rstrip('/').split('/')[-1]] = e['settings'].get('image', {}).get('id')
+    demo_hub, demo_damnoen = demo_bangkok(boxes)
+    result = []
+    for page in idx:
+        hub = by_id.get(page['parent'])
+        data = json.load(open(os.path.join(el, f"{page['id']}.json")))
+        content, meta, gal, log = convert(page, hub, data, demo_hub if page['slug'] == 'bangkok' else None)
+        if page['slug'] == 'damnoen-saduak':
+            content = place_before(content, demo_damnoen)
+        result.append({'id': page['id'], 'slug': page['slug'], 'hub': page['parent'] == 0, 'content': content, 'meta': meta,
+                       'set_thumbnail': (gal[0]['id'] if (not feat.get(page['id']) and gal) else 0), 'log': log,
+                       'title': (HUB_META[page['slug']][0] if page['parent'] == 0 else None)})
+    json.dump(result, open(out, 'w'), ensure_ascii=False)
+    print(len(result), 'pages,', sum(r['content'].count('<!-- wp:') for r in result), 'blocs')
+    for r in result[:3] + [x for x in result if x['hub']][:2]:
+        print(r['slug'], r['meta'].get('tt_h1'), '|', r['meta'].get('tt_intro', '')[:80], '|', r['log'][:4])
+
+
+if __name__ == '__main__':
+    main(*sys.argv[1:4])

@@ -24,7 +24,7 @@
 | `tt/gyg-card` | Carte activité GetYourGuide |
 | `tt/gyg-spotlight` | Mise en avant d'une activité (points forts, infos pratiques, prix, lien) |
 | `tt/gyg-compare` | Comparatif de 2 à 4 activités sur les mêmes critères |
-| `tt/card-grid` | Grille de cartes : sous-pages, pages sœurs, destinations ou sélection d'IDs |
+| `tt/card-grid` | Grille de cartes : sous-pages, pages sœurs, destinations, autres activités ou sélection d'IDs |
 | `tt/cta-card` | Carte de réservation : photo, titre, texte court, bouton vers l'offre (tag partenaire ajouté) |
 | `tt/map` | Carte des fiches de la destination (MapLibre auto-hébergé + fonds OpenFreeMap, noms en français) : repère photo, fiche cliquable vers l'offre GetYourGuide de l'activité |
 | `tt/toc` | Sommaire automatique (H2 du contenu) |
@@ -45,6 +45,10 @@ Une sous-page hérite de la destination de son hub parent. `tt_h1` remplace le t
 `tt_trip_city` est une clé de `tt_trip_destinations()` (ex. `koh-samui`) ; `tt_geo` vaut « lat,lng » (repère de la fiche sur la carte) ;
 `tt_gyg_url` est le lien GetYourGuide de l'activité de la fiche (sinon la carte renvoie vers la recherche `tt_gyg_query`).
 
+Pages au gabarit Activité (`page-activite`) : `tt_card_title` sert de libellé aux boutons (header, barre mobile, choix du formulaire),
+`tt_gyg_query` de requête d'offres (ex. « plongée Phuket ») et `tt_trip_city` de destination hôtels (vide pour une page Thaïlande).
+Le formulaire du hero propose la page et ses sous-pages (Plongée en Thaïlande, Plongée à Koh Tao…).
+
 Style de paragraphe « Astuce » (`is-style-tt-tip`).
 
 ## Réglages partenaires
@@ -62,6 +66,17 @@ Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris 
 2. `migration/apply_destinations.php` (via execute-php, variable `$tt_rows`) : applique le contenu,
    le template `page-destination` et les métadonnées. Le contenu Elementor d'origine est gardé
    dans `_tt_backup_content`, `_tt_backup_elementor_mode`, `_tt_backup_template` et `_tt_backup_title`.
+
+## Migration des pages activité
+
+1. Export des pages (id, slug, parent, titre, image à la une, `_elementor_data`) et `hubs.json` (slug -> ID des guides destination).
+2. `python3 -I migration/activites2blocks.py <pages.json> <sortie.json>` : plongée, snorkeling, yoga, randonnée, bateau.
+   - sorties Trip.com de la section « Les meilleures sorties » -> sélection de 3 `tt/gyg-card` (requête par type de sortie, sans note ni prix
+     tant que les offres réelles ne sont pas choisies) ; pages principales -> cartes vers les sous-pages ;
+   - encart « Réserve ta sortie » -> `tt/cta-card` au même endroit ; encart hôtel -> `tt/trip-search` de la destination ;
+   - « Découvrez les autres… » -> `tt/card-grid` (pages sœurs, autres activités) ; FAQ -> blocs Détails.
+3. `migration/apply_activites.php` (via execute-php, variable `$tt_rows`) : contenu, gabarit `page-activite`, métadonnées
+   et image à la une distincte par page. Sauvegarde dans `_tt_backup_content`, `_tt_backup_elementor_mode`, `_tt_backup_template`, `_tt_backup_thumb`.
 
 ## Migration des articles
 
