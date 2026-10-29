@@ -407,3 +407,16 @@ mark.tt-st.is-bad { background: #FAE8EB; color: var(--tt-red); }
 	.tt-hero--page .tt-hero__in { padding-block: 14px 20px; }
 	.tt-hero--page .tt-hero__grid { padding-top: 14px; gap: 20px; }
 }
+
+/* Sommaire mobile : barre fixe en haut pendant la lecture, sections en pastilles à faire glisser */
+.tt-tocbar { display: none; }
+@media (max-width: 900px) {
+	.tt-tocbar { display: block; position: fixed; top: 0; left: 0; right: 0; z-index: 45; background: rgba(255, 255, 255, .97); border-bottom: 1px solid var(--tt-line); box-shadow: 0 8px 20px -16px rgba(30, 27, 54, .5); transform: translateY(-110%); transition: transform .25s ease; }
+	.tt-tocbar.is-visible { transform: none; }
+	.tt-tocbar__track { display: flex; gap: 8px; overflow-x: auto; padding: 10px 40px 10px 16px; scroll-snap-type: x proximity; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 85%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 85%, transparent); }
+	.tt-tocbar__track::-webkit-scrollbar { display: none; }
+	.tt-tocbar a { flex: none; max-width: 75vw; overflow: hidden; text-overflow: ellipsis; scroll-snap-align: start; padding: 7px 14px; border-radius: 999px; background: var(--tt-mist); color: var(--tt-indigo); font-size: 14px; font-weight: 600; line-height: 1.2; white-space: nowrap; text-decoration: none; }
+	.tt-tocbar a.is-on { background: var(--tt-indigo); color: #fff; }
+	.tt-tocbar__progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--tt-red); transform: scaleX(0); transform-origin: left; }
+}
+@media (prefers-reduced-motion: reduce) { .tt-tocbar { transition: none; } }

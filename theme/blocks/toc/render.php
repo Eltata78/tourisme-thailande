@@ -37,12 +37,20 @@ if ( $tt_ctx ) {
 	$tt_trim[] = 'à ' . $tt_ctx['name'];
 	$tt_trim[] = 'dans ' . $tt_ctx['name'];
 }
+// Sur une fiche, le nom du lieu aussi : « Comment se rendre à Wat Pho » -> « Comment se rendre ».
+$tt_name = (string) get_post_meta( $tt_post->ID, 'tt_card_title', true );
+if ( $tt_name && $tt_post->post_parent ) {
+	foreach ( array( 'à ', 'au ', 'aux ', 'de ', 'du ', 'des ', 'sur ', 'pour ' ) as $tt_prep ) {
+		$tt_trim[] = $tt_prep . $tt_name;
+	}
+}
 ?>
 <nav <?php echo get_block_wrapper_attributes( array( 'class' => 'tt-toc' ) ); ?> aria-label="<?php echo esc_attr( $attributes['title'] ); ?>" data-tt-toc>
 	<p class="tt-toc__t"><?php echo esc_html( $attributes['title'] ); ?></p>
 	<?php foreach ( $tt_items as $tt_i => $tt_item ) : ?>
 		<?php
 		$tt_label = preg_replace( '/\s*:\s.*$/u', '', $tt_item[1] ); // « Logistique : où dormir… » -> « Logistique »
+		$tt_label = preg_replace( '/\?\s+\S.*$/u', '?', $tt_label ); // « D'où ça vient ? Une histoire… » -> « D'où ça vient ? »
 		$tt_label = rtrim( str_ireplace( $tt_trim, '', $tt_label ), ' ?:' );
 		?>
 		<a href="#<?php echo esc_attr( $tt_item[0] ); ?>"<?php echo 0 === $tt_i ? ' class="is-on"' : ''; ?>><?php echo esc_html( $tt_label ); ?></a>

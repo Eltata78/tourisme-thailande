@@ -371,15 +371,50 @@
 		} ).observe( hero );
 	}
 
-	/* ---------- Sommaire : section en cours ---------- */
+	/* ---------- Sommaire : section en cours, et barre fixe à faire glisser sur mobile ---------- */
 	$$( '[data-tt-toc]' ).forEach( function ( toc ) {
-		var links = $$( 'a', toc );
-		if ( ! ( 'IntersectionObserver' in window ) ) return;
-		var io = new IntersectionObserver( function ( es ) {
-			es.forEach( function ( e ) {
-				if ( e.isIntersecting ) links.forEach( function ( a ) { a.classList.toggle( 'is-on', a.getAttribute( 'href' ) === '#' + e.target.id ); } );
+		var links = $$( 'a', toc ), prose = toc.closest( '.tt-layout' ) || document.body;
+		if ( links.length < 2 ) return;
+		// Mêmes liens en pastilles, dans une barre qui apparaît en haut de l'écran pendant la lecture (mobile).
+		var bar = document.createElement( 'nav' );
+		bar.className = 'tt-tocbar';
+		bar.setAttribute( 'aria-label', toc.getAttribute( 'aria-label' ) || 'Sommaire' );
+		bar.innerHTML = '<div class="tt-tocbar__track">' + links.map( function ( a ) {
+			return '<a href="' + esc( a.getAttribute( 'href' ) ) + '">' + esc( a.textContent ) + '</a>';
+		} ).join( '' ) + '</div><span class="tt-tocbar__progress"></span>';
+		document.body.appendChild( bar );
+		var chips = $$( 'a', bar ), track = $( '.tt-tocbar__track', bar ), progress = $( '.tt-tocbar__progress', bar );
+		function setActive( id ) {
+			links.forEach( function ( a ) { a.classList.toggle( 'is-on', a.getAttribute( 'href' ) === '#' + id ); } );
+			chips.forEach( function ( c ) {
+				var on = c.getAttribute( 'href' ) === '#' + id;
+				c.classList.toggle( 'is-on', on );
+				if ( on ) track.scrollTo( { left: c.offsetLeft - ( track.clientWidth - c.offsetWidth ) / 2, behavior: 'smooth' } );
 			} );
-		}, { rootMargin: '0px 0px -70% 0px' } );
-		links.forEach( function ( a ) { var t = document.getElementById( a.getAttribute( 'href' ).slice( 1 ) ); if ( t ) io.observe( t ); } );
+		}
+		chips.forEach( function ( c ) {
+			c.addEventListener( 'click', function ( e ) {
+				var t = document.getElementById( c.getAttribute( 'href' ).slice( 1 ) );
+				if ( ! t ) return;
+				e.preventDefault();
+				window.scrollTo( { top: t.getBoundingClientRect().top + window.scrollY - bar.offsetHeight - 12, behavior: 'smooth' } );
+				history.replaceState( null, '', c.getAttribute( 'href' ) );
+				setActive( t.id );
+			} );
+		} );
+		var heads = links.map( function ( a ) { return document.getElementById( a.getAttribute( 'href' ).slice( 1 ) ); } ), current = null, ticking = false;
+		function onScroll() {
+			ticking = false;
+			var r = prose.getBoundingClientRect(), h = window.innerHeight;
+			bar.classList.toggle( 'is-visible', r.top < 0 && r.bottom > h * 0.35 );
+			progress.style.transform = 'scaleX(' + Math.min( 1, Math.max( 0, -r.top / Math.max( 1, r.height - h ) ) ) + ')';
+			// Section en cours : le dernier titre passé sous le haut de l'écran (barre comprise).
+			var id = null;
+			heads.forEach( function ( t ) { if ( t && t.getBoundingClientRect().top < 120 ) id = t.id; } );
+			id = id || ( heads[ 0 ] && heads[ 0 ].id );
+			if ( id !== current ) { current = id; setActive( id ); }
+		}
+		window.addEventListener( 'scroll', function () { if ( ! ticking ) { ticking = true; requestAnimationFrame( onScroll ); } }, { passive: true } );
+		onScroll();
 	} );
 } )();
