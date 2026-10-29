@@ -43,6 +43,33 @@
 	document.addEventListener( 'click', function ( e ) {
 		if ( ! e.target.closest( '.tt-nav__item' ) ) $$( '.tt-nav__item.is-open' ).forEach( function ( o ) { o.classList.remove( 'is-open' ); } );
 	} );
+	// Souris : un panneau ouvert ne bascule vers une autre rubrique qu'après un court arrêt dessus (120 ms),
+	// pour qu'un trajet en diagonale vers le panneau ne déclenche pas la rubrique voisine ; fermeture 150 ms après la sortie.
+	var nav = $( '.tt-nav' );
+	if ( nav && window.matchMedia( '(hover: hover)' ).matches ) {
+		var cur = null, tSwitch = 0, tClose = 0;
+		var show = function ( it ) {
+			clearTimeout( tSwitch );
+			clearTimeout( tClose );
+			if ( cur && cur !== it ) cur.classList.remove( 'is-open' );
+			cur = it;
+			if ( it ) it.classList.add( 'is-open' );
+		};
+		nav.classList.add( 'is-js' );
+		$$( '.tt-nav__item.has-mega', nav ).forEach( function ( it ) {
+			it.addEventListener( 'mouseenter', function () {
+				clearTimeout( tClose );
+				clearTimeout( tSwitch );
+				if ( ! cur || cur === it ) show( it );
+				else tSwitch = setTimeout( function () { show( it ); }, 120 );
+			} );
+			it.addEventListener( 'mouseleave', function () {
+				clearTimeout( tSwitch );
+				tClose = setTimeout( function () { show( null ); }, 150 );
+			} );
+		} );
+		document.addEventListener( 'keydown', function ( e ) { if ( 'Escape' === e.key ) show( null ); } );
+	}
 
 	/* ---------- Recherche instantanée ---------- */
 	var index = null, loading = null;

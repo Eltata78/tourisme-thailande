@@ -41,8 +41,9 @@ b, strong { font-weight: 700; }
 
 /* ---------- Header ---------- */
 .tt-header { position: relative; z-index: 50; background: var(--tt-night); }
-.tt-header__bar { max-width: var(--tt-wide); margin-inline: auto; padding: 12px var(--tt-gutter); display: flex; align-items: center; gap: 24px; }
-.tt-header__logo { display: block; flex: none; text-decoration: none; }
+/* La barre n'a pas de marge verticale : chaque rubrique du menu occupe toute la hauteur du header et touche son panneau. */
+.tt-header__bar { max-width: var(--tt-wide); margin-inline: auto; padding: 0 var(--tt-gutter); min-height: 64px; display: flex; align-items: center; gap: 24px; }
+.tt-header__logo { display: block; flex: none; text-decoration: none; padding-block: 12px; }
 /* Logo : emblème et nom en texte (blanc sur le header et le footer de nuit). */
 .tt-brand { display: flex; align-items: center; gap: 10px; }
 .tt-brand__mark { width: auto; height: 40px; display: block; }
@@ -56,9 +57,13 @@ b, strong { font-weight: 700; }
 .tt-nav__item { display: flex; align-items: center; }
 /* Panneau : reste ouvert 0,2 s après la sortie de la souris, pour tolérer un trajet imprécis. */
 .tt-mega { position: absolute; left: 0; right: 0; top: 100%; background: #fff; border-top: 1px solid var(--tt-line); border-bottom: 1px solid var(--tt-line); box-shadow: var(--tt-shadow); visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity .15s ease, transform .15s ease, visibility 0s linear .2s; }
-/* Pont invisible entre le lien et le panneau : la souris ne « tombe » plus dans le vide. */
-.tt-mega::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 36px; }
-.tt-nav__item:hover .tt-mega, .tt-nav__item:focus-within .tt-mega, .tt-nav__item.is-open .tt-mega { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; }
+.tt-nav:not(.is-js) .tt-nav__item:hover .tt-mega, .tt-nav__item:focus-within .tt-mega, .tt-nav__item.is-open .tt-mega { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; }
+/* Sans script : passage à une autre rubrique, le panneau précédent se ferme tout de suite. */
+.tt-nav:not(.is-js):hover .tt-nav__item:not(:hover) .tt-mega { visibility: hidden; opacity: 0; transition: none; }
+/* Avec script (souris) : les délais d'ouverture et de fermeture sont gérés dans front.js. */
+.tt-nav.is-js .tt-mega { transition: opacity .12s ease, transform .12s ease, visibility 0s; }
+.tt-nav.is-js .tt-nav__item.is-open > .tt-nav__top { background: rgba(255, 255, 255, .1); }
+.tt-nav.is-js:has(.is-open) .tt-nav__item:not(.is-open) .tt-mega { visibility: hidden; opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .tt-mega { transition: visibility 0s linear .2s; transform: none; } }
 .tt-mega__in { max-width: var(--tt-wide); margin-inline: auto; padding: 26px var(--tt-gutter) 30px; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 28px; }
 .tt-mega__h { margin: 0 0 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--tt-muted); }
