@@ -397,7 +397,7 @@
 		var chips = $$( '[data-ex-kind]', sec ), dest = $( '[data-ex-dest]', sec ), listLink = $( '[data-ex-listlink]', sec ), toggle = $( '[data-ex-toggle]', sec );
 		var rows = {}, others = $$( '.tt-explorer__other li', sec ), thailand = new ml.LngLatBounds();
 		data.pins.forEach( function ( p ) { thailand.extend( [ p.lng, p.lat ] ); } ); // vue d'ensemble : cadrée sur les activités
-		$$( '.tt-explorer__list li', sec ).forEach( function ( li ) { rows[ li.getAttribute( 'data-ex-id' ) ] = li; } );
+		$$( '.tt-explorer__list li[data-ex-id]', sec ).forEach( function ( li ) { rows[ li.getAttribute( 'data-ex-id' ) ] = li; } );
 		var params = new URLSearchParams( location.search ), kind = params.get( 'k' ) || '';
 		if ( ! chips.some( function ( c ) { return c.getAttribute( 'data-ex-kind' ) === kind; } ) ) kind = '';
 		var map = new ml.Map( {
@@ -409,7 +409,7 @@
 		map.addControl( new ml.NavigationControl( { showCompass: false } ), 'top-right' );
 		map.addControl( new ml.AttributionControl( { compact: true } ), 'bottom-right' );
 		map.on( 'style.load', function () { styleMap( map ); } );
-		var pins = [], groups = [], card = document.createElement( 'div' ), active = null, inView = 0;
+		var pins = [], byId = {}, groups = [], card = document.createElement( 'div' ), active = null, inView = 0, openRow = null;
 		card.className = 'tt-mapcard';
 		card.hidden = true;
 		box.appendChild( card );
@@ -417,14 +417,34 @@
 		function mark( id, on ) { if ( rows[ id ] ) rows[ id ].classList.toggle( 'is-active', on ); }
 		function close() {
 			card.hidden = true;
-			if ( active ) { active.el.classList.remove( 'is-active' ); mark( active.p.id, false ); }
+			var was = active;
 			active = null;
+			if ( was ) {
+				was.el.classList.remove( 'is-active' );
+				mark( was.p.id, false );
+				was.p.c = false;
+				group( map, shown(), groups );
+			}
 		}
-		function select( x ) {
-			close();
+		// Repère choisi : toujours affiché seul (jamais fondu dans une bulle « n lieux »).
+		function spot( x ) {
 			active = x;
+			x.p.c = true;
 			x.el.classList.add( 'is-active' );
 			mark( x.p.id, true );
+			group( map, shown(), groups );
+		}
+		// Ligne de la liste dépliée : photo, description, article et réservation. Une seule à la fois.
+		function expand( li, on ) {
+			$( '.tt-explorer__head', li ).setAttribute( 'aria-expanded', String( on ) );
+			$( '.tt-explorer__more', li ).hidden = ! on;
+			li.classList.toggle( 'is-open', on );
+			openRow = on ? li : ( openRow === li ? null : openRow );
+		}
+		function select( x ) {
+			if ( openRow && openRow !== rows[ x.p.id ] ) expand( openRow, false );
+			close();
+			spot( x );
 			card.innerHTML = cardHtml( x.p );
 			card.classList.toggle( 'is-plain', ! x.p.i );
 			card.hidden = false;
@@ -479,19 +499,30 @@
 			new ml.Marker( { element: el, anchor: 'center' } ).setLngLat( [ p.lng, p.lat ] ).addTo( map );
 			el.setAttribute( 'aria-label', p.t );
 			pins.push( x );
+			byId[ p.id ] = x;
 			var li = rows[ p.id ];
 			if ( li ) {
 				li.addEventListener( 'mouseenter', function () { el.classList.add( 'is-hover' ); } );
 				li.addEventListener( 'mouseleave', function () { el.classList.remove( 'is-hover' ); } );
-				// Clic sur la ligne (hors lien vers le guide) : la carte va sur l'activité et ouvre sa fiche.
-				li.addEventListener( 'click', function ( e ) {
-					if ( e.target.closest( 'a' ) ) return;
-					sec.classList.remove( 'is-listing' );
-					label();
-					map.easeTo( { center: [ p.lng, p.lat ], zoom: Math.max( map.getZoom(), 12 ), duration: 600 } );
-					map.once( 'moveend', function () { select( x ); } );
-				} );
 			}
+		} );
+		$$( '.tt-explorer__head', sec ).forEach( function ( head ) {
+			var li = head.parentNode;
+			head.addEventListener( 'click', function () {
+				var on = openRow !== li, x = byId[ li.getAttribute( 'data-ex-id' ) ];
+				if ( openRow && openRow !== li ) expand( openRow, false );
+				expand( li, on );
+				if ( ! on ) { if ( x ) close(); return; }
+				setTimeout( function () { li.scrollIntoView( { block: 'nearest', behavior: 'smooth' } ); }, 30 );
+				// Activité de la carte : son repère est marqué ; la carte ne bouge que s'il est hors de la zone affichée,
+				// sans changer le zoom, pour que la liste en cours de lecture ne se réduise pas d'un coup.
+				if ( x ) {
+					close();
+					spot( x );
+					if ( ! map.getBounds().contains( [ x.p.lng, x.p.lat ] ) ) map.easeTo( { center: [ x.p.lng, x.p.lat ], duration: 600 } );
+				}
+				if ( window.gtag ) window.gtag( 'event', 'tt_map_list_open', { pin: $( 'b', head ).textContent } );
+			} );
 		} );
 		map.on( 'click', function ( e ) {
 			var t = e.originalEvent && e.originalEvent.target;

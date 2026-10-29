@@ -22,7 +22,18 @@ $tt_by_k  = array_count_values( wp_list_pluck( $tt_geo, 'kind' ) );
 $tt_h1    = (string) get_post_meta( $tt_post->ID, 'tt_h1', true ) ?: get_the_title( $tt_post );
 $tt_label = static fn( $d ) => 'Thaïlande' === $d ? 'Toute la Thaïlande' : $d;
 
-$tt_pins = array();
+// Lien d'affiliation de l'activité s'il est renseigné, sinon la recherche de l'activité (suivi par emplacement).
+$tt_offer = static fn( $it, $cmp ) => $it['gyg'] ? tt_gyg_tag( $it['gyg'], $cmp ) : tt_gyg_url( $it['query'], $cmp );
+// Description courte : l'accroche de la page, sinon le début de l'extrait de l'article.
+$tt_desc = static function ( $it ) {
+	$d = (string) get_post_meta( $it['id'], 'tt_intro', true );
+	if ( '' === $d ) {
+		$d = wp_trim_words( html_entity_decode( wp_strip_all_tags( get_the_excerpt( $it['id'] ) ), ENT_QUOTES, 'UTF-8' ), 30 );
+	}
+	return $d;
+};
+$tt_cmp_list = tt_cmp( $attributes['placement'] . '-liste', $tt_post->ID );
+$tt_pins     = array();
 foreach ( $tt_geo as $tt_it ) {
 	$tt_pins[] = array(
 		'id'  => $tt_it['id'],
@@ -30,8 +41,7 @@ foreach ( $tt_geo as $tt_it ) {
 		'lng' => $tt_it['geo'][1],
 		't'   => $tt_it['title'],
 		'u'   => $tt_it['url'],
-		// Lien d'affiliation de l'activité s'il est renseigné, sinon la recherche de l'activité.
-		'g'   => $tt_it['gyg'] ? tt_gyg_tag( $tt_it['gyg'], $tt_cmp ) : tt_gyg_url( $tt_it['query'], $tt_cmp ),
+		'g'   => $tt_offer( $tt_it, $tt_cmp ),
 		'b'   => $tt_it['gyg'] ? 'Voir les disponibilités' : 'Voir les offres',
 		'i'   => $tt_it['img'] ? (string) wp_get_attachment_image_url( $tt_it['img'], 'tt-card' ) : '',
 		'm'   => $tt_it['img'] ? (string) wp_get_attachment_image_url( $tt_it['img'], 'thumbnail' ) : '',
@@ -50,6 +60,30 @@ $tt_cfg = array(
 	'style' => apply_filters( 'tt_map_style', 'https://tiles.openfreemap.org/styles/positron' ),
 );
 $tt_list = get_page_by_path( 'activites-thailande' );
+// Ligne de la liste : en-tête cliquable qui déplie photo, description, article et réservation.
+$tt_row = static function ( $it ) use ( $tt_kinds, $tt_label, $tt_desc, $tt_offer, $tt_cmp_list ) {
+	$panel = 'tt-ex-' . (int) $it['id'];
+	?>
+	<button type="button" class="tt-explorer__head" aria-expanded="false" aria-controls="<?php echo esc_attr( $panel ); ?>">
+		<span class="tt-explorer__thumb"><?php echo $it['img'] ? wp_get_attachment_image( $it['img'], 'thumbnail', false, array( 'alt' => '', 'loading' => 'lazy' ) ) : ''; // phpcs:ignore ?></span>
+		<span class="tt-explorer__txt">
+			<small><?php echo esc_html( $tt_kinds[ $it['kind'] ] . ' · ' . $tt_label( $it['dest'] ) ); ?></small>
+			<b><?php echo esc_html( $it['title'] ); ?></b>
+		</span>
+	</button>
+	<div class="tt-explorer__more" id="<?php echo esc_attr( $panel ); ?>" hidden>
+		<?php if ( $it['img'] ) : ?>
+			<?php echo wp_get_attachment_image( $it['img'], 'tt-card', false, array( 'alt' => '', 'loading' => 'lazy', 'class' => 'tt-explorer__photo', 'sizes' => '(max-width: 900px) 92vw, 310px' ) ); // phpcs:ignore ?>
+		<?php endif; ?>
+		<?php $d = $tt_desc( $it ); ?>
+		<?php if ( $d ) : ?><p><?php echo esc_html( $d ); ?></p><?php endif; ?>
+		<div class="tt-explorer__acts">
+			<a class="tt-btn tt-btn--out" href="<?php echo esc_url( $it['url'] ); ?>">Voir notre article</a>
+			<a class="tt-btn tt-btn--gold" href="<?php echo esc_url( $tt_offer( $it, $tt_cmp_list ) ); ?>" target="_blank" rel="sponsored nofollow noopener">Réserver</a>
+		</div>
+	</div>
+	<?php
+};
 ?>
 <section <?php echo get_block_wrapper_attributes( array( 'class' => 'tt-explorer' ) ); ?> data-tt-explorer="<?php echo esc_attr( wp_json_encode( $tt_cfg ) ); ?>">
 	<div class="tt-explorer__bar">
@@ -80,21 +114,15 @@ $tt_list = get_page_by_path( 'activites-thailande' );
 			<p class="tt-explorer__count" data-ex-count aria-live="polite"><?php echo esc_html( sprintf( '%d activités sur la carte', count( $tt_geo ) ) ); ?></p>
 			<ul class="tt-explorer__list">
 				<?php foreach ( $tt_geo as $tt_it ) : ?>
-					<li data-ex-id="<?php echo (int) $tt_it['id']; ?>">
-						<span class="tt-explorer__thumb"><?php echo $tt_it['img'] ? wp_get_attachment_image( $tt_it['img'], 'thumbnail', false, array( 'alt' => '', 'loading' => 'lazy' ) ) : ''; // phpcs:ignore ?></span>
-						<span class="tt-explorer__txt">
-							<small><?php echo esc_html( $tt_kinds[ $tt_it['kind'] ] . ' · ' . $tt_label( $tt_it['dest'] ) ); ?></small>
-							<a href="<?php echo esc_url( $tt_it['url'] ); ?>"><?php echo esc_html( $tt_it['title'] ); ?></a>
-						</span>
-					</li>
+					<li data-ex-id="<?php echo (int) $tt_it['id']; ?>"><?php $tt_row( $tt_it ); ?></li>
 				<?php endforeach; ?>
 			</ul>
 			<?php if ( $tt_other ) : ?>
 				<div class="tt-explorer__other">
 					<p>Partout en Thaïlande</p>
-					<ul>
+					<ul class="tt-explorer__list">
 						<?php foreach ( $tt_other as $tt_it ) : ?>
-							<li data-ex-k="<?php echo esc_attr( $tt_it['kind'] ); ?>"><a href="<?php echo esc_url( $tt_it['url'] ); ?>"><?php echo esc_html( $tt_it['title'] ); ?></a></li>
+							<li data-ex-k="<?php echo esc_attr( $tt_it['kind'] ); ?>"><?php $tt_row( $tt_it ); ?></li>
 						<?php endforeach; ?>
 					</ul>
 				</div>
