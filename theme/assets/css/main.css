@@ -182,9 +182,13 @@ b, strong { font-weight: 700; }
 .tt-prose > * + * { margin-block-start: 1rem; }
 .tt-prose h2 { margin-top: 2.25rem; scroll-margin-top: 16px; }
 .tt-prose h3 { margin-top: 1.5rem; scroll-margin-top: 16px; }
+.tt-prose :where(h2, h3, h4) { text-wrap: pretty; } /* intertitres sur toute la largeur de la colonne (pas de lignes équilibrées) */
 .tt-prose p, .tt-prose li { color: #34314F; }
 .tt-prose strong { color: var(--tt-ink); }
-.tt-prose p a, .tt-prose li a { color: var(--tt-red); text-underline-offset: 3px; }
+/* Liens du contenu : un seul style, qu'ils soient en gras ou non dans le texte d'origine. */
+.tt-prose :where(p, li, td, th, dd, blockquote) a { color: var(--tt-red); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.tt-prose :where(p, li, td, th, dd, blockquote) a :is(strong, b, em) { color: inherit; font-weight: inherit; }
+.tt-prose :where(p, li, td, th, dd, blockquote) a:hover { text-decoration-thickness: 2px; }
 @media (max-width: 1180px) {
 	.tt-layout { grid-template-columns: 220px minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 40px; row-gap: 28px; }
 	.tt-prose { grid-row: 1 / span 2; }
