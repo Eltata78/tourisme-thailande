@@ -445,5 +445,5 @@ mark.tt-st.is-bad { background: #FAE8EB; color: var(--tt-red); }
 .tt-prose .is-style-tt-timeline ol ul { margin: 6px 0 0; padding-left: 18px; }
 
 /* FAQ Yoast rendue en questions repliables : mêmes espacements que la FAQ des destinations */
-.tt-prose > .tt-faq { margin-block-start: 0; }
+.tt-prose .tt-faq { margin-block-start: 0 !important; }
 .tt-prose .tt-faq .wp-block-details > p { margin-bottom: 0; }
