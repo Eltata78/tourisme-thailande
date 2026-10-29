@@ -374,7 +374,16 @@ class Converter:
         return out
 
     # ---------- article ----------
+    def repair(self, c):
+        """Insertions de liens internes mal placées par un outil : paragraphe glissé dans un intertitre,
+        élément de liste ajouté sans son bloc, « n » laissé à la place d'un retour à la ligne."""
+        c = re.sub(r'(</h[1-6]>)n\s*(<!-- wp:paragraph -->.*?<!-- /wp:paragraph -->)\s*(<!-- /wp:heading -->)', r'\1\n\3\n\n\2', c, flags=re.S)
+        c = re.sub(r'</li>n(<li>)', '</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n\\1', c)
+        c = re.sub(r'<strong>(<a [^>]*>)<strong>([^<]*)</strong></a>', r'\1<strong>\2</strong></a>', c)  # gras ouvert deux fois autour d'un lien
+        return re.sub(r'(</(?:p|li|h[1-6]|ul|ol|table|figure)>)n(?=\s*<)', r'\1\n', c)
+
     def convert(self, post):
+        post = dict(post, content=self.repair(post['content']))
         title = plain(post['title'] + ' ' + post['slug'].replace('-', ' '))
         query = next((q for k, q in DESTS if re.search(r'\b' + re.escape(k) + r'\b', title)), 'Thaïlande')
         ctx = {'log': [], 'query': query}
@@ -396,6 +405,7 @@ class Converter:
                 text = re.sub(r'<!--\s+wp:html\s+-->(.*?)<!--\s+/wp:html\s+-->', lambda m: '\n\n'.join(self.html_block(m.group(1), ctx)), text, flags=re.S)
                 out.append(scrub(text.strip()))
         content = '\n\n'.join(b for b in out if b)
+        content = re.sub(r'<!-- wp:list-item -->\s*<li>n</li>\s*<!-- /wp:list-item -->\s*', '', content)  # élément vide laissé par la même erreur
         content = content.replace('https://preprod.tourisme-thailande.fr', 'https://tourisme-thailande.fr')
         return {'id': post['id'], 'slug': post['slug'], 'content': content, 'meta': {'tt_gyg_query': query}, 'log': ctx['log']}
 
