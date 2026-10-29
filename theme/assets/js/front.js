@@ -214,10 +214,12 @@
 		return mapLib;
 	}
 	function pinPopup( p ) {
-		return '<div class="tt-pop">' + ( p.i ? '<img src="' + esc( p.i ) + '" alt="" loading="lazy">' : '' ) +
-			'<div class="tt-pop__b"><b>' + esc( p.t ) + '</b><span class="tt-pop__a">' +
-			'<a class="tt-btn tt-btn--gold" href="' + esc( p.g ) + '" target="_blank" rel="sponsored nofollow noopener">' + esc( p.b ) + '</a>' +
-			( p.u ? '<a class="tt-pop__guide" href="' + esc( p.u ) + '">Le guide</a>' : '' ) + '</span></div></div>';
+		// Toute la fiche (photo et nom) mène aux offres ; « Le guide » reste un lien interne à part.
+		var go = ' href="' + esc( p.g ) + '" target="_blank" rel="sponsored nofollow noopener"';
+		return '<div class="tt-pop"><a class="tt-pop__main"' + go + '>' + ( p.i ? '<img src="' + esc( p.i ) + '" alt="" loading="lazy">' : '' ) +
+			'<b class="tt-pop__t">' + esc( p.t ) + '</b></a><span class="tt-pop__a">' +
+			'<a class="tt-btn tt-btn--gold"' + go + '>' + esc( p.b ) + '</a>' +
+			( p.u ? '<a class="tt-pop__guide" href="' + esc( p.u ) + '">Le guide</a>' : '' ) + '</span></div>';
 	}
 	function km( a, b ) {
 		var r = Math.PI / 180, dLat = ( b[ 1 ] - a[ 1 ] ) * r, dLng = ( b[ 0 ] - a[ 0 ] ) * r;
