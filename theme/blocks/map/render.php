@@ -14,19 +14,14 @@ $tt_post = get_post( $block->context['postId'] ?? null );
 if ( ! $tt_post ) {
 	return;
 }
-$tt_kids  = get_pages( array( 'parent' => $tt_post->ID, 'sort_column' => 'menu_order,post_title' ) );
-$tt_hub   = $tt_kids || ! $tt_post->post_parent ? $tt_post : get_post( $tt_post->post_parent );
-// Les repères sont les fiches (visites et activités) de la destination : sous-pages du hub ayant des coordonnées.
-$tt_pages = $tt_kids ?: ( $tt_post->post_parent ? get_pages( array( 'parent' => $tt_post->post_parent, 'sort_column' => 'menu_order,post_title' ) ) : array() );
+$tt_map   = tt_map_places( $tt_post );
+$tt_hub   = $tt_map['hub'];
 $tt_cmp   = tt_cmp( $attributes['placement'], $tt_post->ID );
 $tt_ctx   = tt_destination_context( $tt_post->ID );
 
 $tt_pins = array();
-foreach ( $tt_pages as $tt_p ) {
-	$tt_geo = tt_geo( $tt_p->ID );
-	if ( ! $tt_geo ) {
-		continue;
-	}
+foreach ( $tt_map['places'] as $tt_p ) {
+	$tt_geo   = tt_geo( $tt_p->ID );
 	$tt_self  = $tt_p->ID === $tt_post->ID;
 	$tt_link  = (string) get_post_meta( $tt_p->ID, 'tt_gyg_url', true );
 	$tt_query = (string) get_post_meta( $tt_p->ID, 'tt_gyg_query', true ) ?: ( $tt_ctx['gyg'] ?? get_the_title( $tt_p ) );

@@ -102,3 +102,28 @@ function tt_geo( int $post_id ): ?array {
 	}
 	return array( (float) $m[1], (float) $m[2] );
 }
+
+/**
+ * Lieux affichés par la carte d'une page : sur un hub, ses fiches ; sur une fiche, elle et ses voisines.
+ * Seules les fiches géolocalisées (meta tt_geo) comptent. Sert à la carte et aux données structurées.
+ *
+ * @return array{hub:WP_Post,places:WP_Post[]}
+ */
+function tt_map_places( WP_Post $post ): array {
+	$kids   = get_pages( array( 'parent' => $post->ID, 'sort_column' => 'menu_order,post_title' ) );
+	$hub    = $kids || ! $post->post_parent ? $post : get_post( $post->post_parent );
+	$pages  = $kids ?: ( $post->post_parent ? get_pages( array( 'parent' => $post->post_parent, 'sort_column' => 'menu_order,post_title' ) ) : array() );
+	return array(
+		'hub'    => $hub,
+		'places' => array_values( array_filter( $pages, static fn( $p ) => null !== tt_geo( $p->ID ) ) ),
+	);
+}
+
+/**
+ * Distance en kilomètres entre deux points [lat, lng].
+ */
+function tt_km( array $a, array $b ): float {
+	$r = M_PI / 180;
+	$h = sin( ( $b[0] - $a[0] ) * $r / 2 ) ** 2 + cos( $a[0] * $r ) * cos( $b[0] * $r ) * sin( ( $b[1] - $a[1] ) * $r / 2 ) ** 2;
+	return 12742 * asin( sqrt( $h ) );
+}
