@@ -10,7 +10,7 @@
   Niveau 1 = barre, niveau 2 = colonnes du méga-menu (classe CSS `tt-feat` = carte image), niveau 3 = liens.
 - Footer : template part `footer`, entièrement en blocs natifs, modifiable dans l'éditeur de site.
 - Templates : `front-page`, `page`, `page-destination`, `page-activite`, `single`, `single-guide`, `home` (blog), `archive` (catégories), `author`, `search`, `404`.
-- Listes d'articles : 12 par page, dernier article en grand sur la page 1, rubriques en pastilles (`tt/topics`), présentation de l'auteur (`tt/author-card`).
+- Listes d'articles : grilles de 4 colonnes, 16 par page (page 1 : dernier article en grand + 12), rubriques en pastilles (`tt/topics`), présentation de l'auteur (`tt/author-card`).
 
 ## Blocs
 
