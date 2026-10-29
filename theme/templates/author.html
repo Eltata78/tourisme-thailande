@@ -1,0 +1,30 @@
+<!-- wp:template-part {"slug":"header","area":"header","tagName":"div"} /-->
+
+<!-- wp:group {"tagName":"main","className":"tt-blog","layout":{"type":"constrained","contentSize":"1240px"}} -->
+<main class="wp-block-group tt-blog"><!-- wp:group {"className":"tt-bloghead","layout":{"type":"default"}} -->
+<div class="wp-block-group tt-bloghead"><!-- wp:tt/author-card /--></div>
+<!-- /wp:group -->
+<!-- wp:heading {"className":"tt-blog__h2"} -->
+<h2 class="wp-block-heading tt-blog__h2">Ses guides et articles</h2>
+<!-- /wp:heading -->
+<!-- wp:query {"queryId":1,"query":{"perPage":12,"inherit":true},"className":"tt-cards"} -->
+<div class="wp-block-query tt-cards"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"260px"}} -->
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/10","sizeSlug":"tt-card"} /-->
+<!-- wp:post-terms {"term":"category","className":"tt-cat"} /-->
+<!-- wp:post-title {"isLink":true,"level":2} /-->
+<!-- wp:post-excerpt {"excerptLength":26,"className":"tt-excerpt"} /-->
+<!-- /wp:post-template -->
+<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"}} -->
+<!-- wp:query-pagination-previous {"label":"Précédent"} /-->
+<!-- wp:query-pagination-numbers /-->
+<!-- wp:query-pagination-next {"label":"Suivant"} /-->
+<!-- /wp:query-pagination -->
+<!-- wp:query-no-results -->
+<!-- wp:paragraph -->
+<p>Aucun article pour le moment.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:query-no-results --></div>
+<!-- /wp:query --></main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer","tagName":"div"} /-->

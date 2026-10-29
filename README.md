@@ -9,7 +9,8 @@
 - Header : bloc `tt/site-header`, alimenté par le menu WordPress affecté à l'emplacement « Menu principal ».
   Niveau 1 = barre, niveau 2 = colonnes du méga-menu (classe CSS `tt-feat` = carte image), niveau 3 = liens.
 - Footer : template part `footer`, entièrement en blocs natifs, modifiable dans l'éditeur de site.
-- Templates : `front-page`, `page`, `page-destination`, `page-activite`, `single`, `single-guide`, `archive`, `search`, `404`.
+- Templates : `front-page`, `page`, `page-destination`, `page-activite`, `single`, `single-guide`, `home` (blog), `archive` (catégories), `author`, `search`, `404`.
+- Listes d'articles : 12 par page, dernier article en grand sur la page 1, rubriques en pastilles (`tt/topics`), présentation de l'auteur (`tt/author-card`).
 
 ## Blocs
 
@@ -27,6 +28,8 @@
 | `tt/cta-card` | Carte de réservation : photo, titre, texte court, bouton vers l'offre (tag partenaire ajouté) |
 | `tt/map` | Carte des fiches de la destination (MapLibre auto-hébergé + fonds OpenFreeMap, noms en français) : repère photo, fiche cliquable vers l'offre GetYourGuide de l'activité |
 | `tt/toc` | Sommaire automatique (H2 du contenu) |
+| `tt/topics` | Rubriques du blog en pastilles |
+| `tt/author-card` | Présentation de l'auteur (photo, rôle, bio, nombre d'articles, profils) |
 | `tt/mobile-bar` | Barre de réservation mobile |
 
 Tous les blocs sont rendus côté serveur. Syntaxe pour le MCP, par exemple :

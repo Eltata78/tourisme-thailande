@@ -447,3 +447,52 @@ mark.tt-st.is-bad { background: #FAE8EB; color: var(--tt-red); }
 /* FAQ Yoast rendue en questions repliables : mêmes espacements que la FAQ des destinations */
 .tt-prose .tt-faq { margin-block-start: 0 !important; }
 .tt-prose .tt-faq .wp-block-details > p { margin-bottom: 0; }
+
+/* ---------- Blog, catégories, auteurs ---------- */
+.tt-blog { padding: 40px var(--tt-gutter) 72px; }
+.tt-bloghead h1 { margin: 0; font-size: clamp(2.25rem, 5vw, 3.5rem); }
+.tt-bloghead__intro { margin: 10px 0 0; max-width: 62ch; font-size: 18px; color: var(--tt-muted); }
+.tt-topics { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.tt-topics a { padding: 7px 14px; border-radius: 999px; background: var(--tt-mist); color: var(--tt-indigo); font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tt-topics a:hover { background: #E9E6F2; }
+.tt-topics a.is-on { background: var(--tt-indigo); color: #fff; }
+@media (max-width: 700px) {
+	.tt-topics { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(-1 * var(--tt-gutter)); padding-inline: var(--tt-gutter); scrollbar-width: none; }
+	.tt-topics::-webkit-scrollbar { display: none; }
+}
+.tt-cards .wp-block-post-template { row-gap: 32px !important; }
+.tt-cards .wp-block-post-featured-image { margin: 0; border-radius: 12px; overflow: hidden; aspect-ratio: 16 / 10; }
+.tt-cards .wp-block-post-featured-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.tt-cards li:hover .wp-block-post-featured-image img { transform: scale(1.03); }
+.tt-cards .tt-noimg { background: linear-gradient(135deg, var(--tt-mist), #E4E1EE); }
+.tt-cards .tt-noimg a { display: block; width: 100%; height: 100%; }
+.tt-cards .tt-cat a ~ a, .tt-cards .tt-cat .wp-block-post-terms__separator { display: none; }
+.tt-cards .wp-block-post-title { font-size: 18px; line-height: 1.25; }
+.tt-cards .tt-excerpt { display: none; }
+/* Page 1 : le dernier article en grand (2 colonnes sur 2 rangées), avec son résumé */
+body:not(.paged) .tt-cards--feature .wp-block-post-template > li:first-child { grid-column: span 2; grid-row: span 2; }
+body:not(.paged) .tt-cards--feature li:first-child .wp-block-post-featured-image { aspect-ratio: 16 / 9.4; }
+body:not(.paged) .tt-cards--feature li:first-child .wp-block-post-title { font-size: clamp(22px, 2.4vw, 30px); }
+body:not(.paged) .tt-cards--feature li:first-child .tt-excerpt { display: block; margin-top: 8px; color: var(--tt-muted); font-size: 16px; }
+body:not(.paged) .tt-cards--feature li:first-child .wp-block-post-excerpt__more-text { display: none; }
+@media (max-width: 900px) { body:not(.paged) .tt-cards--feature .wp-block-post-template > li:first-child { grid-column: auto; grid-row: auto; } }
+.tt-cards .wp-block-query-pagination { margin-top: 3rem; gap: 6px; }
+.tt-cards .wp-block-query-pagination-numbers { display: flex; gap: 6px; }
+.tt-cards .wp-block-query-pagination .page-numbers, .tt-cards .wp-block-query-pagination > a { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; height: 42px; padding: 0 12px; border: 1px solid var(--tt-line); border-radius: 10px; color: var(--tt-indigo); font-weight: 600; text-decoration: none; }
+.tt-cards .wp-block-query-pagination .page-numbers.current { background: var(--tt-indigo); border-color: var(--tt-indigo); color: #fff; }
+.tt-cards .wp-block-query-pagination .page-numbers.dots { border: 0; min-width: 0; }
+.tt-blog__h2 { margin-top: 3rem !important; font-size: clamp(1.5rem, 3vw, 2rem); }
+
+/* Présentation de l'auteur */
+.tt-author { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 28px; align-items: start; padding: 28px; border: 1px solid var(--tt-line); border-radius: 18px; background: #fff; }
+.tt-author .tt-author__img { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; }
+.tt-author__role { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--tt-red); }
+.tt-author__name { margin: 4px 0 0; font-size: clamp(2rem, 4vw, 2.75rem); }
+.tt-author__bio { margin-top: 12px; max-width: 72ch; color: #34314F; }
+.tt-author__bio p { margin: 0 0 .6rem; }
+.tt-author__meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 12px 0 0; font-size: 14px; color: var(--tt-muted); }
+.tt-author__meta a { color: var(--tt-red); font-weight: 600; }
+@media (max-width: 700px) {
+	.tt-author { grid-template-columns: 1fr; padding: 20px; gap: 14px; }
+	.tt-author .tt-author__img { width: 96px; height: 96px; }
+}

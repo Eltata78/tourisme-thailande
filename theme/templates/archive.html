@@ -1,13 +1,18 @@
 <!-- wp:template-part {"slug":"header","area":"header","tagName":"div"} /-->
 
-<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained","contentSize":"1240px"}} -->
-<main class="wp-block-group" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--60)"><!-- wp:query-title {"type":"archive","level":1,"style":{"typography":{"fontSize":"clamp(2.25rem, 5vw, 3.5rem)"}}} /-->
-<!-- wp:term-description /-->
-<!-- wp:query {"queryId":1,"query":{"perPage":12,"inherit":true},"className":"tt-cards"} -->
-<div class="wp-block-query tt-cards"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"260px"}} -->
-<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/10","style":{"border":{"radius":"12px"}}} /-->
+<!-- wp:group {"tagName":"main","className":"tt-blog","layout":{"type":"constrained","contentSize":"1240px"}} -->
+<main class="wp-block-group tt-blog"><!-- wp:group {"className":"tt-bloghead","layout":{"type":"default"}} -->
+<div class="wp-block-group tt-bloghead"><!-- wp:query-title {"type":"archive","level":1} /-->
+<!-- wp:term-description {"className":"tt-bloghead__intro"} /-->
+<!-- wp:tt/topics /--></div>
+<!-- /wp:group -->
+
+<!-- wp:query {"queryId":1,"query":{"perPage":12,"inherit":true},"className":"tt-cards tt-cards--feature"} -->
+<div class="wp-block-query tt-cards tt-cards--feature"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"260px"}} -->
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/10","sizeSlug":"tt-card"} /-->
 <!-- wp:post-terms {"term":"category","className":"tt-cat"} /-->
-<!-- wp:post-title {"isLink":true,"level":2,"style":{"typography":{"fontSize":"18px","lineHeight":"1.25"}}} /-->
+<!-- wp:post-title {"isLink":true,"level":2} /-->
+<!-- wp:post-excerpt {"excerptLength":26,"className":"tt-excerpt"} /-->
 <!-- /wp:post-template -->
 <!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"}} -->
 <!-- wp:query-pagination-previous {"label":"Précédent"} /-->
