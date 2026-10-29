@@ -27,6 +27,7 @@ h3, h4 { font-stretch: 85%; }
 img { height: auto; }
 b, strong { font-weight: 700; }
 .tt-wdg, .tt-wdg * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* un élément en flex ou grid resterait visible malgré l'attribut hidden */
 .screen-reader-text { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }
 :where(a, button, input, select, summary):focus-visible { outline: 2px solid var(--tt-gold); outline-offset: 2px; }
 
