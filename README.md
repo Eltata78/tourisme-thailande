@@ -59,3 +59,15 @@ Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris 
 2. `migration/apply_destinations.php` (via execute-php, variable `$tt_rows`) : applique le contenu,
    le template `page-destination` et les métadonnées. Le contenu Elementor d'origine est gardé
    dans `_tt_backup_content`, `_tt_backup_elementor_mode`, `_tt_backup_template` et `_tt_backup_title`.
+
+## Migration des articles
+
+1. Export du contenu des articles (id, slug, contenu) depuis le site.
+2. `python3 -I migration/posts2blocks.py <articles.json> migration/liens_courts.tsv <media.json> <sortie.json>` :
+   - encadrés HTML -> groupes aux styles « Le savais-tu » (`is-style-tt-savais`), « À retenir » (`is-style-tt-retenir`), « Attention » (`is-style-tt-alerte`) ;
+   - CTA hôtel Trip -> `tt/trip-search` (destination de l'article si Trip la connaît) ; CTA activité et bannières Shortcoder -> `tt/cta-card` ;
+     sélections de 3 activités -> `tt/gyg-card` ; programmes horaires -> groupe `is-style-tt-timeline` ; FAQ maison -> blocs Détails ;
+   - espaceurs et émojis retirés (sauf FAQ Yoast) ; requête d'activités de l'article dans la meta `tt_gyg_query`.
+   `migration/liens_courts.tsv` : liens courts gyg.me / trip.com/t déroulés (cible réelle de chaque lien).
+3. `migration/apply_posts.php` (via execute-php, variable `$tt_rows`) : contenu d'origine gardé dans `_tt_backup_content`
+   (et `_tt_backup_elementor_mode` pour les articles qui étaient marqués Elementor).

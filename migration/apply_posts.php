@@ -13,6 +13,11 @@ foreach ( $tt_rows as $r ) {
 	}
 	if ( '' === get_post_meta( $p->ID, '_tt_backup_content', true ) ) {
 		update_post_meta( $p->ID, '_tt_backup_content', wp_slash( $p->post_content ) );
+		update_post_meta( $p->ID, '_tt_backup_elementor_mode', get_post_meta( $p->ID, '_elementor_edit_mode', true ) );
+	}
+	// Article encore marqué « construit avec Elementor » : le thème affiche désormais ses blocs.
+	if ( 'builder' === get_post_meta( $p->ID, '_elementor_edit_mode', true ) ) {
+		update_post_meta( $p->ID, '_elementor_edit_mode', '' );
 	}
 	$content = str_replace( 'https://tourisme-thailande.fr', $home, $r['content'] );
 	$res     = wp_update_post( array( 'ID' => $p->ID, 'post_content' => wp_slash( $content ) ), true );
