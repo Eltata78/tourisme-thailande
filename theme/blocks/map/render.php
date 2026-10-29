@@ -2,8 +2,8 @@
 /**
  * Carte des visites : repères des pages de la destination, rendus par MapLibre (auto-hébergé) à l'approche du bloc.
  *
- * Sur un hub : ses sous-pages. Sur une sous-page : la page et ses voisines, centrée sur la page.
- * Une page sans coordonnées (activité sans lieu fixe) n'a pas de repère.
+ * Sur un hub : ses fiches (sous-pages). Sur une fiche : elle et ses voisines, centrée sur elle.
+ * Une fiche sans coordonnées (activité sans lieu fixe) n'a pas de repère ; un hub sans fiche n'affiche pas de carte.
  *
  * @package tt
  */
@@ -16,7 +16,8 @@ if ( ! $tt_post ) {
 }
 $tt_kids  = get_pages( array( 'parent' => $tt_post->ID, 'sort_column' => 'menu_order,post_title' ) );
 $tt_hub   = $tt_kids || ! $tt_post->post_parent ? $tt_post : get_post( $tt_post->post_parent );
-$tt_pages = $tt_kids ?: ( $tt_post->post_parent ? get_pages( array( 'parent' => $tt_post->post_parent, 'sort_column' => 'menu_order,post_title' ) ) : array( $tt_post ) );
+// Les repères sont les fiches (visites et activités) de la destination : sous-pages du hub ayant des coordonnées.
+$tt_pages = $tt_kids ?: ( $tt_post->post_parent ? get_pages( array( 'parent' => $tt_post->post_parent, 'sort_column' => 'menu_order,post_title' ) ) : array() );
 $tt_cmp   = tt_cmp( $attributes['placement'], $tt_post->ID );
 $tt_ctx   = tt_destination_context( $tt_post->ID );
 
@@ -27,38 +28,20 @@ foreach ( $tt_pages as $tt_p ) {
 		continue;
 	}
 	$tt_self  = $tt_p->ID === $tt_post->ID;
+	$tt_link  = (string) get_post_meta( $tt_p->ID, 'tt_gyg_url', true );
 	$tt_query = (string) get_post_meta( $tt_p->ID, 'tt_gyg_query', true ) ?: ( $tt_ctx['gyg'] ?? get_the_title( $tt_p ) );
 	$tt_pins[] = array(
 		'lat' => $tt_geo[0],
 		'lng' => $tt_geo[1],
 		't'   => (string) get_post_meta( $tt_p->ID, 'tt_card_title', true ) ?: get_the_title( $tt_p ),
 		'u'   => $tt_self ? '' : get_permalink( $tt_p ),
-		'g'   => tt_gyg_url( $tt_query, $tt_cmp ),
-		'b'   => $tt_kids || $tt_p->post_parent ? 'Voir les offres' : 'Voir les activités',
+		// Lien d'affiliation de l'activité s'il est renseigné sur la fiche, sinon la recherche de l'activité.
+		'g'   => $tt_link ? tt_gyg_tag( $tt_link, $tt_cmp ) : tt_gyg_url( $tt_query, $tt_cmp ),
+		'b'   => $tt_link ? 'Voir les disponibilités' : 'Voir les offres',
 		'i'   => (string) get_the_post_thumbnail_url( $tt_p, 'tt-card' ),
+		'm'   => (string) get_the_post_thumbnail_url( $tt_p, 'thumbnail' ),
 		'c'   => $tt_self,
 	);
-}
-// Lieux cités par le guide du hub (sans page dédiée) : un repère par lieu, à la place du repère unique de la destination.
-$tt_extra = $tt_hub->ID === $tt_post->ID ? (array) json_decode( (string) get_post_meta( $tt_post->ID, 'tt_map_pins', true ), true ) : array();
-if ( $tt_extra && ! $tt_kids ) {
-	$tt_pins = array();
-}
-if ( $tt_extra ) {
-	foreach ( $tt_extra as $tt_x ) {
-		if ( isset( $tt_x['t'], $tt_x['lat'], $tt_x['lng'] ) ) {
-			$tt_pins[] = array(
-				'lat' => (float) $tt_x['lat'],
-				'lng' => (float) $tt_x['lng'],
-				't'   => (string) $tt_x['t'],
-				'u'   => '',
-				'g'   => tt_gyg_url( (string) ( $tt_x['q'] ?? $tt_x['t'] ), $tt_cmp ),
-				'b'   => 'Voir les activités',
-				'i'   => '',
-				'c'   => false,
-			);
-		}
-	}
 }
 if ( ! $tt_pins ) {
 	return;

@@ -237,6 +237,34 @@
 			if ( map.getLayer( c[ 0 ] ) ) map.setPaintProperty( c[ 0 ], c[ 1 ], c[ 2 ] );
 		} );
 	}
+	// Repères trop proches à ce niveau de zoom : une seule bulle « n lieux » qui zoome sur eux au clic.
+	function group( map, pins, groups ) {
+		var ml = window.maplibregl, gap = 46, todo = [];
+		groups.splice( 0 ).forEach( function ( g ) { g.remove(); } );
+		pins.forEach( function ( x ) { x.el.classList.remove( 'is-grouped' ); x.xy = map.project( [ x.p.lng, x.p.lat ] ); if ( ! x.p.c ) todo.push( x ); } );
+		while ( todo.length ) {
+			var first = todo.shift(), near = [ first ];
+			todo = todo.filter( function ( x ) {
+				var close = Math.abs( x.xy.x - first.xy.x ) < gap && Math.abs( x.xy.y - first.xy.y ) < gap;
+				if ( close ) near.push( x );
+				return ! close;
+			} );
+			if ( near.length < 2 ) continue;
+			var bounds = new ml.LngLatBounds(), el = document.createElement( 'button' );
+			near.forEach( function ( x ) { x.el.classList.add( 'is-grouped' ); bounds.extend( [ x.p.lng, x.p.lat ] ); } );
+			el.type = 'button';
+			el.className = 'tt-pin tt-pin--group' + ( first.p.m ? ' has-img' : '' );
+			el.innerHTML = ( first.p.m ? '<img class="tt-pin__img" src="' + esc( first.p.m ) + '" alt="">' : '<span class="tt-pin__dot"></span>' ) +
+				'<span class="tt-pin__count">' + near.length + '</span><span class="tt-pin__label">' + esc( near.map( function ( x ) { return x.p.t; } ).slice( 0, 3 ).join( ', ' ) + ( near.length > 3 ? '…' : '' ) ) + '</span>';
+			el.addEventListener( 'click', function ( e ) {
+				e.stopPropagation();
+				map.fitBounds( bounds, { padding: 70, maxZoom: map.getZoom() + 3 } );
+			} );
+			var m = new ml.Marker( { element: el, anchor: 'center' } ).setLngLat( bounds.getCenter() ).addTo( map );
+			el.setAttribute( 'aria-label', near.length + ' lieux : zoomer' );
+			groups.push( m );
+		}
+	}
 	function drawMap( box ) {
 		var data = JSON.parse( box.getAttribute( 'data-tt-map' ) ), ml = window.maplibregl;
 		var pts = data.pins.map( function ( p ) { return [ p.lng, p.lat ]; } );
@@ -259,13 +287,15 @@
 			var attrib = box.querySelector( '.maplibregl-compact-show' );
 			if ( attrib ) attrib.classList.remove( 'maplibregl-compact-show' );
 		} );
+		var pins = [], groups = [];
 		data.pins.forEach( function ( p ) {
 			var el = document.createElement( 'button' );
 			el.type = 'button';
 			el.className = 'tt-pin' + ( p.c ? ' is-cur' : '' );
 			el.setAttribute( 'aria-label', p.t );
-			el.innerHTML = '<span class="tt-pin__dot"></span><span class="tt-pin__label">' + esc( p.t ) + '</span>';
-			var pop = new ml.Popup( { offset: 16, anchor: 'bottom', maxWidth: '240px', className: 'tt-popup', focusAfterOpen: false } ).setHTML( pinPopup( p ) );
+			el.innerHTML = ( p.m ? '<img class="tt-pin__img" src="' + esc( p.m ) + '" alt="">' : '<span class="tt-pin__dot"></span>' ) + '<span class="tt-pin__label">' + esc( p.t ) + '</span>';
+			if ( p.m ) el.classList.add( 'has-img' );
+			var pop = new ml.Popup( { offset: p.m ? ( p.c ? 32 : 26 ) : 16, anchor: 'bottom', maxWidth: '240px', className: 'tt-popup', focusAfterOpen: false } ).setHTML( pinPopup( p ) );
 			pop.on( 'open', function () {
 				// Le repère descend vers le bas de la carte pour que la fiche, au-dessus, tienne entièrement.
 				map.easeTo( { center: [ p.lng, p.lat ], offset: [ 0, Math.max( 0, box.clientHeight / 2 - 40 ) ], duration: 350 } );
@@ -273,7 +303,10 @@
 			} );
 			new ml.Marker( { element: el, anchor: 'center' } ).setLngLat( [ p.lng, p.lat ] ).setPopup( pop ).addTo( map );
 			el.setAttribute( 'aria-label', p.t ); // MapLibre pose « Map marker » par défaut
+			pins.push( { p: p, el: el } );
 		} );
+		map.on( 'zoomend', function () { group( map, pins, groups ); } );
+		map.once( 'idle', function () { group( map, pins, groups ); } );
 		if ( cur && pts.length > 1 && ! data.fit ) {
 			map.jumpTo( { center: [ cur.lng, cur.lat ], zoom: data.zoom || 11.5 } );
 		} else if ( 1 === pts.length ) {

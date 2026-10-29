@@ -27,7 +27,6 @@ HUB_META = {
 GYG = 'https://www.getyourguide.fr/s/?q={q}&partner_id=YADMZ9Q&cmp={cmp}'
 GEO = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'geo.json')))  # lat, lng géocodés (OpenStreetMap)
 # Lieux cités par les guides des hubs sans sous-page : [titre, requête activités, lat, lng] -> repères de la carte.
-GEO_PINS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'geo_pins.json')))
 # Liens courts gyg.me du site, déroulés : on garde la page cible, le tag est remis à l'affichage (cmp par emplacement).
 GYG_LINKS = {
     'https://gyg.me/YdEyJ7Ug': ('https://www.getyourguide.fr/pattaya-l182/', ''),
@@ -319,8 +318,10 @@ def convert(page, hub, data, demo=None):
         blocks.append(block('tt/map', {}))
     if page['slug'] in GEO:
         meta['tt_geo'] = ','.join(str(c) for c in GEO[page['slug']])
-    if page['slug'] in GEO_PINS:
-        meta['tt_map_pins'] = json.dumps([{'t': t, 'q': q, 'lat': la, 'lng': ln} for t, q, la, ln in GEO_PINS[page['slug']]], ensure_ascii=False)
+    # Lien d'affiliation propre à l'activité (page produit GetYourGuide) : repris sur la carte des visites.
+    product = next((u for u, t in GYG_LINKS.values() if t and u in json.dumps(blocks)), '')
+    if product and not is_hub:
+        meta['tt_gyg_url'] = product
     if is_hub:
         name, syn = HUB_META[page['slug']]
         meta.update({'tt_destination': name, 'tt_gyg_query': name, 'tt_trip_city': page['slug'], 'tt_synonyms': syn})

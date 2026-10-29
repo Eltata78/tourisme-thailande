@@ -25,7 +25,7 @@
 | `tt/gyg-compare` | Comparatif de 2 à 4 activités sur les mêmes critères |
 | `tt/card-grid` | Grille de cartes : sous-pages, pages sœurs, destinations ou sélection d'IDs |
 | `tt/cta-card` | Carte de réservation : photo, titre, texte court, bouton vers l'offre (tag partenaire ajouté) |
-| `tt/map` | Carte des visites (MapLibre auto-hébergé + fonds OpenFreeMap, noms en français), chargée à l'approche du bloc |
+| `tt/map` | Carte des fiches de la destination (MapLibre auto-hébergé + fonds OpenFreeMap, noms en français) : repère photo, fiche cliquable vers l'offre GetYourGuide de l'activité |
 | `tt/toc` | Sommaire automatique (H2 du contenu) |
 | `tt/mobile-bar` | Barre de réservation mobile |
 
@@ -37,10 +37,10 @@ Tous les blocs sont rendus côté serveur. Syntaxe pour le MCP, par exemple :
 
 ## Métadonnées de page (API REST)
 
-`tt_h1`, `tt_destination`, `tt_gyg_query`, `tt_trip_city`, `tt_intro`, `tt_price_from`, `tt_synonyms`, `tt_card_title`, `tt_geo`, `tt_map_pins`.
+`tt_h1`, `tt_destination`, `tt_gyg_query`, `tt_trip_city`, `tt_intro`, `tt_price_from`, `tt_synonyms`, `tt_card_title`, `tt_geo`, `tt_gyg_url`.
 Une sous-page hérite de la destination de son hub parent. `tt_h1` remplace le titre dans le hero, `tt_card_title` sur les cartes.
-`tt_trip_city` est une clé de `tt_trip_destinations()` (ex. `koh-samui`) ; `tt_geo` vaut « lat,lng » ; `tt_map_pins` liste en JSON
-les lieux cités par un guide sans page dédiée (repères de la carte).
+`tt_trip_city` est une clé de `tt_trip_destinations()` (ex. `koh-samui`) ; `tt_geo` vaut « lat,lng » (repère de la fiche sur la carte) ;
+`tt_gyg_url` est le lien GetYourGuide de l'activité de la fiche (sinon la carte renvoie vers la recherche `tt_gyg_query`).
 
 Style de paragraphe « Astuce » (`is-style-tt-tip`).
 
@@ -55,7 +55,7 @@ Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris 
 
 1. `python3 -I migration/elementor2blocks.py <dossier _elementor_data> <pages.json> <sortie.json>` :
    convertit les pages Elementor (hubs et sous-pages) en blocs natifs et calcule les métadonnées.
-   Coordonnées : `migration/geo.json` (pages) et `migration/geo_pins.json` (lieux des hubs), géocodées avec OpenStreetMap.
+   Coordonnées des fiches : `migration/geo.json`, géocodées avec OpenStreetMap.
 2. `migration/apply_destinations.php` (via execute-php, variable `$tt_rows`) : applique le contenu,
    le template `page-destination` et les métadonnées. Le contenu Elementor d'origine est gardé
    dans `_tt_backup_content`, `_tt_backup_elementor_mode`, `_tt_backup_template` et `_tt_backup_title`.

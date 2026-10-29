@@ -20,7 +20,7 @@ function tt_page_meta_fields(): array {
 		'tt_card_title'  => array( 'type' => 'string', 'description' => 'Titre court utilisé sur les cartes (grilles de pages).' ),
 		'tt_price_from'  => array( 'type' => 'number', 'description' => 'Prix « dès » affiché dans la barre mobile.' ),
 		'tt_geo'         => array( 'type' => 'string', 'description' => 'Coordonnées du lieu « latitude,longitude » (repère sur la carte des visites).' ),
-		'tt_map_pins'    => array( 'type' => 'string', 'description' => 'Repères supplémentaires de la carte, en JSON : [{"t":"Railay","q":"Railay Krabi","lat":8.01,"lng":98.83}].' ),
+		'tt_gyg_url'     => array( 'type' => 'string', 'description' => 'Lien GetYourGuide de l\'activité de la fiche (page produit ou lien gyg.me) ; le tag partenaire est ajouté à l\'affichage.' ),
 	);
 }
 

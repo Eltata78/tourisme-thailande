@@ -12,6 +12,14 @@
 .tt-pin:hover .tt-pin__dot, .tt-pin:focus-visible .tt-pin__dot { transform: scale(1.25); }
 .tt-map .tt-pin.is-cur { width: 26px; height: 26px; z-index: 2; }
 .tt-pin.is-cur .tt-pin__dot { background: var(--tt-indigo, #2D2A4A); box-shadow: 0 0 0 7px rgba(165, 25, 49, .22), 0 2px 8px rgba(30, 27, 54, .45); }
+/* Repère photo : la vignette de la fiche, comme une bulle */
+.tt-map .tt-pin.has-img { width: 44px; height: 44px; }
+.tt-map .tt-pin.has-img.is-cur { width: 56px; height: 56px; }
+.tt-pin__img { display: block; width: 100%; height: 100%; max-width: none; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 3px 10px rgba(30, 27, 54, .45); transition: transform .15s ease; }
+.tt-pin:hover .tt-pin__img, .tt-pin:focus-visible .tt-pin__img { transform: scale(1.12); }
+.tt-pin.is-cur .tt-pin__img { border-color: var(--tt-red, #A51931); box-shadow: 0 0 0 4px rgba(165, 25, 49, .2), 0 3px 10px rgba(30, 27, 54, .45); }
+.tt-map .tt-pin.is-grouped { display: none; }
+.tt-pin__count { position: absolute; top: -6px; right: -8px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--tt-red, #A51931); color: #fff; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center; box-shadow: 0 0 0 2px #fff; }
 .tt-pin__label { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; background: #fff; color: var(--tt-indigo, #2D2A4A); font-size: 13px; font-weight: 600; line-height: 1.2; padding: 5px 9px; border-radius: 8px; box-shadow: 0 6px 16px -8px rgba(30, 27, 54, .6); opacity: 0; pointer-events: none; transition: opacity .15s ease; }
 .tt-pin:hover .tt-pin__label, .tt-pin:focus-visible .tt-pin__label, .tt-pin.is-cur .tt-pin__label { opacity: 1; }
 
