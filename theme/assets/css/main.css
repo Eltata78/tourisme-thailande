@@ -14,6 +14,7 @@
 	--tt-gutter: clamp(16px, 4vw, 56px);
 	--tt-wide: 1240px;
 	--tt-shadow: 0 24px 44px -26px rgba(30, 27, 54, .5);
+	--tt-night: #24213F; /* header et footer */
 }
 
 /* Le style du thème parent est désactivé : on rétablit le modèle de boîte habituel. */
@@ -38,15 +39,18 @@ b, strong { font-weight: 700; }
 .is-style-outline .wp-block-button__link, .tt-btn--out { background: transparent; color: var(--tt-indigo); border: 1.5px solid var(--tt-indigo); }
 
 /* ---------- Header ---------- */
-.tt-header { position: relative; z-index: 50; background: #fff; border-bottom: 1px solid var(--tt-line); }
-.tt-header__bar { max-width: var(--tt-wide); margin-inline: auto; padding: 10px var(--tt-gutter); display: flex; align-items: center; gap: 24px; }
-.tt-header__logo { display: block; flex: none; }
-.tt-logo { height: 52px; width: auto; display: block; }
-.tt-logo-text { font-weight: 800; font-stretch: 80%; font-size: 20px; color: var(--tt-indigo); }
+.tt-header { position: relative; z-index: 50; background: var(--tt-night); }
+.tt-header__bar { max-width: var(--tt-wide); margin-inline: auto; padding: 12px var(--tt-gutter); display: flex; align-items: center; gap: 24px; }
+.tt-header__logo { display: block; flex: none; text-decoration: none; }
+/* Logo : emblème et nom en texte (blanc sur le header et le footer de nuit). */
+.tt-brand { display: flex; align-items: center; gap: 10px; }
+.tt-brand__mark { width: auto; height: 40px; display: block; }
+.tt-brand__name { font-weight: 800; font-stretch: 78%; font-size: 24px; line-height: 1; letter-spacing: -.005em; color: #fff; white-space: nowrap; }
+.tt-brand-link { display: inline-block; text-decoration: none; }
 .tt-nav { display: flex; gap: 2px; }
-.tt-nav__top { display: flex; align-items: center; gap: 5px; padding: 9px 10px; border-radius: 8px; color: var(--tt-ink); text-decoration: none; font-weight: 500; white-space: nowrap; }
-.tt-nav__top svg { width: 11px; height: 11px; opacity: .55; }
-.tt-nav__item:hover > .tt-nav__top, .tt-nav__item:focus-within > .tt-nav__top { background: var(--tt-mist); color: var(--tt-indigo); }
+.tt-nav__top { display: flex; align-items: center; gap: 5px; padding: 9px 10px; border-radius: 8px; color: #fff; text-decoration: none; font-weight: 600; font-stretch: 85%; font-size: 16.5px; letter-spacing: .01em; white-space: nowrap; }
+.tt-nav__top svg { width: 11px; height: 11px; opacity: .75; }
+.tt-nav__item:hover > .tt-nav__top, .tt-nav__item:focus-within > .tt-nav__top { background: rgba(255, 255, 255, .1); color: #fff; }
 .tt-nav { align-self: stretch; }
 .tt-nav__item { display: flex; align-items: center; }
 /* Panneau : reste ouvert 0,2 s après la sortie de la souris, pour tolérer un trajet imprécis. */
@@ -69,12 +73,14 @@ b, strong { font-weight: 700; }
 .tt-header__actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 .tt-ico { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; border: 0; background: transparent; color: var(--tt-indigo); cursor: pointer; }
 .tt-ico:hover { background: var(--tt-mist); }
+.tt-header .tt-ico { color: #fff; }
+.tt-header .tt-ico:hover { background: rgba(255, 255, 255, .1); }
 .tt-ico svg { width: 20px; height: 20px; }
 .tt-burger { display: none; }
-.tt-search-panel { border-top: 1px solid var(--tt-line); padding: 12px var(--tt-gutter) 14px; }
+.tt-search-panel { border-top: 1px solid rgba(255, 255, 255, .12); padding: 12px var(--tt-gutter) 14px; }
 .tt-search-panel .tt-search { max-width: 720px; margin-inline: auto; }
 .tt-search-panel .tt-search__bar { border: 1px solid var(--tt-line); }
-.tt-drawer { border-top: 1px solid var(--tt-line); padding: 0 var(--tt-gutter) 16px; }
+.tt-drawer { border-top: 1px solid var(--tt-line); padding: 0 var(--tt-gutter) 16px; background: #fff; }
 .tt-drawer details, .tt-drawer__link { display: block; border-bottom: 1px solid var(--tt-line); }
 .tt-drawer summary, .tt-drawer__link { list-style: none; padding: 14px 0; font-weight: 600; display: flex; justify-content: space-between; cursor: pointer; color: var(--tt-ink); text-decoration: none; }
 .tt-drawer summary::-webkit-details-marker { display: none; }
@@ -89,7 +95,8 @@ b, strong { font-weight: 700; }
 }
 @media (max-width: 520px) {
 	.tt-header__cta { display: none; }
-	.tt-logo { height: 44px; }
+	.tt-brand__mark { height: 36px; }
+	.tt-brand__name { font-size: 21px; }
 	.tt-header__bar { gap: 12px; }
 }
 
@@ -279,12 +286,14 @@ mark.tt-st.is-bad { background: #FAE8EB; color: var(--tt-red); }
 }
 
 /* ---------- Footer ---------- */
-.tt-footer { font-size: 14px; }
+.tt-footer { font-size: 14px; background: var(--tt-night); color: #C9C6E0; }
+.tt-footer__intro { color: #B9B5D3; }
+.tt-footer .tt-brand-link { margin-bottom: 4px; }
 .tt-footer .tt-nl { background: var(--tt-gold-soft); }
-.tt-footer h4 { margin: 0 0 12px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-stretch: 100%; }
+.tt-footer h4 { margin: 0 0 12px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-stretch: 100%; color: #E3C35A; }
 .tt-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
-.tt-footer ul a { color: #3C3958; text-decoration: none; }
-.tt-footer ul a:hover { color: var(--tt-red); }
+.tt-footer ul a { color: #E9E7F5; text-decoration: none; }
+.tt-footer ul a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
 .tt-footer .tt-bar a { color: #C9C6E0; text-decoration: none; }
 
 /* ---------- Article ---------- */

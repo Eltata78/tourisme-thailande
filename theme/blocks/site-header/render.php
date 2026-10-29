@@ -57,12 +57,7 @@ $tt_feat = static function ( $item ): string {
 <header <?php echo get_block_wrapper_attributes( array( 'class' => 'tt-header' ) ); ?>>
 	<div class="tt-header__bar">
 		<a class="tt-header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
-			<?php
-			$tt_logo = (int) get_theme_mod( 'custom_logo' );
-			echo $tt_logo
-				? wp_get_attachment_image( $tt_logo, 'medium', false, array( 'alt' => get_bloginfo( 'name' ), 'class' => 'tt-logo', 'fetchpriority' => 'high', 'loading' => 'eager' ) )
-				: '<span class="tt-logo-text">' . esc_html( get_bloginfo( 'name' ) ) . '</span>';
-			?>
+			<?php echo tt_brand(); // phpcs:ignore ?>
 		</a>
 		<?php if ( $tt_tree ) : ?>
 		<nav class="tt-nav" aria-label="Menu principal">

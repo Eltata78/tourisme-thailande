@@ -25,6 +25,7 @@
 | `tt/gyg-spotlight` | Mise en avant d'une activité (points forts, infos pratiques, prix, lien) |
 | `tt/gyg-compare` | Comparatif de 2 à 4 activités sur les mêmes critères |
 | `tt/card-grid` | Grille de cartes : sous-pages, pages sœurs, destinations, autres activités ou sélection d'IDs |
+| `tt/brand` | Logo du site (emblème et nom, lien vers l'accueil), utilisé dans le footer ; le header appelle `tt_brand()` |
 | `tt/catalog` | Catalogue d'activités : en-tête, raccourcis par type, filtres (destination, type), recherche, tri et grille de cartes |
 | `tt/cta-card` | Carte de réservation : photo, titre, texte court, bouton vers l'offre (tag partenaire ajouté) |
 | `tt/map` | Carte des fiches de la destination (MapLibre auto-hébergé + fonds OpenFreeMap, noms en français) : repère photo, fiche cliquable vers l'offre GetYourGuide de l'activité |

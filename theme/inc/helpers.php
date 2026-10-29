@@ -140,6 +140,18 @@ function tt_cmp( string $placement, ?int $post_id = null ): string {
 }
 
 /**
+ * Logo du site : emblème (drapeau et temple) et nom en texte, lisible à la hauteur d'un header.
+ * Le nom se change avec le filtre tt_brand_name.
+ */
+function tt_brand(): string {
+	return sprintf(
+		'<span class="tt-brand"><img class="tt-brand__mark" src="%s" width="41" height="40" alt="" decoding="async"><span class="tt-brand__name">%s</span></span>',
+		esc_url( TT_URI . '/assets/img/emblem.webp' ),
+		esc_html( apply_filters( 'tt_brand_name', 'Tourisme Thaïlande' ) )
+	);
+}
+
+/**
  * Image responsive d'une pièce jointe, avec chargement prioritaire optionnel.
  */
 function tt_img( int $id, string $size = 'large', array $attr = array() ): string {
