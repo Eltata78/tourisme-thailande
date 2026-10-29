@@ -443,3 +443,7 @@ mark.tt-st.is-bad { background: #FAE8EB; color: var(--tt-red); }
 .tt-prose .is-style-tt-timeline .tt-tl-time { display: block; font-size: 13px; font-weight: 700; color: var(--tt-muted); }
 .tt-prose .is-style-tt-timeline ol > li > strong:first-of-type { display: block; color: var(--tt-indigo); }
 .tt-prose .is-style-tt-timeline ol ul { margin: 6px 0 0; padding-left: 18px; }
+
+/* FAQ Yoast rendue en questions repliables : mêmes espacements que la FAQ des destinations */
+.tt-prose > .tt-faq { margin-block-start: 0; }
+.tt-prose .tt-faq .wp-block-details > p { margin-bottom: 0; }

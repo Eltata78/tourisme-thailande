@@ -57,3 +57,35 @@ add_filter(
 		return $cats;
 	}
 );
+
+/**
+ * FAQ Yoast affichée comme les FAQ des pages destination : questions repliables (première ouverte).
+ * Le balisage FAQPage de Yoast est calculé à partir des attributs du bloc, il n'est pas touché.
+ */
+add_filter(
+	'render_block_yoast/faq-block',
+	static function ( string $html, array $block ): string {
+		$items = $block['attrs']['questions'] ?? array();
+		if ( ! $items ) {
+			return $html;
+		}
+		$out = '';
+		foreach ( array_values( $items ) as $i => $q ) {
+			$question = trim( wp_strip_all_tags( (string) ( $q['jsonQuestion'] ?? '' ) ) );
+			$answer   = trim( (string) ( $q['jsonAnswer'] ?? '' ) );
+			if ( '' === $question ) {
+				continue;
+			}
+			$out .= sprintf(
+				'<details class="wp-block-details" id="%s"%s><summary>%s</summary><p>%s</p></details>',
+				esc_attr( (string) ( $q['id'] ?? '' ) ),
+				0 === $i ? ' open' : '',
+				esc_html( $question ),
+				wp_kses_post( $answer )
+			);
+		}
+		return '<div class="tt-faq">' . $out . '</div>';
+	},
+	10,
+	2
+);
