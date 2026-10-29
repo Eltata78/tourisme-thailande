@@ -94,6 +94,14 @@ Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris 
 `migration/catalogue.php` (via execute-php, rejouable) : type d'activité de chaque page et des guides d'activité, titres courts des cartes,
 création de la page `/activites-thailande/` (gabarit, contenu, métadonnées, titre et description Yoast). À rejouer sur la prod à la mise en ligne.
 
+## Cookies
+
+Bandeau de consentement intégré au thème (`inc/consent.php` et `front.js`), sans extension : deux catégories, mesure
+d'audience (bibliothèque Google Analytics de Site Kit) et partenaires de réservation (script de suivi des clics vers les
+offres, auparavant dans Insert Headers and Footers). Ces scripts sont neutralisés (`type="text/plain"`) et chargés
+seulement après accord ; choix gardé 6 mois (cookie `tt_consent`) ; retrait d'accord : cookies `_ga` effacés et page
+rechargée. Tout lien vers `#reglages-cookies` (footer, mentions légales) rouvre le bandeau.
+
 ## Mode carte
 
 `/carte-thailande/` (gabarit `page-carte`, bloc `tt/explorer`), lien « Carte » dans le header (réglage `map_url` de `tt_partners`)

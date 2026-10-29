@@ -28,6 +28,76 @@
 	} );
 
 
+	/* ---------- Cookies : bandeau de consentement ; les scripts tiers ne se chargent qu'après accord ---------- */
+	var consentBox = $( '#tt-consent' );
+	// Choix enregistré (« a1.p0.horodatage ») : { a: audience, p: partenaires }, ou null.
+	function readConsent() {
+		var m = document.cookie.match( /(?:^|; )tt_consent=([^;]+)/ ), c = {};
+		if ( ! m ) return null;
+		decodeURIComponent( m[ 1 ] ).split( '.' ).forEach( function ( part ) { if ( /^[ap][01]$/.test( part ) ) c[ part.charAt( 0 ) ] = '1' === part.charAt( 1 ); } );
+		return c;
+	}
+	// Scripts neutralisés (type text/plain) des catégories acceptées : remplacés par de vrais scripts.
+	function runConsented( c ) {
+		$$( 'script[type="text/plain"][data-tt-consent]' ).forEach( function ( s ) {
+			if ( ! c[ s.getAttribute( 'data-tt-consent' ) ] ) return;
+			var n = document.createElement( 'script' );
+			Array.prototype.forEach.call( s.attributes, function ( at ) {
+				if ( [ 'type', 'data-src', 'data-tt-consent' ].indexOf( at.name ) === -1 ) n.setAttribute( at.name, at.value );
+			} );
+			if ( s.getAttribute( 'data-src' ) ) { n.src = s.getAttribute( 'data-src' ); n.async = true; } else n.text = s.text;
+			s.parentNode.replaceChild( n, s );
+		} );
+	}
+	function saveConsent( c ) {
+		var prev = readConsent();
+		document.cookie = 'tt_consent=' + encodeURIComponent( 'a' + ( c.a ? 1 : 0 ) + '.p' + ( c.p ? 1 : 0 ) + '.' + Math.round( Date.now() / 1000 ) ) +
+			'; Max-Age=15552000; Path=/; SameSite=Lax' + ( 'https:' === location.protocol ? '; Secure' : '' );
+		consentBox.hidden = true;
+		// Accord retiré : cookies d'audience effacés et page rechargée, pour que les scripts déjà chargés s'arrêtent.
+		if ( prev && ( ( prev.a && ! c.a ) || ( prev.p && ! c.p ) ) ) {
+			document.cookie.split( '; ' ).forEach( function ( kv ) {
+				var name = kv.split( '=' )[ 0 ];
+				if ( ! /^_ga/.test( name ) ) return;
+				// Google les dépose sur le domaine le plus large possible : on essaie chaque niveau (preprod.site.fr, site.fr).
+				var parts = location.hostname.split( '.' ), doms = [ '' ];
+				for ( var i = 0; i < parts.length - 1; i++ ) doms.push( '; Domain=.' + parts.slice( i ).join( '.' ) );
+				doms.forEach( function ( d ) { document.cookie = name + '=; Max-Age=0; Path=/' + d; } );
+			} );
+			location.reload();
+			return;
+		}
+		runConsented( c );
+	}
+	if ( consentBox ) {
+		var choices = $( '.tt-consent__choices', consentBox ), chooseBtn = $( '[data-consent="choose"]', consentBox ), stored = readConsent();
+		var openChoices = function () {
+			var c = readConsent() || {};
+			$$( 'input', choices ).forEach( function ( i ) { i.checked = !! c[ i.name ]; } );
+			choices.hidden = false;
+			chooseBtn.textContent = 'Enregistrer mes choix';
+		};
+		if ( stored ) runConsented( stored );
+		else consentBox.hidden = false;
+		consentBox.addEventListener( 'click', function ( e ) {
+			var b = e.target.closest( '[data-consent]' ), k = b && b.getAttribute( 'data-consent' );
+			if ( 'all' === k ) saveConsent( { a: true, p: true } );
+			else if ( 'none' === k ) saveConsent( { a: false, p: false } );
+			else if ( 'choose' === k ) {
+				if ( choices.hidden ) openChoices();
+				else saveConsent( { a: $( '[name=a]', choices ).checked, p: $( '[name=p]', choices ).checked } );
+			}
+		} );
+		// Lien « Cookies » (footer, mentions légales) : rouvre le bandeau sur les choix en cours.
+		document.addEventListener( 'click', function ( e ) {
+			var a = e.target.closest( 'a[href$="#reglages-cookies"]' );
+			if ( ! a ) return;
+			e.preventDefault();
+			openChoices();
+			consentBox.hidden = false;
+		} );
+	}
+
 	/* ---------- Méga-menu : ouverture au clic (tactile, clavier) et fermeture en cliquant ailleurs ---------- */
 	$$( '.tt-nav__item.has-mega > .tt-nav__top' ).forEach( function ( link ) {
 		var item = link.parentNode;
