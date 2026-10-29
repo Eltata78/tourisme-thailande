@@ -172,13 +172,14 @@ function tt_search_form( string $uid, string $placeholder = 'Bangkok, Wat Pho, f
 			<label class="screen-reader-text" for="%2$s">Rechercher une destination, une visite ou un guide</label>
 			<div class="tt-search__bar">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-				<input type="search" id="%2$s" name="s" autocomplete="off" placeholder="%3$s">
+				<input type="search" id="%2$s" name="s" autocomplete="off" placeholder="%3$s" value="%4$s">
 				<button type="submit" class="tt-btn tt-btn--indigo">Rechercher</button>
 			</div>
 			<div class="tt-search__sugg" role="listbox" hidden></div>
 		</form>',
 		esc_url( home_url( '/' ) ),
 		esc_attr( $id ),
-		esc_attr( $placeholder )
+		esc_attr( $placeholder ),
+		esc_attr( is_search() ? get_search_query( false ) : '' )
 	);
 }

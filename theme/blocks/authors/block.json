@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/authors",
+	"title": "Auteurs du site",
+	"category": "tt-layout",
+	"description": "Les auteurs qui ont publié des guides : photo, nom, rôle, présentation et lien vers leurs articles.",
+	"supports": { "html": false },
+	"attributes": {},
+	"render": "file:./render.php"
+}

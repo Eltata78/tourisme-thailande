@@ -26,6 +26,9 @@
 | `tt/gyg-compare` | Comparatif de 2 à 4 activités sur les mêmes critères |
 | `tt/card-grid` | Grille de cartes : sous-pages, pages sœurs, destinations, autres activités ou sélection d'IDs |
 | `tt/brand` | Logo du site (emblème et nom, lien vers l'accueil), utilisé dans le footer ; le header appelle `tt_brand()` |
+| `tt/page-head` | En-tête centré des pages simples, de la recherche et de la 404 (fil d'Ariane, H1, accroche, recherche) |
+| `tt/authors` | Cartes des auteurs (photo, présentation, lien vers leurs guides), page « Qui sommes-nous » |
+| `tt/suggestions` | Destinations, catalogue, blog et offres pour la recherche tapée (recherche sans résultat, 404) |
 | `tt/catalog` | Catalogue d'activités : en-tête, raccourcis par type, filtres (destination, type), recherche, tri et grille de cartes |
 | `tt/cta-card` | Carte de réservation : photo, titre, texte court, bouton vers l'offre (tag partenaire ajouté) |
 | `tt/map` | Carte des fiches de la destination (MapLibre auto-hébergé + fonds OpenFreeMap, noms en français) : repère photo, fiche cliquable vers l'offre GetYourGuide de l'activité |
@@ -89,6 +92,12 @@ Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris 
 
 `migration/catalogue.php` (via execute-php, rejouable) : type d'activité de chaque page et des guides d'activité, titres courts des cartes,
 création de la page `/activites-thailande/` (gabarit, contenu, métadonnées, titre et description Yoast). À rejouer sur la prod à la mise en ligne.
+
+## Pages simples
+
+`python3 -I migration/pages_simples.py <export.json> <sortie.json>` puis `migration/apply_pages.php` (via execute-php) :
+Qui sommes-nous (cartes auteurs, section « Nos liens partenaires » ancrée `#partenaires`) et Mentions légales
+(ancres `#donnees-personnelles` et `#cookies`, lien « Confidentialité » du footer). Contenu d'origine gardé dans `_tt_backup_*`.
 
 ## Migration des articles
 

@@ -19,7 +19,7 @@ add_action(
 		if ( is_admin() || ! $q->is_main_query() ) {
 			return;
 		}
-		if ( $q->is_author() ) {
+		if ( $q->is_author() || $q->is_search() ) {
 			$q->set( 'posts_per_page', TT_PER_PAGE );
 		} elseif ( $q->is_home() || $q->is_category() || $q->is_tag() || $q->is_date() ) {
 			$paged = max( 1, (int) $q->get( 'paged' ) );
@@ -56,6 +56,32 @@ add_filter(
 			'<figure class="wp-block-post-featured-image tt-noimg"><a href="%s" tabindex="-1" aria-hidden="true"></a></figure>',
 			esc_url( get_permalink( $id ) )
 		);
+	},
+	10,
+	3
+);
+
+// Résultats de recherche : une page n'a pas de catégorie, on affiche son type (destination, visite, activité).
+add_filter(
+	'render_block_core/post-terms',
+	static function ( string $html, array $block, $instance ): string {
+		if ( '' !== trim( $html ) || 'category' !== ( $block['attrs']['term'] ?? '' ) || empty( $instance->context['postId'] ) ) {
+			return $html;
+		}
+		$p = get_post( (int) $instance->context['postId'] );
+		if ( ! $p || 'page' !== $p->post_type ) {
+			return $html;
+		}
+		if ( get_post_meta( $p->ID, 'tt_destination', true ) ) {
+			$type = 'Destination';
+		} elseif ( in_array( get_page_template_slug( $p ), array( 'page-activite', 'page-catalogue' ), true ) ) {
+			$type = 'Activité';
+		} elseif ( $p->post_parent && get_post_meta( $p->post_parent, 'tt_destination', true ) ) {
+			$type = 'Visite';
+		} else {
+			return $html;
+		}
+		return sprintf( '<div class="taxonomy-category wp-block-post-terms tt-cat"><span>%s</span></div>', esc_html( $type ) );
 	},
 	10,
 	3

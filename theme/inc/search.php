@@ -130,3 +130,39 @@ add_action(
 		}
 	}
 );
+
+/**
+ * Classement des résultats : le mot dans le titre d'abord, puis le nombre de fois où il revient dans le texte
+ * (plafonné), avec un léger avantage aux pages. Sans ça, WordPress trie tout ce qui n'a pas le mot
+ * dans le titre par date de publication.
+ */
+add_filter(
+	'posts_search_orderby',
+	static function ( $orderby, WP_Query $q ) {
+		if ( is_admin() || ! $q->is_main_query() || ! $q->is_search() ) {
+			return $orderby;
+		}
+		global $wpdb;
+		$score = array();
+		foreach ( array_slice( (array) $q->get( 'search_terms' ), 0, 4 ) as $t ) {
+			$t = mb_strtolower( (string) $t );
+			if ( mb_strlen( $t ) < 3 ) {
+				continue;
+			}
+			$score[] = $wpdb->prepare( "(CASE WHEN {$wpdb->posts}.post_title LIKE %s THEN 30 ELSE 0 END)", '%' . $wpdb->esc_like( $t ) . '%' );
+			$score[] = $wpdb->prepare(
+				"LEAST(20, (CHAR_LENGTH({$wpdb->posts}.post_content) - CHAR_LENGTH(REPLACE(LOWER({$wpdb->posts}.post_content), %s, ''))) / %d)",
+				$t,
+				mb_strlen( $t )
+			);
+		}
+		if ( ! $score ) {
+			return $orderby;
+		}
+		// Les pages (destinations, visites, activités) passent devant les articles à pertinence égale.
+		$score[] = "(CASE WHEN {$wpdb->posts}.post_type = 'page' THEN 8 ELSE 0 END)";
+		return '(' . implode( ' + ', $score ) . ') DESC, ' . $orderby;
+	},
+	10,
+	2
+);
