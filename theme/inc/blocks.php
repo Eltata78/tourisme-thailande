@@ -137,3 +137,15 @@ add_filter(
 );
 add_filter( 'pings_open', '__return_false' );
 add_filter( 'pre_option_default_pingback_flag', '__return_zero' );
+
+// Jamais de lien dans les commentaires : pas de champ « Site web », adresse jamais enregistrée ni affichée
+// (le lien sur le nom de l'auteur est ce que cherchent les spammeurs).
+add_filter(
+	'comment_form_default_fields',
+	static function ( array $fields ): array {
+		unset( $fields['url'] );
+		return $fields;
+	}
+);
+add_filter( 'pre_comment_author_url', '__return_empty_string' );
+add_filter( 'get_comment_author_url', '__return_empty_string' );
