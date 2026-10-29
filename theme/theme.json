@@ -341,6 +341,13 @@
 			]
 		},
 		{
+			"name": "page-carte",
+			"title": "Carte des activités",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
 			"name": "page-catalogue",
 			"title": "Catalogue d'activités",
 			"postTypes": [

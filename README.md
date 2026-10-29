@@ -29,6 +29,7 @@
 | `tt/page-head` | En-tête centré des pages simples, de la recherche et de la 404 (fil d'Ariane, H1, accroche, recherche) |
 | `tt/authors` | Cartes des auteurs (photo, présentation, lien vers leurs guides), page « Qui sommes-nous » |
 | `tt/suggestions` | Destinations, catalogue, blog et offres pour la recherche tapée (recherche sans résultat, 404) |
+| `tt/explorer` | Mode carte : grande carte de toutes les activités géolocalisées, filtres par type, « Aller à » une destination, liste de la zone affichée |
 | `tt/catalog` | Catalogue d'activités : en-tête, raccourcis par type, filtres (destination, type), recherche, tri et grille de cartes |
 | `tt/cta-card` | Carte de réservation : photo, titre, texte court, bouton vers l'offre (tag partenaire ajouté) |
 | `tt/map` | Carte des fiches de la destination (MapLibre auto-hébergé + fonds OpenFreeMap, noms en français) : repère photo, fiche cliquable vers l'offre GetYourGuide de l'activité |
@@ -92,6 +93,13 @@ Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris 
 
 `migration/catalogue.php` (via execute-php, rejouable) : type d'activité de chaque page et des guides d'activité, titres courts des cartes,
 création de la page `/activites-thailande/` (gabarit, contenu, métadonnées, titre et description Yoast). À rejouer sur la prod à la mise en ligne.
+
+## Mode carte
+
+`/carte-thailande/` (gabarit `page-carte`, bloc `tt/explorer`), lien « Carte » dans le header (réglage `map_url` de `tt_partners`)
+et « Voir sur la carte » dans le catalogue. Repères : les activités du catalogue qui ont des coordonnées (`tt_geo`, pages et articles).
+Mêmes filtres que le catalogue dans l'adresse (`?k=iles&d=phuket`). `migration/carte.php` (rejouable) : coordonnées manquantes
+et création de la page ; à rejouer sur la prod à la mise en ligne.
 
 ## Pages simples
 

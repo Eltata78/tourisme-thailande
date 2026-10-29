@@ -390,6 +390,133 @@
 		io.observe( box );
 	} );
 
+	/* ---------- Mode carte : toutes les activités sur une grande carte, filtres par type, liste de la zone affichée ---------- */
+	function drawExplorer( sec ) {
+		var data = JSON.parse( sec.getAttribute( 'data-tt-explorer' ) ), ml = window.maplibregl;
+		var box = $( '.tt-explorer__map', sec ), side = $( '.tt-explorer__side', sec ), count = $( '[data-ex-count]', sec );
+		var chips = $$( '[data-ex-kind]', sec ), dest = $( '[data-ex-dest]', sec ), listLink = $( '[data-ex-listlink]', sec ), toggle = $( '[data-ex-toggle]', sec );
+		var rows = {}, others = $$( '.tt-explorer__other li', sec ), thailand = new ml.LngLatBounds();
+		data.pins.forEach( function ( p ) { thailand.extend( [ p.lng, p.lat ] ); } ); // vue d'ensemble : cadrée sur les activités
+		$$( '.tt-explorer__list li', sec ).forEach( function ( li ) { rows[ li.getAttribute( 'data-ex-id' ) ] = li; } );
+		var params = new URLSearchParams( location.search ), kind = params.get( 'k' ) || '';
+		if ( ! chips.some( function ( c ) { return c.getAttribute( 'data-ex-kind' ) === kind; } ) ) kind = '';
+		var map = new ml.Map( {
+			container: box, style: data.style, bounds: thailand, fitBoundsOptions: { padding: 40 }, attributionControl: false,
+			dragRotate: false, pitchWithRotate: false, touchPitch: false,
+			locale: { 'NavigationControl.ZoomIn': 'Zoomer', 'NavigationControl.ZoomOut': 'Dézoomer' }
+		} );
+		map.touchZoomRotate.disableRotation();
+		map.addControl( new ml.NavigationControl( { showCompass: false } ), 'top-right' );
+		map.addControl( new ml.AttributionControl( { compact: true } ), 'bottom-right' );
+		map.on( 'style.load', function () { styleMap( map ); } );
+		var pins = [], groups = [], card = document.createElement( 'div' ), active = null, inView = 0;
+		card.className = 'tt-mapcard';
+		card.hidden = true;
+		box.appendChild( card );
+		var shown = function () { return pins.filter( function ( x ) { return ! kind || x.p.k === kind; } ); };
+		function mark( id, on ) { if ( rows[ id ] ) rows[ id ].classList.toggle( 'is-active', on ); }
+		function close() {
+			card.hidden = true;
+			if ( active ) { active.el.classList.remove( 'is-active' ); mark( active.p.id, false ); }
+			active = null;
+		}
+		function select( x ) {
+			close();
+			active = x;
+			x.el.classList.add( 'is-active' );
+			mark( x.p.id, true );
+			card.innerHTML = cardHtml( x.p );
+			card.classList.toggle( 'is-plain', ! x.p.i );
+			card.hidden = false;
+			card.querySelector( '.tt-mapcard__x' ).addEventListener( 'click', close );
+			var xy = map.project( [ x.p.lng, x.p.lat ] ), limit = box.clientHeight - card.offsetHeight - 50;
+			if ( xy.y > limit ) map.panBy( [ 0, xy.y - limit ], { duration: 300 } );
+			if ( rows[ x.p.id ] && side.offsetParent ) rows[ x.p.id ].scrollIntoView( { block: 'nearest', behavior: 'smooth' } );
+			if ( window.gtag ) window.gtag( 'event', 'tt_map_pin', { pin: x.p.t, source: 'mode-carte' } );
+		}
+		// Liste : les activités du filtre qui sont dans la zone affichée.
+		function sync() {
+			var b = map.getBounds(), n = 0;
+			pins.forEach( function ( x ) {
+				var on = ( ! kind || x.p.k === kind ) && b.contains( [ x.p.lng, x.p.lat ] );
+				if ( rows[ x.p.id ] ) rows[ x.p.id ].hidden = ! on;
+				n += on ? 1 : 0;
+			} );
+			others.forEach( function ( li ) { li.hidden = !! kind && li.getAttribute( 'data-ex-k' ) !== kind; } );
+			count.textContent = n ? n + ( n > 1 ? ' activités' : ' activité' ) + ' dans cette zone' : 'Aucune activité dans cette zone : dézoome ou change de filtre.';
+			inView = n;
+			label();
+		}
+		function label() { toggle.textContent = sec.classList.contains( 'is-listing' ) ? 'Voir la carte' : 'Liste (' + inView + ')'; }
+		function refresh() {
+			pins.forEach( function ( x ) { x.el.classList.toggle( 'is-off', !! kind && x.p.k !== kind ); } );
+			if ( active && active.el.classList.contains( 'is-off' ) ) close();
+			group( map, shown(), groups );
+			sync();
+		}
+		function setKind( k ) {
+			kind = k;
+			chips.forEach( function ( c ) { c.setAttribute( 'aria-pressed', String( c.getAttribute( 'data-ex-kind' ) === kind ) ); } );
+			var q = new URLSearchParams( location.search );
+			if ( kind ) q.set( 'k', kind ); else q.delete( 'k' );
+			history.replaceState( null, '', location.pathname + ( q.toString() ? '?' + q : '' ) );
+			if ( listLink ) listLink.href = listLink.href.split( '?' )[ 0 ] + ( kind ? '?k=' + kind : '' );
+			refresh();
+		}
+		function goTo( d ) {
+			var b = new ml.LngLatBounds();
+			pins.forEach( function ( x ) { if ( x.p.d === d ) b.extend( [ x.p.lng, x.p.lat ] ); } );
+			if ( d && ! b.isEmpty() ) map.fitBounds( b, { padding: 70, maxZoom: 12.5 } );
+			else map.fitBounds( thailand, { padding: 40 } );
+		}
+		data.pins.forEach( function ( p ) {
+			var el = document.createElement( 'button' );
+			el.type = 'button';
+			el.className = 'tt-pin' + ( p.m ? ' has-img' : '' );
+			el.innerHTML = ( p.m ? '<img class="tt-pin__img" src="' + esc( p.m ) + '" alt="" loading="lazy">' : '<span class="tt-pin__dot"></span>' ) + '<span class="tt-pin__label">' + esc( p.t ) + '</span>';
+			var x = { p: p, el: el };
+			onTap( el, function () { select( x ); } );
+			new ml.Marker( { element: el, anchor: 'center' } ).setLngLat( [ p.lng, p.lat ] ).addTo( map );
+			el.setAttribute( 'aria-label', p.t );
+			pins.push( x );
+			var li = rows[ p.id ];
+			if ( li ) {
+				li.addEventListener( 'mouseenter', function () { el.classList.add( 'is-hover' ); } );
+				li.addEventListener( 'mouseleave', function () { el.classList.remove( 'is-hover' ); } );
+				// Clic sur la ligne (hors lien vers le guide) : la carte va sur l'activité et ouvre sa fiche.
+				li.addEventListener( 'click', function ( e ) {
+					if ( e.target.closest( 'a' ) ) return;
+					sec.classList.remove( 'is-listing' );
+					label();
+					map.easeTo( { center: [ p.lng, p.lat ], zoom: Math.max( map.getZoom(), 12 ), duration: 600 } );
+					map.once( 'moveend', function () { select( x ); } );
+				} );
+			}
+		} );
+		map.on( 'click', function ( e ) {
+			var t = e.originalEvent && e.originalEvent.target;
+			if ( ! ( t && t.closest && t.closest( '.tt-pin, .tt-mapcard' ) ) ) close();
+		} );
+		document.addEventListener( 'keydown', function ( e ) { if ( 'Escape' === e.key ) close(); } );
+		map.on( 'zoomend', function () { group( map, shown(), groups ); } );
+		map.on( 'moveend', sync );
+		map.once( 'idle', function () {
+			setKind( kind );
+			if ( params.get( 'd' ) ) { dest.value = params.get( 'd' ); goTo( dest.value ); }
+		} );
+		chips.forEach( function ( c ) { c.addEventListener( 'click', function () { setKind( c.getAttribute( 'data-ex-kind' ) ); } ); } );
+		dest.addEventListener( 'change', function () { close(); goTo( dest.value ); } );
+		toggle.addEventListener( 'click', function () {
+			var open = ! sec.classList.contains( 'is-listing' );
+			sec.classList.toggle( 'is-listing', open );
+			toggle.setAttribute( 'aria-expanded', String( open ) );
+			label();
+		} );
+		sec.classList.add( 'is-ready' );
+		box.classList.add( 'is-ready' );
+	}
+	$$( '[data-tt-explorer]' ).forEach( function ( sec ) { loadMapLib().then( function () { drawExplorer( sec ); } ); } );
+
 	/* ---------- Barre mobile : visible une fois le hero passé ---------- */
 	var bar = $( '[data-tt-mbar]' ), hero = $( '.tt-hero' ) || $( 'h1' );
 	if ( bar && hero && 'IntersectionObserver' in window ) {
@@ -449,7 +576,7 @@
 	$$( '[data-tt-cat]' ).forEach( function ( cat ) {
 		var grid = $( '.tt-catalog__grid', cat ), q = $( '[data-cat-q]', cat ), sort = $( '[data-cat-sort]', cat ), side = $( '.tt-catalog__side', cat );
 		var count = $( '[data-cat-count]', cat ), chips = $( '[data-cat-chips]', cat ), empty = $( '.tt-catalog__empty', cat ), offers = $( '[data-cat-offers]', cat );
-		var openBtn = $( '[data-cat-open]', cat ), apply = $( '[data-cat-apply]', cat ), boxes = $$( 'input[type=checkbox]', side ), tiles = $$( '[data-cat-tile]', cat );
+		var openBtn = $( '[data-cat-open]', cat ), apply = $( '[data-cat-apply]', cat ), boxes = $$( 'input[type=checkbox]', side ), tiles = $$( '[data-cat-tile]', cat ), mapLink = $( '[data-cat-maplink]', cat );
 		var items = $$( 'li', grid ).map( function ( li, i ) {
 			return { li: li, d: li.dataset.d, k: li.dataset.k, ki: +li.dataset.ki, s: norm( li.textContent + ' ' + li.dataset.s ), t: norm( $( 'h3', li ).textContent ), o: i };
 		} );
@@ -471,6 +598,12 @@
 			} ).join( '' );
 			tiles.forEach( function ( t ) { t.setAttribute( 'aria-pressed', String( k.length === 1 && k[ 0 ] === t.dataset.catTile ) ); } );
 			openBtn.textContent = 'Filtrer' + ( d.length + k.length ? ' (' + ( d.length + k.length ) + ')' : '' );
+			if ( mapLink ) {
+				var mq = new URLSearchParams();
+				if ( 1 === k.length ) mq.set( 'k', k[ 0 ] );
+				if ( 1 === d.length ) mq.set( 'd', d[ 0 ] );
+				mapLink.href = mapLink.href.split( '?' )[ 0 ] + ( mq.toString() ? '?' + mq : '' );
+			}
 			var params = new URLSearchParams( location.search );
 			[ [ 'q', q.value.trim() ], [ 'd', d.join( ',' ) ], [ 'k', k.join( ',' ) ] ].forEach( function ( p ) { if ( p[ 1 ] ) params.set( p[ 0 ], p[ 1 ] ); else params.delete( p[ 0 ] ); } );
 			history.replaceState( null, '', location.pathname + ( params.toString() ? '?' + params : '' ) + location.hash );

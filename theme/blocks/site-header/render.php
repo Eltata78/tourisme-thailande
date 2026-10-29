@@ -86,6 +86,8 @@ $tt_feat = static function ( $item ): string {
 		</nav>
 		<?php endif; ?>
 		<div class="tt-header__actions">
+			<?php $tt_map = tt_partners()['map_url']; ?>
+			<a class="tt-header__map" href="<?php echo esc_url( str_starts_with( $tt_map, 'http' ) ? $tt_map : home_url( $tt_map ) ); ?>"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5V4l-6 2.5L9 4Z"/><path d="M9 4v13M15 6.5v13"/></svg><span>Carte</span></a>
 			<button type="button" class="tt-ico" data-tt-toggle="tt-search-panel" aria-expanded="false" aria-controls="tt-search-panel" aria-label="Rechercher"><?php echo $tt_search; // phpcs:ignore ?></button>
 			<?php if ( $tt_tree ) : ?>
 			<button type="button" class="tt-ico tt-burger" data-tt-toggle="tt-drawer" aria-expanded="false" aria-controls="tt-drawer" aria-label="Menu"><?php echo $tt_burger; // phpcs:ignore ?></button>

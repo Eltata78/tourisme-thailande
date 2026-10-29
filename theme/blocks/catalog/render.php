@@ -98,6 +98,7 @@ $tt_empty  = tt_gyg_url( '__Q__', tt_cmp( 'catalogue-vide', $tt_post->ID ) );
 			<div class="tt-catalog__bar">
 				<p class="tt-catalog__count" data-cat-count aria-live="polite"><?php echo esc_html( sprintf( '%d activités', count( $tt_items ) ) ); ?></p>
 				<div class="tt-catalog__chips" data-cat-chips></div>
+				<a class="tt-catalog__maplink" href="<?php echo esc_url( home_url( tt_partners()['map_url'] ) ); ?>" data-cat-maplink><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5V4l-6 2.5L9 4Z"/><path d="M9 4v13M15 6.5v13"/></svg><span class="tt-catalog__ml">Voir sur la carte</span><span class="tt-catalog__ml is-short">Carte</span></a>
 				<button type="button" class="tt-catalog__open" data-cat-open aria-controls="tt-catalog-filters" aria-expanded="false">Filtrer</button>
 				<label class="tt-catalog__sort">Trier
 					<select data-cat-sort>

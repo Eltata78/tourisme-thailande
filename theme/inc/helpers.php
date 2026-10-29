@@ -22,6 +22,7 @@ function tt_partners(): array {
 				'trip_sid'          => '274143472',
 				'cta_default_label' => 'Réserver une activité',
 				'cta_default_url'   => '/activites-thailande/',
+				'map_url'           => '/carte-thailande/',
 			)
 		);
 	}

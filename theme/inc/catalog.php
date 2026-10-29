@@ -39,7 +39,7 @@ function tt_regions(): array {
 add_action(
 	'init',
 	static function () {
-		foreach ( array( 'tt_kind', 'tt_card_title' ) as $key ) {
+		foreach ( array( 'tt_kind', 'tt_card_title', 'tt_geo' ) as $key ) {
 			register_post_meta(
 				'post',
 				$key,
@@ -110,6 +110,9 @@ function tt_catalog_items(): array {
 			'kind'   => $kind,
 			'search' => implode( ' ', array( $dest, $kinds[ $kind ], get_the_title( $p ), (string) get_post_meta( $p->ID, 'tt_synonyms', true ), $p->post_parent ? get_the_title( $p->post_parent ) : '' ) ),
 			'order'  => array( 'Thaïlande' === $dest ? 99 : ( $rank[ $dest ] ?? 50 ), $dest, remove_accents( $title ) ),
+			'geo'    => tt_geo( $p->ID ),
+			'gyg'    => (string) get_post_meta( $p->ID, 'tt_gyg_url', true ),
+			'query'  => $act['gyg'] ?? ( 'post' === $p->post_type ? $title . ( 'Thaïlande' === $dest ? '' : ' ' . $dest ) : ( $q ?: ( $ctx['gyg'] ?? $title ) ) ),
 		);
 	}
 	usort( $items, static fn( $a, $b ) => $a['order'] <=> $b['order'] );
