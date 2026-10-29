@@ -36,6 +36,7 @@ global $wpdb;
 return array(
 	'rows' => $wpdb->get_results( "SELECT ID, post_type, post_status, post_name, post_modified_gmt, guid FROM {$wpdb->posts} WHERE post_type IN ('post','page','attachment') AND post_status IN ('publish','draft','private','future','pending','inherit')", ARRAY_A ),
 	'comments' => $wpdb->get_results( "SELECT comment_ID, comment_post_ID, comment_type, comment_approved, comment_date_gmt, comment_author_email, MD5(comment_content) h FROM {$wpdb->comments}", ARRAY_A ),
+	'synced' => $wpdb->get_results( "SELECT p.post_type, p.post_name, m.meta_value FROM {$wpdb->postmeta} m JOIN {$wpdb->posts} p ON p.ID = m.post_id WHERE m.meta_key = '_tt_sync_from'", ARRAY_A ),
 );
 """
 
@@ -52,7 +53,7 @@ foreach ( $ids as $id ) {
 	$out[] = array( 'id' => $p->ID, 'type' => $p->post_type, 'slug' => $p->post_name, 'title' => $p->post_title, 'content' => $p->post_content,
 		'excerpt' => $p->post_excerpt, 'status' => $p->post_status, 'date_gmt' => $p->post_date_gmt, 'author' => get_the_author_meta( 'user_login', $p->post_author ),
 		'cats' => wp_get_post_categories( $p->ID, array( 'fields' => 'slugs' ) ), 'meta' => $meta, 'comment_status' => $p->comment_status,
-		'thumb_url' => $thumb ? wp_get_attachment_url( $thumb ) : '' );
+		'thumb_url' => $thumb ? wp_get_attachment_url( $thumb ) : '', 'modified_gmt' => $p->post_modified_gmt );
 }
 return $out;
 """
@@ -85,6 +86,7 @@ foreach ( $rows as $r ) {
 		wp_set_post_categories( $id, array_filter( array_map( static function ( $s ) { $t = get_category_by_slug( $s ); return $t ? $t->term_id : 0; }, $r['cats'] ) ) );
 	}
 	foreach ( $r['meta'] as $k => $v ) { update_post_meta( $id, $k, is_string( $v ) ? wp_slash( $v ) : $v ); }
+	update_post_meta( $id, '_tt_sync_from', $r['modified_gmt'] );
 	update_post_meta( $id, '_elementor_edit_mode', '' );
 	// Image à la une : celle du preprod si le fichier y est déjà, sinon téléchargée depuis la prod.
 	if ( $r['thumb_url'] ) {
@@ -134,7 +136,9 @@ def main():
     s_by_id = {r['ID']: r for r in pre['rows']}
     t0 = max(r['post_modified_gmt'] for r in prod['rows'] if r['ID'] in s_by_id and s_by_id[r['ID']]['post_modified_gmt'] == r['post_modified_gmt'])
     new = [r for k, r in p_rows.items() if k not in s_rows]
-    changed = [r for k, r in p_rows.items() if k in s_rows and r['post_modified_gmt'] > t0]
+    # Déjà repris lors d'un passage précédent : même version de la prod (date de modification gardée en méta).
+    synced = {(r['post_type'], r['post_name']): r['meta_value'] for r in pre.get('synced') or []}
+    changed = [r for k, r in p_rows.items() if k in s_rows and r['post_modified_gmt'] > t0 and synced.get(k) != r['post_modified_gmt']]
     new_media = [r for r in new if r['post_type'] == 'attachment']
     todo = [r for r in new + changed if r['post_type'] in ('post', 'page')]
     # Commentaires : ceux de la prod absents du preprod (même date, même auteur), hors pings et spam. Le texte n'entre pas
