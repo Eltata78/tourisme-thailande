@@ -126,7 +126,7 @@ b, strong { font-weight: 700; }
 .tt-search__sugg a.gyg { border-top: 1px solid var(--tt-line); margin-top: 6px; border-radius: 0 0 8px 8px; color: var(--tt-red); font-weight: 600; }
 
 /* ---------- Hero ---------- */
-.tt-hero { position: relative; color: #fff; background: var(--tt-indigo); overflow: hidden; margin-block: 0 !important; }
+.tt-hero { position: relative; z-index: 2; color: #fff; background: var(--tt-indigo); overflow-x: clip; margin-block: 0 !important; } /* z-index et pas de coupe verticale : la liste de la recherche passe par-dessus la suite de la page */
 .tt-hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .tt-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(30, 27, 54, .8) 0%, rgba(30, 27, 54, .42) 55%, rgba(30, 27, 54, .1) 100%), linear-gradient(0deg, rgba(30, 27, 54, .5), rgba(30, 27, 54, 0) 60%); }
 .tt-hero__in { position: relative; z-index: 1; max-width: var(--tt-wide); margin-inline: auto; padding: 18px var(--tt-gutter) 44px; min-height: 480px; display: flex; flex-direction: column; }
