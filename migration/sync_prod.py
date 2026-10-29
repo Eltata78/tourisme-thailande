@@ -4,9 +4,11 @@ Usage : python3 -I migration/sync_prod.py <fichier identifiants user:app-passwor
 
 Sans --apply : liste ce qui a changé sur la prod (articles, pages, médias, commentaires).
 Avec --apply : copie ces contenus sur le preprod. Articles convertis au nouveau format (posts2blocks),
-images manquantes téléchargées depuis la prod, commentaires recopiés (sans les pings ni le spam).
+images manquantes téléchargées depuis la prod, commentaires recopiés (sans les pings ni le spam),
+notes des lecteurs (Rate My Post : totaux des articles et journal des votes). Redirections ajoutées sur la prod : signalées.
 La prod n'est jamais modifiée : on n'y fait que des lectures.
 """
+import base64
 import json
 import os
 import subprocess
@@ -37,6 +39,9 @@ return array(
 	'rows' => $wpdb->get_results( "SELECT ID, post_type, post_status, post_name, post_modified_gmt, guid FROM {$wpdb->posts} WHERE post_type IN ('post','page','attachment') AND post_status IN ('publish','draft','private','future','pending','inherit')", ARRAY_A ),
 	'comments' => $wpdb->get_results( "SELECT comment_ID, comment_post_ID, comment_type, comment_approved, comment_date_gmt, comment_author_email, MD5(comment_content) h FROM {$wpdb->comments}", ARRAY_A ),
 	'synced' => $wpdb->get_results( "SELECT p.post_type, p.post_name, m.meta_value FROM {$wpdb->postmeta} m JOIN {$wpdb->posts} p ON p.ID = m.post_id WHERE m.meta_key = '_tt_sync_from'", ARRAY_A ),
+	'votes' => $wpdb->get_results( "SELECT p.post_type, p.post_name, m.meta_key, m.meta_value FROM {$wpdb->postmeta} m JOIN {$wpdb->posts} p ON p.ID = m.post_id WHERE m.meta_key IN ('rmp_vote_count','rmp_rating_val_sum','rmp_avg_rating')", ARRAY_A ),
+	'votes_last' => $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}rmp_analytics'" ) ? $wpdb->get_var( "SELECT MAX(time) FROM {$wpdb->prefix}rmp_analytics" ) : null,
+	'redirects' => $wpdb->get_col( "SELECT url FROM {$wpdb->prefix}redirection_items" ),
 );
 """
 
@@ -54,6 +59,33 @@ foreach ( $ids as $id ) {
 		'excerpt' => $p->post_excerpt, 'status' => $p->post_status, 'date_gmt' => $p->post_date_gmt, 'author' => get_the_author_meta( 'user_login', $p->post_author ),
 		'cats' => wp_get_post_categories( $p->ID, array( 'fields' => 'slugs' ) ), 'meta' => $meta, 'comment_status' => $p->comment_status,
 		'thumb_url' => $thumb ? wp_get_attachment_url( $thumb ) : '', 'modified_gmt' => $p->post_modified_gmt );
+}
+return $out;
+"""
+
+# Journal des votes postérieurs à une date (article désigné par son slug : les ID diffèrent pour les contenus repris).
+VOTES_LOG = r"""
+global $wpdb;
+return $wpdb->get_results( $wpdb->prepare( "SELECT a.*, p.post_type, p.post_name FROM {$wpdb->prefix}rmp_analytics a JOIN {$wpdb->posts} p ON p.ID = a.post WHERE a.time > %%s ORDER BY a.id", '%s' ), ARRAY_A );
+"""
+
+IMPORT_VOTES = r"""
+global $wpdb;
+$in = json_decode( base64_decode( '%s' ), true );
+$id = static function ( $type, $name ) {
+	$p = get_posts( array( 'post_type' => $type, 'name' => $name, 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ) );
+	return $p ? (int) $p[0] : 0;
+};
+$out = array( 'totaux' => 0, 'journal' => 0 );
+foreach ( $in['meta'] as $m ) {
+	if ( $pid = $id( $m['post_type'], $m['post_name'] ) ) { update_post_meta( $pid, $m['meta_key'], $m['meta_value'] ); $out['totaux']++; }
+}
+foreach ( $in['log'] as $r ) {
+	if ( $pid = $id( $r['post_type'], $r['post_name'] ) ) {
+		$r['post'] = $pid;
+		unset( $r['id'], $r['post_type'], $r['post_name'] );
+		$out['journal'] += (int) $wpdb->insert( $wpdb->prefix . 'rmp_analytics', $r );
+	}
 }
 return $out;
 """
@@ -152,6 +184,15 @@ def main():
     print('à reprendre :', [(r['post_type'], r['post_name'], 'nouveau' if r in new else 'modifié') for r in todo])
     print('médias nouveaux :', [r['guid'] for r in new_media])
     print('commentaires nouveaux :', len(new_comments), '| pings parasites du preprod :', len(stray))
+    # Notes des lecteurs : totaux par article qui diffèrent, et votes enregistrés sur la prod après le dernier vote du preprod.
+    vkey = lambda m: (m['post_type'], m['post_name'], m['meta_key'])  # noqa: E731
+    s_votes = {vkey(m): m['meta_value'] for m in pre['votes']}
+    votes = [m for m in prod['votes'] if s_votes.get(vkey(m)) != m['meta_value']]
+    votes_log = php(PROD, VOTES_LOG % pre['votes_last']) if pre['votes_last'] else []
+    print('notes à reprendre :', sorted({m['post_name'] for m in votes}), '| votes du journal :', len(votes_log))
+    redirects = sorted(set(prod['redirects']) - set(pre['redirects']))
+    if redirects:
+        print('redirections ajoutées sur la prod (à recréer à la main) :', redirects)
     if not APPLY:
         return
     if todo:
@@ -171,12 +212,14 @@ def main():
                 print('  converti', r['slug'], c['log'][:6])
             else:
                 r['content'] = r['content'].replace(PROD, PRE)
-        import base64
+
         print(php(PRE, IMPORT % base64.b64encode(json.dumps(rows, ensure_ascii=False).encode()).decode()))
     if new_comments:
-        import base64
+
         full = php(PROD, COMMENTS % json.dumps([c['comment_ID'] for c in new_comments]))
         print('commentaires :', php(PRE, IMPORT_COMMENTS % base64.b64encode(json.dumps(full, ensure_ascii=False).encode()).decode()))
+    if votes or votes_log:
+        print('notes :', php(PRE, IMPORT_VOTES % base64.b64encode(json.dumps({'meta': votes, 'log': votes_log}).encode()).decode()))
     if stray:
         print('pings supprimés :', php(PRE, 'foreach ( %s as $id ) { wp_delete_comment( $id, true ); } return count( %s );' % (json.dumps([int(i) for i in stray]), json.dumps([int(i) for i in stray]))))
     php(PRE, "do_action( 'litespeed_purge_all' ); return 1;")

@@ -92,7 +92,7 @@ Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris 
 ## Catalogue d'activités
 
 `migration/catalogue.php` (via execute-php, rejouable) : type d'activité de chaque page et des guides d'activité, titres courts des cartes,
-création de la page `/activites-thailande/` (gabarit, contenu, métadonnées, titre et description Yoast). À rejouer sur la prod à la mise en ligne.
+création de la page `/activites-thailande/` (gabarit, contenu, métadonnées, titre et description Yoast). Déjà joué sur le preprod, dont la base part en prod à la mise en ligne.
 
 ## Cookies
 
@@ -107,18 +107,23 @@ rechargée. Tout lien vers `#reglages-cookies` (footer, mentions légales) rouvr
 `/carte-thailande/` (gabarit `page-carte`, bloc `tt/explorer`), lien « Carte » dans le header (réglage `map_url` de `tt_partners`)
 et « Voir sur la carte » dans le catalogue. Repères : les activités du catalogue qui ont des coordonnées (`tt_geo`, pages et articles).
 Mêmes filtres que le catalogue dans l'adresse (`?k=iles&d=phuket`). `migration/carte.php` (rejouable) : coordonnées manquantes
-et création de la page ; à rejouer sur la prod à la mise en ligne.
+et création de la page ; déjà joué sur le preprod, dont la base part en prod à la mise en ligne.
 
 ## Mise en ligne (staging Hostinger publié sur la prod)
 
 1. Gel de la prod (aucune publication Content Machine, aucune modification).
 2. `python3 -I migration/sync_prod.py <identifiants>` : écart prod / preprod (lecture seule sur la prod) ; avec `--apply`,
    articles et pages nouveaux ou modifiés repris sur le preprod (convertis au nouveau format), images manquantes,
-   commentaires, et suppression des pings créés sur le preprod.
+   commentaires, notes des lecteurs (Rate My Post), et suppression des pings créés sur le preprod. Redirections ajoutées
+   sur la prod depuis la copie : signalées, à recréer à la main.
 3. Sauvegarde complète de la prod (hPanel), puis publication du staging sur la prod (fichiers et base).
-4. Après publication : indexation rétablie (`blog_public`), plus aucune trace du domaine preprod, cache purgé, contrôle
-   de toutes les URL, Content Machine relu sur les nouveaux blocs, puis retrait de Novamira, du gestionnaire de fichiers
-   et des mots de passe d'application.
+4. `python3 -I migration/apres_bascule.py <identifiants>` : état de la prod, traces du domaine preprod dans la base,
+   contrôle de toutes les URL des sitemaps (code HTTP, domaine preprod, noindex, Elementor, erreurs PHP) ; avec `--apply`,
+   indexation rétablie (`blog_public`), domaine preprod remplacé (valeurs sérialisées comprises, sauf `guid`), empreintes
+   des permaliens Yoast recalculées, caches vidés. Les mots de passe d'application sont ceux du preprod (copie de la prod
+   du 27 octobre) : celui de Content Machine en fait partie.
+5. Search Console (sitemap), Site Kit, Content Machine relu sur les nouveaux blocs, puis retrait de Novamira,
+   du gestionnaire de fichiers et des mots de passe d'application.
 
 Extensions désactivées sur le preprod avant publication : Elementor, Elementor Pro, ElementsKit, Hello Plus, CPT UI, ACF,
 Insert Headers and Footers, Shortcoder (plus utilisés). Gardées : Yoast, Site Kit, LiteSpeed, Rate My Post (notes des
