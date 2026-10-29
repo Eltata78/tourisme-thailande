@@ -417,4 +417,80 @@
 		window.addEventListener( 'scroll', function () { if ( ! ticking ) { ticking = true; requestAnimationFrame( onScroll ); } }, { passive: true } );
 		onScroll();
 	} );
+	// Catalogue d'activités : recherche, filtres (destination ET type, plusieurs choix par filtre) et tri, sans rechargement.
+	// L'état est repris dans l'adresse (?q=…&d=bangkok,phuket&k=temples) : un lien peut ouvrir le catalogue déjà filtré.
+	$$( '[data-tt-cat]' ).forEach( function ( cat ) {
+		var grid = $( '.tt-catalog__grid', cat ), q = $( '[data-cat-q]', cat ), sort = $( '[data-cat-sort]', cat ), side = $( '.tt-catalog__side', cat );
+		var count = $( '[data-cat-count]', cat ), chips = $( '[data-cat-chips]', cat ), empty = $( '.tt-catalog__empty', cat ), offers = $( '[data-cat-offers]', cat );
+		var openBtn = $( '[data-cat-open]', cat ), apply = $( '[data-cat-apply]', cat ), boxes = $$( 'input[type=checkbox]', side ), tiles = $$( '[data-cat-tile]', cat );
+		var items = $$( 'li', grid ).map( function ( li, i ) {
+			return { li: li, d: li.dataset.d, k: li.dataset.k, ki: +li.dataset.ki, s: norm( li.textContent + ' ' + li.dataset.s ), t: norm( $( 'h3', li ).textContent ), o: i };
+		} );
+		var plural = function ( n ) { return n + ( n > 1 ? ' activités' : ' activité' ); };
+		function selected( name ) { return boxes.filter( function ( b ) { return b.name === name && b.checked; } ).map( function ( b ) { return b.value; } ); }
+		function update() {
+			var d = selected( 'd' ), k = selected( 'k' ), words = norm( q.value ).split( /\s+/ ).filter( Boolean ), n = 0;
+			items.forEach( function ( it ) {
+				var ok = ( ! d.length || d.indexOf( it.d ) > -1 ) && ( ! k.length || k.indexOf( it.k ) > -1 ) && words.every( function ( w ) { return it.s.indexOf( w ) > -1; } );
+				it.li.hidden = ! ok;
+				n += ok ? 1 : 0;
+			} );
+			count.textContent = plural( n );
+			apply.textContent = n ? 'Voir les ' + plural( n ) : 'Aucune activité';
+			empty.hidden = n > 0;
+			if ( ! n ) offers.href = offers.dataset.href.replace( '__Q__', encodeURIComponent( q.value.trim() || 'Thaïlande' ) );
+			chips.innerHTML = boxes.filter( function ( b ) { return b.checked; } ).map( function ( b ) {
+				return '<button type="button" data-name="' + b.name + '" data-value="' + esc( b.value ) + '">' + esc( b.dataset.label ) + ' <span aria-hidden="true">×</span><span class="screen-reader-text">(retirer le filtre)</span></button>';
+			} ).join( '' );
+			tiles.forEach( function ( t ) { t.setAttribute( 'aria-pressed', String( k.length === 1 && k[ 0 ] === t.dataset.catTile ) ); } );
+			openBtn.textContent = 'Filtrer' + ( d.length + k.length ? ' (' + ( d.length + k.length ) + ')' : '' );
+			var params = new URLSearchParams( location.search );
+			[ [ 'q', q.value.trim() ], [ 'd', d.join( ',' ) ], [ 'k', k.join( ',' ) ] ].forEach( function ( p ) { if ( p[ 1 ] ) params.set( p[ 0 ], p[ 1 ] ); else params.delete( p[ 0 ] ); } );
+			history.replaceState( null, '', location.pathname + ( params.toString() ? '?' + params : '' ) + location.hash );
+		}
+		function reorder() {
+			var by = sort.value;
+			items.slice().sort( function ( a, b ) {
+				if ( 'az' === by ) return a.t.localeCompare( b.t, 'fr' );
+				if ( 'kind' === by ) return a.ki - b.ki || a.o - b.o;
+				return a.o - b.o;
+			} ).forEach( function ( it ) { grid.appendChild( it.li ); } );
+		}
+		function toggleSheet( open ) {
+			cat.classList.toggle( 'is-filtering', open );
+			document.documentElement.classList.toggle( 'tt-lock', open );
+			openBtn.setAttribute( 'aria-expanded', String( open ) );
+			if ( open ) $( 'input', side ).focus( { preventScroll: true } );
+		}
+		// État initial depuis l'adresse.
+		var init = new URLSearchParams( location.search );
+		q.value = init.get( 'q' ) || '';
+		[ 'd', 'k' ].forEach( function ( name ) {
+			( init.get( name ) || '' ).split( ',' ).forEach( function ( v ) { boxes.forEach( function ( b ) { if ( b.name === name && b.value === v ) b.checked = true; } ); } );
+		} );
+		boxes.forEach( function ( b ) { b.addEventListener( 'change', update ); } );
+		q.addEventListener( 'input', update );
+		sort.addEventListener( 'change', reorder );
+		chips.addEventListener( 'click', function ( e ) {
+			var c = e.target.closest( 'button' );
+			if ( ! c ) return;
+			boxes.forEach( function ( b ) { if ( b.name === c.dataset.name && b.value === c.dataset.value ) b.checked = false; } );
+			update();
+		} );
+		$( '[data-cat-clear]', cat ).addEventListener( 'click', function () { boxes.forEach( function ( b ) { b.checked = false; } ); q.value = ''; update(); } );
+		// Raccourci par type : n'affiche que ce type (second clic : tous les types).
+		tiles.forEach( function ( t ) {
+			t.addEventListener( 'click', function () {
+				var only = 'true' !== t.getAttribute( 'aria-pressed' );
+				boxes.forEach( function ( b ) { if ( 'k' === b.name ) b.checked = only && b.value === t.dataset.catTile; } );
+				update();
+				var top = $( '.tt-catalog__body', cat ).getBoundingClientRect().top;
+				if ( top < 0 || top > window.innerHeight * 0.6 ) window.scrollTo( { top: top + window.scrollY - 16, behavior: 'smooth' } );
+			} );
+		} );
+		openBtn.addEventListener( 'click', function () { toggleSheet( true ); } );
+		$$( '[data-cat-close]', cat ).forEach( function ( b ) { b.addEventListener( 'click', function () { toggleSheet( false ); } ); } );
+		document.addEventListener( 'keydown', function ( e ) { if ( 'Escape' === e.key && cat.classList.contains( 'is-filtering' ) ) toggleSheet( false ); } );
+		update();
+	} );
 } )();

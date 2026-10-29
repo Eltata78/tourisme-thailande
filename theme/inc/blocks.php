@@ -43,6 +43,29 @@ add_action(
 	'enqueue_block_editor_assets',
 	static function () {
 		wp_enqueue_script( 'tt-blocks-editor' );
+		// Réglages de la page (métadonnées tt_*) : seulement dans l'éditeur d'articles et de pages.
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || 'post' !== $screen->base ) {
+			return;
+		}
+		wp_enqueue_script(
+			'tt-meta-panel',
+			TT_URI . '/assets/js/editor-meta.js',
+			array( 'wp-plugins', 'wp-editor', 'wp-data', 'wp-components', 'wp-element' ),
+			filemtime( TT_DIR . '/assets/js/editor-meta.js' ),
+			true
+		);
+		wp_add_inline_script(
+			'tt-meta-panel',
+			'window.ttMeta = ' . wp_json_encode(
+				array(
+					'fields' => tt_page_meta_fields(),
+					'kinds'  => tt_activity_kinds(),
+					'trip'   => array_map( static fn( $d ) => $d[0], tt_trip_destinations() ),
+				)
+			) . ';',
+			'before'
+		);
 	}
 );
 

@@ -9,7 +9,7 @@
 - Header : bloc `tt/site-header`, alimenté par le menu WordPress affecté à l'emplacement « Menu principal ».
   Niveau 1 = barre, niveau 2 = colonnes du méga-menu (classe CSS `tt-feat` = carte image), niveau 3 = liens.
 - Footer : template part `footer`, entièrement en blocs natifs, modifiable dans l'éditeur de site.
-- Templates : `front-page`, `page`, `page-destination`, `page-activite`, `single`, `single-guide`, `home` (blog), `archive` (catégories), `author`, `search`, `404`.
+- Templates : `front-page`, `page`, `page-destination`, `page-activite`, `page-catalogue`, `single`, `single-guide`, `home` (blog), `archive` (catégories), `author`, `search`, `404`.
 - Listes d'articles : grilles de 4 colonnes, 16 par page (page 1 : dernier article en grand + 12), rubriques en pastilles (`tt/topics`), présentation de l'auteur (`tt/author-card`).
 
 ## Blocs
@@ -25,6 +25,7 @@
 | `tt/gyg-spotlight` | Mise en avant d'une activité (points forts, infos pratiques, prix, lien) |
 | `tt/gyg-compare` | Comparatif de 2 à 4 activités sur les mêmes critères |
 | `tt/card-grid` | Grille de cartes : sous-pages, pages sœurs, destinations, autres activités ou sélection d'IDs |
+| `tt/catalog` | Catalogue d'activités : en-tête, raccourcis par type, filtres (destination, type), recherche, tri et grille de cartes |
 | `tt/cta-card` | Carte de réservation : photo, titre, texte court, bouton vers l'offre (tag partenaire ajouté) |
 | `tt/map` | Carte des fiches de la destination (MapLibre auto-hébergé + fonds OpenFreeMap, noms en français) : repère photo, fiche cliquable vers l'offre GetYourGuide de l'activité |
 | `tt/toc` | Sommaire automatique (H2 du contenu) |
@@ -40,7 +41,8 @@ Tous les blocs sont rendus côté serveur. Syntaxe pour le MCP, par exemple :
 
 ## Métadonnées de page (API REST)
 
-`tt_h1`, `tt_destination`, `tt_gyg_query`, `tt_trip_city`, `tt_intro`, `tt_price_from`, `tt_synonyms`, `tt_card_title`, `tt_geo`, `tt_gyg_url`.
+`tt_h1`, `tt_destination`, `tt_gyg_query`, `tt_trip_city`, `tt_intro`, `tt_price_from`, `tt_synonyms`, `tt_card_title`, `tt_kind`, `tt_geo`, `tt_gyg_url`.
+Elles se règlent dans l'éditeur, panneau « Tourisme Thaïlande » des réglages de la page (ou de l'article pour `tt_gyg_query`, `tt_kind`, `tt_card_title`).
 Une sous-page hérite de la destination de son hub parent. `tt_h1` remplace le titre dans le hero, `tt_card_title` sur les cartes.
 `tt_trip_city` est une clé de `tt_trip_destinations()` (ex. `koh-samui`) ; `tt_geo` vaut « lat,lng » (repère de la fiche sur la carte) ;
 `tt_gyg_url` est le lien GetYourGuide de l'activité de la fiche (sinon la carte renvoie vers la recherche `tt_gyg_query`).
@@ -48,6 +50,10 @@ Une sous-page hérite de la destination de son hub parent. `tt_h1` remplace le t
 Pages au gabarit Activité (`page-activite`) : `tt_card_title` sert de libellé aux boutons (header, barre mobile, choix du formulaire),
 `tt_gyg_query` de requête d'offres (ex. « plongée Phuket ») et `tt_trip_city` de destination hôtels (vide pour une page Thaïlande).
 Le formulaire du hero propose la page et ses sous-pages (Plongée en Thaïlande, Plongée à Koh Tao…).
+
+Catalogue d'activités (`/activites-thailande/`, gabarit `page-catalogue`, bloc `tt/catalog`) : toute page ou tout article qui a un
+type d'activité (`tt_kind` : temples, marches, iles, nature, plongee, sorties, experiences) y apparaît, avec sa destination et son titre court.
+Filtres dans l'adresse : `?d=bangkok,phuket&k=temples&q=wat`. Données structurées : `CollectionPage` + `ItemList`.
 
 Style de paragraphe « Astuce » (`is-style-tt-tip`).
 
@@ -77,6 +83,11 @@ Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris 
    - « Découvrez les autres… » -> `tt/card-grid` (pages sœurs, autres activités) ; FAQ -> blocs Détails.
 3. `migration/apply_activites.php` (via execute-php, variable `$tt_rows`) : contenu, gabarit `page-activite`, métadonnées
    et image à la une distincte par page. Sauvegarde dans `_tt_backup_content`, `_tt_backup_elementor_mode`, `_tt_backup_template`, `_tt_backup_thumb`.
+
+## Catalogue d'activités
+
+`migration/catalogue.php` (via execute-php, rejouable) : type d'activité de chaque page et des guides d'activité, titres courts des cartes,
+création de la page `/activites-thailande/` (gabarit, contenu, métadonnées, titre et description Yoast). À rejouer sur la prod à la mise en ligne.
 
 ## Migration des articles
 

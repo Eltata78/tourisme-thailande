@@ -12,15 +12,16 @@ defined( 'ABSPATH' ) || exit;
  */
 function tt_page_meta_fields(): array {
 	return array(
-		'tt_destination' => array( 'type' => 'string', 'description' => 'Nom de la destination (ex. Bangkok). Hérité par les sous-pages.' ),
-		'tt_gyg_query'   => array( 'type' => 'string', 'description' => 'Requête GetYourGuide par défaut (ex. Bangkok).' ),
-		'tt_trip_city'   => array( 'type' => 'string', 'description' => 'Destination hôtels Trip.com (clé de tt_trip_destinations, ex. koh-samui).' ),
-		'tt_intro'       => array( 'type' => 'string', 'description' => 'Accroche courte affichée dans le hero.' ),
-		'tt_h1'          => array( 'type' => 'string', 'description' => 'Titre H1 affiché dans le hero (le titre de la page reste court pour les menus et le fil d\'Ariane).' ),
-		'tt_card_title'  => array( 'type' => 'string', 'description' => 'Titre court utilisé sur les cartes (grilles de pages).' ),
-		'tt_price_from'  => array( 'type' => 'number', 'description' => 'Prix « dès » affiché dans la barre mobile.' ),
-		'tt_geo'         => array( 'type' => 'string', 'description' => 'Coordonnées du lieu « latitude,longitude » (repère sur la carte des visites).' ),
-		'tt_gyg_url'     => array( 'type' => 'string', 'description' => 'Lien GetYourGuide de l\'activité de la fiche (page produit ou lien gyg.me) ; le tag partenaire est ajouté à l\'affichage.' ),
+		'tt_h1'          => array( 'type' => 'string', 'label' => 'Titre H1', 'description' => 'Titre H1 affiché dans le hero (le titre de la page reste court pour les menus et le fil d\'Ariane).' ),
+		'tt_intro'       => array( 'type' => 'string', 'label' => 'Accroche', 'description' => 'Accroche courte affichée dans le hero.' ),
+		'tt_card_title'  => array( 'type' => 'string', 'label' => 'Titre court', 'description' => 'Titre court utilisé sur les cartes (grilles de pages, catalogue) et les boutons des pages activité.' ),
+		'tt_kind'        => array( 'type' => 'string', 'label' => 'Type d\'activité', 'description' => 'Type d\'activité : une page qui en a un apparaît dans le catalogue d\'activités.' ),
+		'tt_destination' => array( 'type' => 'string', 'label' => 'Destination', 'description' => 'Nom de la destination (ex. Bangkok). Hérité par les sous-pages.' ),
+		'tt_gyg_query'   => array( 'type' => 'string', 'label' => 'Requête des offres', 'description' => 'Requête GetYourGuide par défaut (ex. Bangkok).' ),
+		'tt_trip_city'   => array( 'type' => 'string', 'label' => 'Destination hôtels', 'description' => 'Destination hôtels Trip.com (clé de tt_trip_destinations, ex. koh-samui).' ),
+		'tt_price_from'  => array( 'type' => 'number', 'label' => 'Prix « dès »', 'description' => 'Prix « dès » affiché dans la barre mobile.' ),
+		'tt_geo'         => array( 'type' => 'string', 'label' => 'Coordonnées', 'description' => 'Coordonnées du lieu « latitude,longitude » (repère sur la carte des visites).' ),
+		'tt_gyg_url'     => array( 'type' => 'string', 'label' => 'Lien de l\'offre', 'description' => 'Lien GetYourGuide de l\'activité de la fiche (page produit ou lien gyg.me) ; le tag partenaire est ajouté à l\'affichage.' ),
 	);
 }
 
@@ -142,6 +143,13 @@ function tt_header_cta(): array {
 		return array(
 			'label' => $act['label'],
 			'url'   => tt_gyg_url( $act['gyg'], tt_cmp( 'header' ) ),
+		);
+	}
+	// Catalogue d'activités : le lien par défaut mènerait à la page elle-même, le bouton ouvre donc les offres.
+	if ( is_page_template( 'page-catalogue' ) ) {
+		return array(
+			'label' => tt_partners()['cta_default_label'],
+			'url'   => tt_gyg_url( 'Thaïlande', tt_cmp( 'header' ) ),
 		);
 	}
 	// Article qui parle d'une destination : ses activités ; sinon le lien par défaut des réglages.

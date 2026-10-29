@@ -341,6 +341,13 @@
 			]
 		},
 		{
+			"name": "page-catalogue",
+			"title": "Catalogue d'activités",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
 			"name": "single-guide",
 			"title": "Guide avec réservation (hôtels, activités)",
 			"postTypes": [
