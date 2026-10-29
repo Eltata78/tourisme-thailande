@@ -310,7 +310,7 @@ mark.tt-st.is-bad { background: #FAE8EB; color: var(--tt-red); }
 
 /* ---------- Article ---------- */
 .tt-ahead { max-width: var(--tt-wide); margin-inline: auto; }
-.tt-ahead .wp-block-post-title { max-width: 22ch; margin-top: 10px; }
+.tt-ahead .wp-block-post-title { margin-top: 10px; text-wrap: pretty; } /* titre sur toute la largeur, sans lignes équilibrées */
 .tt-cat { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
 .tt-cat a { color: var(--tt-red); text-decoration: none; }
 .tt-byline { gap: 8px 16px; align-items: center; font-size: 14px; color: var(--tt-muted); margin-block: 16px 22px !important; }
