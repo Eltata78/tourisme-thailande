@@ -213,13 +213,25 @@
 		}
 		return mapLib;
 	}
-	function pinPopup( p ) {
-		// Toute la fiche (photo et nom) mène aux offres ; « Le guide » reste un lien interne à part.
+	function cardHtml( p ) {
+		// Toute la carte (photo, nom, bouton) mène aux offres ; « Le guide » reste un lien interne à part.
 		var go = ' href="' + esc( p.g ) + '" target="_blank" rel="sponsored nofollow noopener"';
-		return '<div class="tt-pop"><a class="tt-pop__main"' + go + '>' + ( p.i ? '<img src="' + esc( p.i ) + '" alt="" loading="lazy">' : '' ) +
-			'<b class="tt-pop__t">' + esc( p.t ) + '</b></a><span class="tt-pop__a">' +
+		return '<div class="tt-mapcard__in">' + ( p.i ? '<a class="tt-mapcard__img"' + go + ' tabindex="-1"><img src="' + esc( p.i ) + '" alt=""></a>' : '' ) +
+			'<div class="tt-mapcard__b"><a class="tt-mapcard__t"' + go + '>' + esc( p.t ) + '</a><div class="tt-mapcard__a">' +
 			'<a class="tt-btn tt-btn--gold"' + go + '>' + esc( p.b ) + '</a>' +
-			( p.u ? '<a class="tt-pop__guide" href="' + esc( p.u ) + '">Le guide</a>' : '' ) + '</span></div>';
+			( p.u ? '<a class="tt-mapcard__guide" href="' + esc( p.u ) + '">Le guide</a>' : '' ) + '</div></div>' +
+			'<button type="button" class="tt-mapcard__x" aria-label="Fermer">×</button></div>';
+	}
+	// Toucher court sur un repère : géré ici, car la carte annule son propre clic au moindre glissement du doigt.
+	function onTap( el, fn ) {
+		var start = null;
+		el.addEventListener( 'pointerdown', function ( e ) { start = { x: e.clientX, y: e.clientY, t: Date.now() }; } );
+		el.addEventListener( 'pointercancel', function () { start = null; } );
+		el.addEventListener( 'pointerup', function ( e ) {
+			if ( start && Math.abs( e.clientX - start.x ) < 14 && Math.abs( e.clientY - start.y ) < 14 && Date.now() - start.t < 900 ) fn();
+			start = null;
+		} );
+		el.addEventListener( 'click', function ( e ) { if ( 0 === e.detail ) fn(); } ); // clavier
 	}
 	function km( a, b ) {
 		var r = Math.PI / 180, dLat = ( b[ 1 ] - a[ 1 ] ) * r, dLng = ( b[ 0 ] - a[ 0 ] ) * r;
@@ -242,6 +254,7 @@
 		var ml = window.maplibregl, gap = 46, todo = [];
 		groups.splice( 0 ).forEach( function ( g ) { g.remove(); } );
 		pins.forEach( function ( x ) { x.el.classList.remove( 'is-grouped' ); x.xy = map.project( [ x.p.lng, x.p.lat ] ); if ( ! x.p.c ) todo.push( x ); } );
+		var sets = [];
 		while ( todo.length ) {
 			var first = todo.shift(), near = [ first ];
 			todo = todo.filter( function ( x ) {
@@ -249,21 +262,21 @@
 				if ( close ) near.push( x );
 				return ! close;
 			} );
-			if ( near.length < 2 ) continue;
-			var bounds = new ml.LngLatBounds(), el = document.createElement( 'button' );
+			if ( near.length > 1 ) sets.push( near );
+		}
+		sets.forEach( function ( near ) {
+			var bounds = new ml.LngLatBounds(), el = document.createElement( 'button' ), lead = near[ 0 ].p;
 			near.forEach( function ( x ) { x.el.classList.add( 'is-grouped' ); bounds.extend( [ x.p.lng, x.p.lat ] ); } );
 			el.type = 'button';
-			el.className = 'tt-pin tt-pin--group' + ( first.p.m ? ' has-img' : '' );
-			el.innerHTML = ( first.p.m ? '<img class="tt-pin__img" src="' + esc( first.p.m ) + '" alt="">' : '<span class="tt-pin__dot"></span>' ) +
+			el.className = 'tt-pin tt-pin--group' + ( lead.m ? ' has-img' : '' );
+			el.innerHTML = ( lead.m ? '<img class="tt-pin__img" src="' + esc( lead.m ) + '" alt="">' : '<span class="tt-pin__dot"></span>' ) +
 				'<span class="tt-pin__count">' + near.length + '</span><span class="tt-pin__label">' + esc( near.map( function ( x ) { return x.p.t; } ).slice( 0, 3 ).join( ', ' ) + ( near.length > 3 ? '…' : '' ) ) + '</span>';
-			el.addEventListener( 'click', function ( e ) {
-				e.stopPropagation();
-				map.fitBounds( bounds, { padding: 70, maxZoom: map.getZoom() + 3 } );
-			} );
+			// Différé : la carte interrompt toute animation à la fin du toucher, qui arrive juste après.
+			onTap( el, function () { setTimeout( function () { map.fitBounds( bounds, { padding: 70, maxZoom: map.getZoom() + 3 } ); }, 60 ); } );
 			var m = new ml.Marker( { element: el, anchor: 'center' } ).setLngLat( bounds.getCenter() ).addTo( map );
 			el.setAttribute( 'aria-label', near.length + ' lieux : zoomer' );
 			groups.push( m );
-		}
+		} );
 	}
 	function drawMap( box ) {
 		var data = JSON.parse( box.getAttribute( 'data-tt-map' ) ), ml = window.maplibregl;
@@ -281,13 +294,39 @@
 		} );
 		map.touchZoomRotate.disableRotation();
 		map.addControl( new ml.NavigationControl( { showCompass: false } ), 'top-left' );
-		map.addControl( new ml.AttributionControl( { compact: true } ), 'bottom-right' );
+		map.addControl( new ml.AttributionControl( { compact: true } ), 'top-right' );
 		map.on( 'style.load', function () { styleMap( map ); } );
 		map.once( 'load', function () {
 			var attrib = box.querySelector( '.maplibregl-compact-show' );
 			if ( attrib ) attrib.classList.remove( 'maplibregl-compact-show' );
 		} );
-		var pins = [], groups = [];
+		var pins = [], groups = [], card = document.createElement( 'div' ), active = null;
+		card.className = 'tt-mapcard';
+		card.hidden = true;
+		box.appendChild( card );
+		function close() {
+			card.hidden = true;
+			if ( active ) active.classList.remove( 'is-active' );
+			active = null;
+		}
+		function select( p, el ) {
+			if ( active ) active.classList.remove( 'is-active' );
+			active = el;
+			el.classList.add( 'is-active' );
+			card.innerHTML = cardHtml( p );
+			card.classList.toggle( 'is-plain', ! p.i );
+			card.hidden = false;
+			card.querySelector( '.tt-mapcard__x' ).addEventListener( 'click', close );
+			// Le repère choisi ne doit pas rester caché sous la carte.
+			var xy = map.project( [ p.lng, p.lat ] ), limit = box.clientHeight - card.offsetHeight - 50;
+			if ( xy.y > limit ) map.panBy( [ 0, xy.y - limit ], { duration: 300 } );
+			if ( window.gtag ) window.gtag( 'event', 'tt_map_pin', { pin: p.t } );
+		}
+		map.on( 'click', function ( e ) {
+			var t = e.originalEvent && e.originalEvent.target;
+			if ( ! ( t && t.closest && t.closest( '.tt-pin, .tt-mapcard' ) ) ) close();
+		} );
+		document.addEventListener( 'keydown', function ( e ) { if ( 'Escape' === e.key ) close(); } );
 		data.pins.forEach( function ( p ) {
 			var el = document.createElement( 'button' );
 			el.type = 'button';
@@ -295,13 +334,8 @@
 			el.setAttribute( 'aria-label', p.t );
 			el.innerHTML = ( p.m ? '<img class="tt-pin__img" src="' + esc( p.m ) + '" alt="">' : '<span class="tt-pin__dot"></span>' ) + '<span class="tt-pin__label">' + esc( p.t ) + '</span>';
 			if ( p.m ) el.classList.add( 'has-img' );
-			var pop = new ml.Popup( { offset: p.m ? ( p.c ? 32 : 26 ) : 16, anchor: 'bottom', maxWidth: '240px', className: 'tt-popup', focusAfterOpen: false } ).setHTML( pinPopup( p ) );
-			pop.on( 'open', function () {
-				// Le repère descend vers le bas de la carte pour que la fiche, au-dessus, tienne entièrement.
-				map.easeTo( { center: [ p.lng, p.lat ], offset: [ 0, Math.max( 0, box.clientHeight / 2 - 40 ) ], duration: 350 } );
-				if ( window.gtag ) window.gtag( 'event', 'tt_map_pin', { pin: p.t } );
-			} );
-			new ml.Marker( { element: el, anchor: 'center' } ).setLngLat( [ p.lng, p.lat ] ).setPopup( pop ).addTo( map );
+			onTap( el, function () { select( p, el ); } );
+			new ml.Marker( { element: el, anchor: 'center' } ).setLngLat( [ p.lng, p.lat ] ).addTo( map );
 			el.setAttribute( 'aria-label', p.t ); // MapLibre pose « Map marker » par défaut
 			pins.push( { p: p, el: el } );
 		} );
