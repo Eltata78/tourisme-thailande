@@ -344,30 +344,41 @@ def demo_bangkok(img_ids):
     spot = block('tt/gyg-spotlight', {'title': 'Marché flottant de Damnoen Saduak et marché sur la voie ferrée de Maeklong', 'imageId': img_ids['damnoen-saduak'],
                                       'points': "Départ tôt pour arriver avant les cars de touristes\nBalade en barque dans les canaux du marché\nLe train qui traverse le marché de Maeklong, vu du quai",
                                       'facts': 'Durée | 6 heures\nDépart | Ton hôtel\nLangue | Français\nAnnulation | Gratuite 24 h avant',
-                                      'rating': '4,6', 'reviews': '5 300', 'price': '35', 'query': 'Damnoen Saduak Maeklong',
-                                      'guideLabel': 'Lire notre guide de Damnoen Saduak', 'guideUrl': '/bangkok/damnoen-saduak/'})
+                                      'rating': '4,6', 'reviews': '5 300', 'price': '35', 'query': 'Damnoen Saduak Maeklong'})
     comp = block('tt/gyg-compare', {'title': 'Marchés flottants : quelle excursion choisir ?', 'criteria': 'Durée\nPour qui\nLe plus',
                                     'items': json.dumps([{'name': 'Damnoen Saduak, matinée', 'imageId': img_ids['damnoen-saduak'], 'values': ['5 heures', 'Premier voyage', 'Barque incluse'], 'price': '29', 'query': 'Damnoen Saduak'},
                                                          {'name': 'Damnoen + marché de Maeklong', 'imageId': img_ids['chao-phraya'], 'best': True, 'values': ['6 heures', 'Voir les deux en une fois', 'Barque + train'], 'price': '35', 'query': 'Damnoen Saduak Maeklong'},
                                                          {'name': 'Amphawa, en fin de journée', 'imageId': img_ids['rattanakosin'], 'values': ['7 heures', 'Ambiance locale', 'Lucioles le soir'], 'price': '39', 'query': 'Amphawa'}], ensure_ascii=False)})
-    return [heading('Les activités les plus réservées à Bangkok', 3), grid, spot, comp]
+    # Hub : la sélection seule ; l'excursion à la une et le comparatif vont sur la page du marché flottant, chacun dans sa section.
+    return [heading('Les activités les plus réservées à Bangkok', 3), grid], {'Comment visiter': spot, 'Conseils pour profiter': comp}
+
+
+def place_before(content, slots):
+    """Insère chaque bloc juste avant l'intertitre H2 qui commence par la clé donnée (fin de la section précédente)."""
+    for start, blk in slots.items():
+        m = re.search(r'<!-- wp:heading -->\n<h2 class="wp-block-heading">' + re.escape(start), content)
+        if m:
+            content = content[:m.start()] + blk + '\n\n' + content[m.start():]
+    return content
 
 
 idx = json.load(open(os.path.join(EL, 'index.json')))
 feat = {p['id']: p['featured_media'] for p in json.load(open(PAGES))}
 by_id = {x['id']: x for x in idx}
+# Formats d'affiliation de démonstration (données d'exemple) : images des visites tirées de la page Bangkok.
+boxes = {}
+bkk = next(p for p in idx if p['slug'] == 'bangkok')
+for e in widgets(json.load(open(os.path.join(EL, f"{bkk['id']}.json")))):
+    if e['widgetType'] == 'image-box':
+        boxes[e['settings'].get('link', {}).get('url', '').rstrip('/').split('/')[-1]] = e['settings'].get('image', {}).get('id')
+demo_hub, demo_damnoen = demo_bangkok(boxes)
 result = []
 for page in idx:
     hub = by_id.get(page['parent'])
     data = json.load(open(os.path.join(EL, f"{page['id']}.json")))
-    demo = None
-    if page['slug'] == 'bangkok':
-        boxes = {}
-        for e in widgets(data):
-            if e['widgetType'] == 'image-box':
-                boxes[e['settings'].get('link', {}).get('url', '').rstrip('/').split('/')[-1]] = e['settings'].get('image', {}).get('id')
-        demo = demo_bangkok(boxes)
-    content, meta, gal, log = convert(page, hub, data, demo)
+    content, meta, gal, log = convert(page, hub, data, demo_hub if page['slug'] == 'bangkok' else None)
+    if page['slug'] == 'damnoen-saduak':
+        content = place_before(content, demo_damnoen)
     result.append({'id': page['id'], 'slug': page['slug'], 'hub': page['parent'] == 0, 'content': content, 'meta': meta,
                    'set_thumbnail': (gal[0]['id'] if (not feat.get(page['id']) and gal) else 0), 'log': log,
                    'title': (HUB_META[page['slug']][0] if page['parent'] == 0 else None)})
