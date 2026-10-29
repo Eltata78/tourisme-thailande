@@ -109,6 +109,21 @@ et « Voir sur la carte » dans le catalogue. Repères : les activités du catal
 Mêmes filtres que le catalogue dans l'adresse (`?k=iles&d=phuket`). `migration/carte.php` (rejouable) : coordonnées manquantes
 et création de la page ; à rejouer sur la prod à la mise en ligne.
 
+## Mise en ligne (staging Hostinger publié sur la prod)
+
+1. Gel de la prod (aucune publication Content Machine, aucune modification).
+2. `python3 -I migration/sync_prod.py <identifiants>` : écart prod / preprod (lecture seule sur la prod) ; avec `--apply`,
+   articles et pages nouveaux ou modifiés repris sur le preprod (convertis au nouveau format), images manquantes,
+   commentaires, et suppression des pings créés sur le preprod.
+3. Sauvegarde complète de la prod (hPanel), puis publication du staging sur la prod (fichiers et base).
+4. Après publication : indexation rétablie (`blog_public`), plus aucune trace du domaine preprod, cache purgé, contrôle
+   de toutes les URL, Content Machine relu sur les nouveaux blocs, puis retrait de Novamira, du gestionnaire de fichiers
+   et des mots de passe d'application.
+
+Extensions désactivées sur le preprod avant publication : Elementor, Elementor Pro, ElementsKit, Hello Plus, CPT UI, ACF,
+Insert Headers and Footers, Shortcoder (plus utilisés). Gardées : Yoast, Site Kit, LiteSpeed, Rate My Post (notes des
+articles), Redirection, WP External Links (nofollow des liens sortants), Duplicate Post, Akismet.
+
 ## Pages simples
 
 `python3 -I migration/pages_simples.py <export.json> <sortie.json>` puis `migration/apply_pages.php` (via execute-php) :

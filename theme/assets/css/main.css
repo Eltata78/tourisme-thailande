@@ -661,3 +661,27 @@ p.tt-consent__more { display: flex; justify-content: space-between; align-items:
 @media (max-width: 600px) {
 	.tt-consent { left: 0; right: 0; bottom: 0; width: auto; padding: 18px 16px calc(16px + env(safe-area-inset-bottom)); border-radius: 16px 16px 0 0; }
 }
+
+/* ---------- Commentaires des articles ---------- */
+.tt-comments { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--tt-line); }
+.tt-comments .wp-block-comments-title { margin: 0 0 1.25rem; font-size: 1.5rem; }
+.tt-comments ol.wp-block-comment-template { list-style: none; margin: 0 0 2rem; padding: 0; }
+.tt-comments ol.wp-block-comment-template ol { list-style: none; margin: 0; padding-left: clamp(16px, 4vw, 40px); border-left: 2px solid var(--tt-line); }
+.tt-comment { padding: 14px 0; }
+.tt-comment__meta { gap: 10px; align-items: center; }
+.tt-comment__meta .wp-block-avatar img { border-radius: 50%; }
+.tt-comment .wp-block-comment-author-name { font-weight: 700; color: var(--tt-ink); }
+.tt-comment .wp-block-comment-author-name a { color: inherit; text-decoration: none; }
+.tt-comment .wp-block-comment-date { font-size: 13px; color: var(--tt-muted); }
+.tt-comment .wp-block-comment-date a { color: inherit; text-decoration: none; }
+.tt-comment .wp-block-comment-content { margin: 8px 0 6px; }
+.tt-comment .wp-block-comment-content p { margin: 0 0 .6em; }
+.tt-comment .wp-block-comment-reply-link a { font-size: 14px; font-weight: 600; color: var(--tt-red); }
+.tt-comments .comment-reply-title { font-size: 1.25rem; margin: 0 0 .75rem; }
+.tt-comments .comment-form { display: grid; gap: 12px; }
+.tt-comments .comment-form p { margin: 0; }
+.tt-comments .comment-form label { display: block; margin-bottom: 4px; font-size: 14px; font-weight: 600; }
+.tt-comments .comment-form input[type="text"], .tt-comments .comment-form input[type="email"], .tt-comments .comment-form input[type="url"], .tt-comments .comment-form textarea { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--tt-line); border-radius: 8px; font: inherit; font-size: 16px; }
+.tt-comments .comment-form .comment-form-cookies-consent { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
+.tt-comments .comment-form .comment-form-cookies-consent label { font-weight: 400; }
+.tt-comments .form-submit .submit, .tt-comments .wp-block-button__link { border: 0; border-radius: 8px; padding: 12px 20px; background: var(--tt-indigo); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }

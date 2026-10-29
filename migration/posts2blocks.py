@@ -142,6 +142,18 @@ class Converter:
         style = root.get('style', '')
         if root.name == 'figure' and root.find('table'):
             return self.tables(root)
+        # Image seule dans une figure : bloc image natif (rattaché à la médiathèque si le fichier y est).
+        img = root.find('img') if root.name == 'figure' else None
+        if img is not None and not root.find(['table', 'iframe', 'video']) and len(root.find_all('img')) == 1:
+            src, alt = img.get('src', ''), img.get('alt', '')
+            cap = root.find('figcaption')
+            mid = self.media_id(src) if src else 0
+            ctx['log'].append('image HTML -> bloc image')
+            a = {'id': mid, 'sizeSlug': 'large', 'linkDestination': 'none'} if mid else {'sizeSlug': 'large', 'linkDestination': 'none'}
+            klass = f' class="wp-image-{mid}"' if mid else ''
+            capt = f'<figcaption class="wp-element-caption">{cap.decode_contents().strip()}</figcaption>' if cap else ''
+            return ['<!-- wp:image ' + json.dumps(a) + ' -->\n'
+                    f'<figure class="wp-block-image size-large"><img src="{esc(src)}" alt="{esc(alt)}"{klass}/>{capt}</figure>\n<!-- /wp:image -->']
         if 'quiz-container' in cls or 'figure' == root.name:
             ctx['log'].append(f'bloc HTML conservé ({root.name}.{cls or "style"})')
             return [f'<!-- wp:html -->\n{raw.strip()}\n<!-- /wp:html -->']
@@ -394,7 +406,7 @@ class Converter:
             if name == 'html':
                 inner = re.sub(r'^<!--\s+wp:html\s+-->|<!--\s+/wp:html\s+-->$', '', text.strip())
                 out.extend(self.html_block(inner, ctx))
-            elif name == 'shortcoder/shortcoder':
+            elif name == 'shortcoder/shortcoder' or ( name == 'shortcode' and '[sc name=' in text ):
                 out.extend(self.shortcode(text, ctx))
             elif name.startswith('yoast/'):
                 out.append(text.strip())

@@ -112,3 +112,28 @@ add_filter(
 	10,
 	2
 );
+
+// Commentaires des articles : seulement ceux des lecteurs. Les pings (liens d'un article vers un autre, souvent
+// internes) ne sont ni affichés ni comptés, et le site n'en envoie ni n'en accepte plus.
+add_action(
+	'pre_get_comments',
+	static function ( WP_Comment_Query $q ) {
+		if ( ! is_admin() && ! empty( $q->query_vars['post_id'] ) && '' === $q->query_vars['type'] && empty( $q->query_vars['type__in'] ) ) {
+			$q->query_vars['type'] = 'comment';
+		}
+	}
+);
+add_filter(
+	'get_comments_number',
+	static function ( $count, $post_id ) {
+		return is_admin() ? $count : (int) get_comments( array( 'post_id' => $post_id, 'type' => 'comment', 'status' => 'approve', 'count' => true ) );
+	},
+	10,
+	2
+);
+add_filter(
+	'render_block_core/comments-title',
+	static fn( $html ) => get_comments_number() ? $html : '' // pas de « 0 réponse » au-dessus du formulaire
+);
+add_filter( 'pings_open', '__return_false' );
+add_filter( 'pre_option_default_pingback_flag', '__return_zero' );
