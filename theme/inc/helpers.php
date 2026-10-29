@@ -23,6 +23,7 @@ function tt_partners(): array {
 				'cta_default_label' => 'Réserver une activité',
 				'cta_default_url'   => '/activites-thailande/',
 				'map_url'           => '/carte-thailande/',
+				'gtm_id'            => '', // conteneur Google Tag Manager (GTM-XXXXXXX), voir inc/tracking.php
 			)
 		);
 	}

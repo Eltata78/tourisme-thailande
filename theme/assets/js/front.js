@@ -98,6 +98,70 @@
 		} );
 	}
 
+
+	/* ---------- Mesure : clics sur les CTA poussés dans le dataLayer, lus par GTM (plan : docs/plan-de-taggage.md) ---------- */
+	// Rien ne part chez Google sans accord : GTM ne se charge qu'après, et reprend alors les événements en attente.
+	var dataLayer = window.dataLayer = window.dataLayer || [];
+	var pageSlug = ( dataLayer.filter( function ( e ) { return e && e.page_slug; } )[ 0 ] || {} ).page_slug || '';
+	// Partenaire d'un lien : GetYourGuide (liens courts gyg.me compris), Trip.com, sinon rien.
+	function partnerOf( u ) {
+		if ( /(^|\.)getyourguide\.[a-z.]+$|(^|\.)gyg\.me$/.test( u.hostname ) ) return 'getyourguide';
+		if ( /(^|\.)trip\.com$/.test( u.hostname ) ) return 'trip.com';
+		return '';
+	}
+	// Composant qui porte le CTA : bloc du thème (gyg-card, cta-card, hero, mobile-bar…), sinon texte de l'article.
+	function componentOf( el ) {
+		if ( el.closest( '.tt-search__sugg' ) ) return 'recherche-suggestion';
+		var b = el.closest( '[class*="wp-block-tt-"]' ), m = b && b.className.match( /wp-block-tt-([a-z0-9-]+)/ );
+		if ( m ) return m[ 1 ];
+		return el.closest( '.wp-block-post-content' ) ? 'texte' : 'autre';
+	}
+	// Emplacement : paramètre de campagne (cmp chez GetYourGuide, trip_sub1 chez Trip.com) sans le préfixe « tt-{page}- ».
+	function placementOf( v ) {
+		v = ( v || '' ).replace( /^tt-/, '' );
+		return pageSlug && 0 === v.indexOf( pageSlug + '-' ) ? v.slice( pageSlug.length + 1 ) : v;
+	}
+	// Hauteur du CTA dans la page, par quart : 0-25 (haut de page) à 75-100 (bas).
+	function positionOf( el ) {
+		var q = Math.floor( ( el.getBoundingClientRect().top + window.scrollY ) / ( document.documentElement.scrollHeight || 1 ) * 4 );
+		return [ '0-25', '25-50', '50-75', '75-100' ][ Math.max( 0, Math.min( 3, q ) ) ];
+	}
+	function labelOf( el ) {
+		return ( el.getAttribute( 'aria-label' ) || el.textContent || '' ).replace( /\s+/g, ' ' ).trim().slice( 0, 100 );
+	}
+	// CTA interne : liens des blocs du site (cartes, catalogue, carte, suggestions), pas le menu, le pied de page ni le texte.
+	function isInternalCta( a, comp ) {
+		if ( 'recherche-suggestion' === comp ) return true;
+		if ( a.closest( '.wp-block-tt-site-header' ) ) return a.matches( '.tt-btn, .tt-header__map' );
+		return ! a.closest( 'footer' ) && [ 'texte', 'autre', 'toc', 'brand' ].indexOf( comp ) === -1;
+	}
+	function trackLink( e ) {
+		var a = e.target.closest && e.target.closest( 'a[href]' ), u;
+		if ( ! a || ( 'auxclick' === e.type && 1 !== e.button ) ) return;
+		try { u = new URL( a.href, location.href ); } catch ( err ) { return; }
+		var partner = partnerOf( u ), comp = componentOf( a );
+		if ( partner ) {
+			dataLayer.push( {
+				event: 'affiliate_click', cta_partner: partner, cta_component: comp,
+				cta_placement: placementOf( u.searchParams.get( 'cmp' ) || u.searchParams.get( 'trip_sub1' ) ) || ( 'texte' === comp ? 'lien-texte' : '' ),
+				cta_text: labelOf( a ), cta_url: u.hostname + u.pathname, cta_position: positionOf( a ),
+			} );
+		} else if ( u.hostname === location.hostname && ! ( u.pathname === location.pathname && u.hash ) && isInternalCta( a, comp ) ) {
+			dataLayer.push( { event: 'cta_click', cta_component: comp, cta_text: labelOf( a ), cta_url: u.pathname, cta_position: positionOf( a ) } );
+		}
+	}
+	document.addEventListener( 'click', trackLink, true );
+	document.addEventListener( 'auxclick', trackLink, true );
+	// Formulaires partenaires (hôtels Trip.com, activités) : envoi = clic d'affiliation.
+	function trackForm( form ) {
+		var trip = 'trip' === form.getAttribute( 'data-tt-wdg' ), field = form.elements[ trip ? 'trip_sub1' : 'cmp' ];
+		dataLayer.push( {
+			event: 'affiliate_click', cta_partner: trip ? 'trip.com' : 'getyourguide', cta_component: componentOf( form ),
+			cta_placement: placementOf( field && field.value ), cta_text: 'formulaire',
+			cta_url: form.action.replace( /^https?:\/\/|\?.*$/g, '' ), cta_position: positionOf( form ),
+		} );
+	}
+
 	/* ---------- Méga-menu : ouverture au clic (tactile, clavier) et fermeture en cliquant ailleurs ---------- */
 	$$( '.tt-nav__item.has-mega > .tt-nav__top' ).forEach( function ( link ) {
 		var item = link.parentNode;
@@ -264,7 +328,7 @@
 					form.appendChild( h );
 				} );
 			}
-			if ( window.gtag ) window.gtag( 'event', 'tt_partner_form', { partner: form.getAttribute( 'data-tt-wdg' ), form_id: form.id } );
+			trackForm( form );
 		} );
 	} );
 

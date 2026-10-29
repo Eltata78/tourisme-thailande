@@ -146,3 +146,10 @@ Qui sommes-nous (cartes auteurs, section « Nos liens partenaires » ancrée `#p
    `migration/liens_courts.tsv` : liens courts gyg.me / trip.com/t déroulés (cible réelle de chaque lien).
 3. `migration/apply_posts.php` (via execute-php, variable `$tt_rows`) : contenu d'origine gardé dans `_tt_backup_content`
    (et `_tt_backup_elementor_mode` pour les articles qui étaient marqués Elementor).
+
+## Mesure (GTM)
+
+Contexte de chaque page (`page_type`, `thematique`, `destination`, `activity_kind`) et clics sur les CTA (`affiliate_click`,
+`cta_click`) poussés dans le `dataLayer` (`inc/tracking.php`, `front.js`). Conteneur GTM : identifiant dans l'option
+`tt_partners` (clé `gtm_id`), chargé après accord « mesure d'audience » ; il remplace alors la balise GA4 de Site Kit.
+Plan de taggage et conteneur à importer : `docs/plan-de-taggage.md`, `docs/gtm-conteneur.json`.
