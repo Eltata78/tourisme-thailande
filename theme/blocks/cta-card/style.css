@@ -14,3 +14,6 @@
 	.tt-cta__body { padding: 18px; }
 	.tt-cta .tt-btn { width: 100%; justify-content: center; text-align: center; }
 }
+.tt-cta .tt-cta__rating { font-size: 14px; color: var(--tt-muted); }
+.tt-cta .tt-cta__rating b { color: var(--tt-ink); }
+.tt-cta .tt-cta__rating .tt-stars { color: var(--tt-gold); font-size: 15px; letter-spacing: 0; }

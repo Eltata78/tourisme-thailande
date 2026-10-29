@@ -40,6 +40,18 @@ add_action(
 				)
 			);
 		}
+		// Articles : requête d'activités propre à l'article (destination dont il parle), sinon « Thaïlande ».
+		register_post_meta(
+			'post',
+			'tt_gyg_query',
+			array(
+				'type'          => 'string',
+				'description'   => 'Requête GetYourGuide de l\'article (ex. Koh Phangan).',
+				'single'        => true,
+				'show_in_rest'  => true,
+				'auth_callback' => static fn() => current_user_can( 'edit_posts' ),
+			)
+		);
 		add_post_type_support( 'page', 'excerpt' );
 	}
 );
@@ -82,6 +94,14 @@ function tt_header_cta(): array {
 		return array(
 			'label' => sprintf( 'Activités à %s', $ctx['name'] ),
 			'url'   => tt_gyg_url( $ctx['gyg'], tt_cmp( 'header' ) ),
+		);
+	}
+	// Article qui parle d'une destination : ses activités ; sinon le lien par défaut des réglages.
+	$q = is_singular( 'post' ) ? (string) get_post_meta( get_queried_object_id(), 'tt_gyg_query', true ) : '';
+	if ( '' !== $q && 'Thaïlande' !== $q ) {
+		return array(
+			'label' => sprintf( 'Activités à %s', $q ),
+			'url'   => tt_gyg_url( $q, tt_cmp( 'header' ) ),
 		);
 	}
 	$p = tt_partners();

@@ -31,6 +31,11 @@ add_action(
 	'init',
 	static function () {
 		register_block_style( 'core/paragraph', array( 'name' => 'tt-tip', 'label' => 'Astuce' ) );
+	// Encadrés d'article : un groupe dont le premier paragraphe en gras sert de titre.
+	register_block_style( 'core/group', array( 'name' => 'tt-savais', 'label' => 'Le savais-tu' ) );
+	register_block_style( 'core/group', array( 'name' => 'tt-retenir', 'label' => 'À retenir' ) );
+	register_block_style( 'core/group', array( 'name' => 'tt-alerte', 'label' => 'Attention' ) );
+	register_block_style( 'core/group', array( 'name' => 'tt-timeline', 'label' => 'Programme horaire' ) );
 	}
 );
 
