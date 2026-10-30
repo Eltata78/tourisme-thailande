@@ -149,3 +149,9 @@ add_filter(
 );
 add_filter( 'pre_comment_author_url', '__return_empty_string' );
 add_filter( 'get_comment_author_url', '__return_empty_string' );
+
+// Titres : espace insécable avant « : ; ? ! » (typographie française), le signe ne passe jamais seul en début de ligne.
+add_filter(
+	'render_block_core/post-title',
+	static fn( $html ) => preg_replace_callback( '/>([^<]+)</', static fn( $m ) => '>' . preg_replace( '/ (?=[:;?!»])/u', "\u{00A0}", $m[1] ) . '<', $html )
+);
