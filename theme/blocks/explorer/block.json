@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/explorer",
+	"title": "Carte des activités (mode carte)",
+	"category": "tt-layout",
+	"description": "Grande carte de la Thaïlande avec toutes les activités géolocalisées du catalogue : filtres par type, accès rapide aux destinations, liste de la zone affichée.",
+	"supports": { "html": false, "multiple": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"placement": { "type": "string", "default": "carte" }
+	},
+	"style": [ "tt-map-style", "file:./style.css" ],
+	"render": "file:./render.php"
+}

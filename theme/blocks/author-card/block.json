@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/author-card",
+	"title": "Présentation de l'auteur",
+	"category": "tt-layout",
+	"description": "Photo, nom, rôle, biographie, nombre d'articles et profils de l'auteur (page auteur). Les champs se remplissent dans le profil utilisateur.",
+	"supports": { "html": false },
+	"attributes": {},
+	"render": "file:./render.php"
+}

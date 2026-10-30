@@ -1,0 +1,365 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"useRootPaddingAwareAlignments": true,
+		"layout": {
+			"contentSize": "720px",
+			"wideSize": "1240px"
+		},
+		"color": {
+			"custom": false,
+			"customGradient": false,
+			"defaultPalette": false,
+			"defaultGradients": false,
+			"defaultDuotone": false,
+			"duotone": [],
+			"gradients": [],
+			"palette": [
+				{
+					"slug": "base",
+					"name": "Blanc",
+					"color": "#FFFFFF"
+				},
+				{
+					"slug": "contrast",
+					"name": "Encre",
+					"color": "#1E1B36"
+				},
+				{
+					"slug": "indigo",
+					"name": "Indigo",
+					"color": "#2D2A4A"
+				},
+				{
+					"slug": "gold",
+					"name": "Or",
+					"color": "#C9A227"
+				},
+				{
+					"slug": "gold-soft",
+					"name": "Or pâle",
+					"color": "#F6EED3"
+				},
+				{
+					"slug": "red",
+					"name": "Rouge",
+					"color": "#A51931"
+				},
+				{
+					"slug": "mist",
+					"name": "Brume",
+					"color": "#F4F3F8"
+				},
+				{
+					"slug": "line",
+					"name": "Filet",
+					"color": "#E5E3EE"
+				},
+				{
+					"slug": "muted",
+					"name": "Gris texte",
+					"color": "#5F5B78"
+				},
+				{
+					"slug": "green",
+					"name": "Vert",
+					"color": "#1E7A4B"
+				}
+			]
+		},
+		"typography": {
+			"customFontSize": false,
+			"defaultFontSizes": false,
+			"dropCap": false,
+			"fluid": true,
+			"fontFamilies": [
+				{
+					"slug": "archivo",
+					"name": "Archivo",
+					"fontFamily": "Archivo, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Archivo",
+							"fontStyle": "normal",
+							"fontWeight": "400 800",
+							"fontStretch": "62% 125%",
+							"fontDisplay": "swap",
+							"src": [
+								"file:./assets/fonts/archivo-latin-var.woff2"
+							]
+						}
+					]
+				}
+			],
+			"fontSizes": [
+				{
+					"slug": "small",
+					"name": "Petit",
+					"size": "0.875rem",
+					"fluid": false
+				},
+				{
+					"slug": "medium",
+					"name": "Normal",
+					"size": "1rem",
+					"fluid": false
+				},
+				{
+					"slug": "large",
+					"name": "Grand",
+					"size": "1.125rem",
+					"fluid": false
+				},
+				{
+					"slug": "x-large",
+					"name": "Très grand",
+					"size": "1.5rem",
+					"fluid": {
+						"min": "1.3rem",
+						"max": "1.5rem"
+					}
+				},
+				{
+					"slug": "xx-large",
+					"name": "Titre de section",
+					"size": "2.875rem",
+					"fluid": {
+						"min": "1.875rem",
+						"max": "2.875rem"
+					}
+				},
+				{
+					"slug": "huge",
+					"name": "Titre principal",
+					"size": "5.5rem",
+					"fluid": {
+						"min": "2.5rem",
+						"max": "5.5rem"
+					}
+				}
+			]
+		},
+		"spacing": {
+			"defaultSpacingSizes": false,
+			"units": [
+				"px",
+				"rem",
+				"%",
+				"vw"
+			],
+			"spacingSizes": [
+				{
+					"slug": "20",
+					"name": "XS",
+					"size": "0.5rem"
+				},
+				{
+					"slug": "30",
+					"name": "S",
+					"size": "1rem"
+				},
+				{
+					"slug": "40",
+					"name": "M",
+					"size": "1.5rem"
+				},
+				{
+					"slug": "50",
+					"name": "L",
+					"size": "clamp(1.75rem, 4vw, 2.5rem)"
+				},
+				{
+					"slug": "60",
+					"name": "XL",
+					"size": "clamp(2.5rem, 6vw, 4.5rem)"
+				},
+				{
+					"slug": "70",
+					"name": "XXL",
+					"size": "clamp(3.5rem, 8vw, 6rem)"
+				}
+			]
+		},
+		"shadow": {
+			"defaultPresets": false,
+			"presets": [
+				{
+					"slug": "card",
+					"name": "Carte",
+					"shadow": "0 14px 30px -24px rgba(30,27,54,.5)"
+				}
+			]
+		},
+		"custom": {
+			"radius": {
+				"s": "8px",
+				"m": "12px",
+				"l": "16px"
+			},
+			"gutter": "max(16px, env(safe-area-inset-left, 0px))"
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var:preset|color|base",
+			"text": "var:preset|color|contrast"
+		},
+		"spacing": {
+			"blockGap": "1rem",
+			"padding": {
+				"left": "clamp(16px, 4vw, 56px)",
+				"right": "clamp(16px, 4vw, 56px)"
+			}
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|archivo",
+			"fontSize": "var:preset|font-size|medium",
+			"fontWeight": "400",
+			"lineHeight": "1.6"
+		},
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var:preset|color|red"
+				},
+				"typography": {
+					"textDecoration": "underline"
+				}
+			},
+			"heading": {
+				"color": {
+					"text": "var:preset|color|indigo"
+				},
+				"typography": {
+					"fontWeight": "800",
+					"lineHeight": "1.05"
+				}
+			},
+			"h1": {
+				"typography": {
+					"fontSize": "var:preset|font-size|huge",
+					"lineHeight": "0.95"
+				}
+			},
+			"h2": {
+				"typography": {
+					"fontSize": "clamp(1.625rem, 3.4vw, 2.125rem)"
+				}
+			},
+			"h3": {
+				"typography": {
+					"fontSize": "clamp(1.1875rem, 1rem + 0.6vw, 1.3125rem)",
+					"fontWeight": "700",
+					"lineHeight": "1.25"
+				}
+			},
+			"h4": {
+				"typography": {
+					"fontSize": "clamp(1.0625rem, 1rem + 0.3vw, 1.125rem)",
+					"fontWeight": "700"
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var:preset|color|gold",
+					"text": "var:preset|color|contrast"
+				},
+				"border": {
+					"radius": "8px"
+				},
+				"typography": {
+					"fontWeight": "600",
+					"fontSize": "0.9375rem"
+				},
+				"spacing": {
+					"padding": {
+						"top": "12px",
+						"bottom": "12px",
+						"left": "20px",
+						"right": "20px"
+					}
+				},
+				":hover": {
+					"color": {
+						"background": "var:preset|color|indigo",
+						"text": "var:preset|color|base"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/quote": {
+				"border": {
+					"left": {
+						"color": "var:preset|color|gold",
+						"width": "3px"
+					}
+				},
+				"spacing": {
+					"padding": {
+						"left": "1rem"
+					}
+				},
+				"typography": {
+					"fontStyle": "italic"
+				}
+			},
+			"core/separator": {
+				"color": {
+					"text": "var:preset|color|line"
+				}
+			}
+		}
+	},
+	"templateParts": [
+		{
+			"name": "header",
+			"title": "En-tête",
+			"area": "header"
+		},
+		{
+			"name": "footer",
+			"title": "Pied de page",
+			"area": "footer"
+		}
+	],
+	"customTemplates": [
+		{
+			"name": "page-destination",
+			"title": "Destination (hub ou lieu)",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
+			"name": "page-activite",
+			"title": "Activité",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
+			"name": "page-carte",
+			"title": "Carte des activités",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
+			"name": "page-catalogue",
+			"title": "Catalogue d'activités",
+			"postTypes": [
+				"page"
+			]
+		},
+		{
+			"name": "single-guide",
+			"title": "Guide avec réservation (hôtels, activités)",
+			"postTypes": [
+				"post"
+			]
+		}
+	]
+}

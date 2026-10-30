@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/search-box",
+	"title": "Recherche du site",
+	"category": "tt-layout",
+	"description": "Barre de recherche avec suggestions instantanées. Une destination reconnue ouvre directement son guide.",
+	"supports": { "html": false },
+	"attributes": {
+		"placeholder": { "type": "string", "default": "Bangkok, Wat Pho, full moon party…" }
+	},
+	"render": "file:./render.php"
+}

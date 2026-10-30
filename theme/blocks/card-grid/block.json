@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/card-grid",
+	"title": "Grille de pages",
+	"category": "tt-layout",
+	"description": "Cartes image vers d'autres pages du site. Mode « sous-pages » (visites d'une destination), « pages sœurs » (autres visites de la même destination), « destinations » (autres hubs), « activités » (autres pages activité principales) ou liste d'ID.",
+	"supports": { "html": false, "align": [ "wide" ] },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"mode": { "type": "string", "enum": [ "children", "siblings", "destinations", "activities", "ids" ], "default": "children" },
+		"ids": { "type": "string", "default": "" },
+		"limit": { "type": "number", "default": 12 },
+		"columns": { "type": "number", "default": 4 }
+	},
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

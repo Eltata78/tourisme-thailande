@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/gyg-compare",
+	"title": "Comparateur d'activités (GetYourGuide)",
+	"category": "tt-affiliation",
+	"description": "« Laquelle choisir ? » : 2 à 4 offres côte à côte. Critères : une ligne par critère. Offres (JSON) : [{\"name\":\"…\",\"imageId\":123,\"values\":[\"…\",\"…\"],\"price\":\"35\",\"url\":\"…\" ou \"query\":\"…\",\"best\":true}].",
+	"supports": { "html": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"criteria": { "type": "string", "default": "" },
+		"items": { "type": "string", "default": "[]" },
+		"placement": { "type": "string", "default": "compare" }
+	},
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

@@ -1,0 +1,686 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2026-10-29 16:30:00",
+  "containerVersion": {
+    "path": "accounts/0/containers/0/versions/0",
+    "accountId": "0",
+    "containerId": "0",
+    "containerVersionId": "0",
+    "container": {
+      "path": "accounts/0/containers/0",
+      "accountId": "0",
+      "containerId": "0",
+      "name": "tourisme-thailande.fr",
+      "publicId": "GTM-XXXXXXX",
+      "usageContext": [
+        "WEB"
+      ]
+    },
+    "tag": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "201",
+        "name": "GA4 - Balise Google (pages vues)",
+        "type": "googtag",
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "tagId",
+            "value": "{{GA4 - ID de mesure}}"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventSettingsVariable",
+            "value": "{{GA4 - Paramètres de page}}"
+          }
+        ],
+        "firingTriggerId": [
+          "2147479573"
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "202",
+        "name": "GA4 - affiliate_click (clic partenaire)",
+        "type": "gaawe",
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "affiliate_click"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 - ID de mesure}}"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventSettingsVariable",
+            "value": "{{GA4 - Paramètres de page}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_partner"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_partner}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_component"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_component}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_placement"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_placement}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_text"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_text}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_url"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_url}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_position"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_position}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "101"
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "203",
+        "name": "GA4 - cta_click (CTA interne)",
+        "type": "gaawe",
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "parameter": [
+          {
+            "type": "BOOLEAN",
+            "key": "sendEcommerceData",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "cta_click"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementIdOverride",
+            "value": "{{GA4 - ID de mesure}}"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventSettingsVariable",
+            "value": "{{GA4 - Paramètres de page}}"
+          },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_component"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_component}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_text"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_text}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_url"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_url}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "cta_position"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - cta_position}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": [
+          "102"
+        ]
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "101",
+        "name": "Événement - affiliate_click",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "affiliate_click"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "102",
+        "name": "Événement - cta_click",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "cta_click"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "1",
+        "name": "DLV - page_type",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "page_type"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "2",
+        "name": "DLV - thematique",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "thematique"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "3",
+        "name": "DLV - destination",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "destination"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "4",
+        "name": "DLV - activity_kind",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "activity_kind"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "5",
+        "name": "DLV - cta_partner",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "cta_partner"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "6",
+        "name": "DLV - cta_component",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "cta_component"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "7",
+        "name": "DLV - cta_placement",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "cta_placement"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "8",
+        "name": "DLV - cta_text",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "cta_text"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "9",
+        "name": "DLV - cta_url",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "cta_url"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "10",
+        "name": "DLV - cta_position",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "cta_position"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "11",
+        "name": "GA4 - ID de mesure",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "G-YNDMC943HF"
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "12",
+        "name": "GA4 - Paramètres de page",
+        "type": "gtes",
+        "parameter": [
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "page_type"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - page_type}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "thematique"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - thematique}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "destination"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - destination}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "activity_kind"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - activity_kind}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "builtInVariable": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "PAGE_URL",
+        "name": "Page URL"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "PAGE_HOSTNAME",
+        "name": "Page Hostname"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "PAGE_PATH",
+        "name": "Page Path"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "REFERRER",
+        "name": "Referrer"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "type": "EVENT",
+        "name": "Event"
+      }
+    ]
+  }
+}

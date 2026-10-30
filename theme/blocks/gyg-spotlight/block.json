@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/gyg-spotlight",
+	"title": "Activité coup de cœur (GetYourGuide)",
+	"category": "tt-affiliation",
+	"description": "Une activité mise en avant : grande photo, 3 points forts, infos pratiques, note, prix et bouton GetYourGuide tagué, avec un lien vers le guide du lieu. Points forts : une ligne par point. Infos : une ligne « Libellé | valeur ».",
+	"supports": { "html": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"kicker": { "type": "string", "default": "Notre coup de cœur" },
+		"title": { "type": "string", "default": "" },
+		"imageId": { "type": "number", "default": 0 },
+		"points": { "type": "string", "default": "" },
+		"facts": { "type": "string", "default": "" },
+		"rating": { "type": "string", "default": "" },
+		"reviews": { "type": "string", "default": "" },
+		"price": { "type": "string", "default": "" },
+		"url": { "type": "string", "default": "" },
+		"query": { "type": "string", "default": "" },
+		"guideLabel": { "type": "string", "default": "" },
+		"guideUrl": { "type": "string", "default": "" },
+		"placement": { "type": "string", "default": "spotlight" }
+	},
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

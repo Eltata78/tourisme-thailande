@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/months",
+	"title": "La Thaïlande mois par mois",
+	"category": "tt-layout",
+	"description": "Les 12 guides mensuels (articles thailande-janvier… thailande-decembre) en cartes photo, avec la saison de chaque mois et le mois en cours mis en avant.",
+	"supports": { "html": false, "align": [ "wide", "full" ] },
+	"attributes": {
+		"align": { "type": "string", "default": "wide" },
+		"texts": { "type": "string", "default": "" }
+	},
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}
