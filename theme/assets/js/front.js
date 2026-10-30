@@ -680,7 +680,12 @@
 		sec.classList.add( 'is-ready' );
 		box.classList.add( 'is-ready' );
 	}
-	$$( '[data-tt-explorer]' ).forEach( function ( sec ) { loadMapLib().then( function () { drawExplorer( sec ); } ); } );
+	// Page carte : la liste (HTML) s'affiche d'abord, la carte démarre une fois la page chargée et le navigateur libre.
+	$$( '[data-tt-explorer]' ).forEach( function ( sec ) {
+		var start = function () { loadMapLib().then( function () { drawExplorer( sec ); } ); };
+		var idle = function () { ( window.requestIdleCallback || setTimeout )( start, { timeout: 1200 } ); };
+		'complete' === document.readyState ? idle() : window.addEventListener( 'load', idle, { once: true } );
+	} );
 
 	/* ---------- Barre mobile : visible une fois le hero passé ---------- */
 	var bar = $( '[data-tt-mbar]' ), hero = $( '.tt-hero' ) || $( 'h1' );

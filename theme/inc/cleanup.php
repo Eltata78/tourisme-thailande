@@ -29,3 +29,30 @@ add_action(
 	},
 	100
 );
+
+// Notes des lecteurs (Rate My Post) : seulement sur les articles, où elles s'affichent, et sans bloquer le rendu.
+add_action(
+	'wp_enqueue_scripts',
+	static function () {
+		if ( ! is_singular( 'post' ) ) {
+			wp_dequeue_script( 'rate-my-post' );
+			wp_dequeue_style( 'rate-my-post' );
+		} else {
+			wp_script_add_data( 'rate-my-post', 'strategy', 'defer' );
+		}
+	},
+	100
+);
+
+// Page carte : connexion ouverte d'avance vers le serveur des fonds de carte.
+add_filter(
+	'wp_resource_hints',
+	static function ( array $urls, string $type ): array {
+		if ( 'preconnect' === $type && is_page() && has_block( 'tt/explorer', get_queried_object() ) ) {
+			$urls[] = array( 'href' => 'https://tiles.openfreemap.org', 'crossorigin' => 'anonymous' );
+		}
+		return $urls;
+	},
+	10,
+	2
+);
