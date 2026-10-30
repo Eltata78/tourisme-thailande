@@ -106,7 +106,11 @@ rechargée. Tout lien vers `#reglages-cookies` (footer, mentions légales) rouvr
 
 `/carte-thailande/` (gabarit `page-carte`, bloc `tt/explorer`), lien « Carte » dans le header (réglage `map_url` de `tt_partners`)
 et « Voir sur la carte » dans le catalogue. Repères : les activités du catalogue qui ont des coordonnées (`tt_geo`, pages et articles).
-Mêmes filtres que le catalogue dans l'adresse (`?k=iles&d=phuket`). `migration/carte.php` (rejouable) : coordonnées manquantes
+Mêmes filtres que le catalogue dans l'adresse (`?k=iles&d=phuket`).
+Géolocalisation automatique (`inc/geo.php`) : à la publication d'une destination, d'une de ses sous-pages ou d'une activité
+du catalogue sans « Coordonnées », le lieu est cherché sur OpenStreetMap autour de la destination (titre, nom entre
+parenthèses, version anglaise, slug ; résultat le plus proche), sinon centre de la destination. Activité « partout en
+Thaïlande » : pas de repère. Le cache des pages qui l'affichent (catalogue, carte, destination) est vidé. `migration/carte.php` (rejouable) : coordonnées manquantes
 et création de la page ; déjà joué sur le preprod, dont la base part en prod à la mise en ligne.
 
 ## Mise en ligne (staging Hostinger publié sur la prod)

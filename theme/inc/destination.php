@@ -20,7 +20,7 @@ function tt_page_meta_fields(): array {
 		'tt_gyg_query'   => array( 'type' => 'string', 'label' => 'Requête des offres', 'description' => 'Requête GetYourGuide par défaut (ex. Bangkok).' ),
 		'tt_trip_city'   => array( 'type' => 'string', 'label' => 'Destination hôtels', 'description' => 'Destination hôtels Trip.com (clé de tt_trip_destinations, ex. koh-samui).' ),
 		'tt_price_from'  => array( 'type' => 'number', 'label' => 'Prix « dès »', 'description' => 'Prix « dès » affiché dans la barre mobile.' ),
-		'tt_geo'         => array( 'type' => 'string', 'label' => 'Coordonnées', 'description' => 'Coordonnées du lieu « latitude,longitude » (repère sur la carte des visites).' ),
+		'tt_geo'         => array( 'type' => 'string', 'label' => 'Coordonnées', 'description' => 'Coordonnées du lieu « latitude,longitude » (repère sur les cartes). Laissé vide, il est cherché à la publication sur OpenStreetMap, sinon pris au centre de la destination : à vérifier.' ),
 		'tt_gyg_url'     => array( 'type' => 'string', 'label' => 'Lien de l\'offre', 'description' => 'Lien GetYourGuide de l\'activité de la fiche (page produit ou lien gyg.me) ; le tag partenaire est ajouté à l\'affichage.' ),
 	);
 }
