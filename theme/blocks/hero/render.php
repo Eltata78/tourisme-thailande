@@ -54,6 +54,7 @@ switch ( $tt_widget_type ) {
 				'uid'   => 'hero',
 				'title'   => $attributes['widgetTitle'] ?: ( $tt_ctx ? 'Que faire à ' . $tt_ctx['name'] . ' ?' : 'Trouve ton activité' ),
 				'query'   => $tt_ctx['gyg'] ?? ( $tt_act['gyg'] ?? get_the_title( $tt_id ) ),
+				'place'   => tt_place_of( $tt_id ),
 				'choices' => $tt_act ? tt_activity_choices( $tt_post ) : array(),
 				'cmp'     => tt_cmp( 'hero', $tt_id ),
 			)

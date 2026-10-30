@@ -106,6 +106,28 @@ function tt_activity_context( ?int $post_id = null ): ?array {
 }
 
 /**
+ * Destination d'une page ou d'un article : celle de la page (ou de sa page mère), le lieu d'une page activité, sinon la
+ * destination citée dans la requête des offres de l'article. « Thaïlande » quand il n'y en a pas.
+ */
+function tt_place_of( int $post_id ): string {
+	$ctx = tt_destination_context( $post_id );
+	if ( $ctx ) {
+		return $ctx['name'];
+	}
+	$act = tt_activity_context( $post_id );
+	if ( $act ) {
+		return $act['place'];
+	}
+	$q = (string) get_post_meta( $post_id, 'tt_gyg_query', true );
+	foreach ( array_unique( wp_list_pluck( tt_catalog_items(), 'dest' ) ) as $dest ) {
+		if ( 'Thaïlande' !== $dest && false !== mb_stripos( $q, $dest ) ) {
+			return $dest;
+		}
+	}
+	return 'Thaïlande';
+}
+
+/**
  * Choix « Envie de » d'une page activité : elle, puis ses sous-pages (Plongée en Thaïlande -> Koh Tao, Phuket…).
  *
  * @return array<string,string> libellé => requête

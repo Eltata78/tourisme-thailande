@@ -333,6 +333,57 @@
 	} );
 
 
+	/* ---------- Formulaire activités : recherche libre avec suggestions, envoyée à GetYourGuide avec la destination ---------- */
+	var fold = function ( s ) { return String( s || '' ).toLowerCase().normalize( 'NFD' ).replace( /[̀-ͯ]/g, '' ); };
+	$$( 'form[data-tt-acts]' ).forEach( function ( form ) {
+		var input = $( 'input[type=search]', form ), list = $( '.tt-search__sugg', form ), q = form.elements.q;
+		var acts = JSON.parse( form.getAttribute( 'data-tt-acts' ) || '[]' ), place = form.getAttribute( 'data-tt-place' ) || '';
+		var fallback = q.value, items = [], on = -1, picked = null;
+		var close = function () { list.hidden = true; input.setAttribute( 'aria-expanded', 'false' ); };
+		var mark = function () { $$( 'a', list ).forEach( function ( a, i ) { a.classList.toggle( 'is-on', i === on ); } ); };
+		// Toutes les lettres tapées présentes, sans tenir compte des accents ; champ vide : les premières idées.
+		var show = function () {
+			var words = fold( input.value ).split( /\s+/ ).filter( Boolean );
+			items = acts.filter( function ( a ) { var t = fold( a[ 0 ] ); return words.every( function ( w ) { return -1 !== t.indexOf( w ); } ); } ).slice( 0, 7 );
+			on = -1;
+			list.innerHTML = ( words.length ? '' : '<p class="h">' + ( place && 'Thaïlande' !== place ? 'Idées à ' + esc( place ) : 'Idées' ) + '</p>' ) +
+				items.map( function ( a, i ) { return '<a href="#" role="option" data-i="' + i + '">' + esc( a[ 0 ] ) + '</a>'; } ).join( '' );
+			list.hidden = ! items.length;
+			input.setAttribute( 'aria-expanded', String( ! list.hidden ) );
+		};
+		var pick = function ( i ) { picked = items[ i ]; input.value = picked[ 0 ]; close(); };
+		input.addEventListener( 'input', function () { picked = null; show(); } );
+		input.addEventListener( 'focus', show );
+		input.addEventListener( 'blur', function () { setTimeout( close, 150 ); } );
+		input.addEventListener( 'keydown', function ( e ) {
+			if ( list.hidden ) return;
+			if ( 'ArrowDown' === e.key || 'ArrowUp' === e.key ) {
+				e.preventDefault();
+				on = ( on + ( 'ArrowDown' === e.key ? 1 : -1 ) + items.length ) % items.length;
+				mark();
+			} else if ( 'Enter' === e.key && on > -1 ) {
+				e.preventDefault();
+				pick( on );
+			} else if ( 'Escape' === e.key ) {
+				close();
+			}
+		} );
+		list.addEventListener( 'mousedown', function ( e ) {
+			var a = e.target.closest( 'a[data-i]' );
+			if ( a ) { e.preventDefault(); pick( +a.getAttribute( 'data-i' ) ); }
+		} );
+		// Envoi : une activité précise choisie (catalogue, choix de la page) part telle quelle ; un texte tapé ou une idée
+		// générale est complété par la destination ; rien de tapé : la requête de la page.
+		form.addEventListener( 'submit', function () {
+			var text = input.value.trim(), exact = picked && picked[ 0 ] === text && picked[ 1 ] !== picked[ 0 ];
+			var query = exact ? picked[ 1 ] : text;
+			if ( ! query ) query = fallback;
+			else if ( ! exact && place && -1 === fold( query ).indexOf( fold( place ) ) ) query += ' ' + place;
+			q.value = query;
+		} );
+	} );
+
+
 	/* ---------- Bandeau des destinations : défilement en boucle ---------- */
 	$$( '.tt-quick p' ).forEach( function ( p ) {
 		var label = $( 'strong', p ), links = $$( 'a', p );

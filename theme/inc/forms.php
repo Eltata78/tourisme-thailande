@@ -52,24 +52,28 @@ function tt_trip_form( array $o ): string {
 }
 
 /**
- * Formulaire activités GetYourGuide.
+ * Formulaire activités GetYourGuide : recherche libre avec suggestions, date, envoi à la recherche GetYourGuide.
  *
- * @param array{uid:string,title:string,query:string,cmp:string,choices?:array<string,string>,compact?:bool} $o
+ * Le texte saisi part avec la destination (« Muay Thai » -> « Muay Thai Bangkok ») ; champ vide : la requête par défaut.
+ * Suggestions pendant la saisie (front.js) : choix de la page, activités du catalogue à cette destination, idées courantes.
+ *
+ * @param array{uid:string,title:string,query:string,cmp:string,place?:string,choices?:array<string,string>,compact?:bool} $o
  */
 function tt_gyg_form( array $o ): string {
-	$p       = tt_partners();
-	$uid     = 'tt-gyg-' . sanitize_key( $o['uid'] );
-	$choices = ! empty( $o['choices'] ) ? $o['choices'] : array( 'Toutes les activités' => $o['query'] );
-	$opts    = '';
-	foreach ( $choices as $label => $q ) {
-		$opts .= sprintf( '<option value="%s">%s</option>', esc_attr( $q ), esc_html( $label ) );
-	}
+	$p     = tt_partners();
+	$uid   = 'tt-gyg-' . sanitize_key( $o['uid'] );
+	$place = $o['place'] ?? '';
 	ob_start();
 	?>
-	<form class="tt-wdg<?php echo ! empty( $o['compact'] ) ? ' is-compact' : ''; ?>" id="<?php echo esc_attr( $uid ); ?>" action="<?php echo esc_url( $p['gyg_domain'] . '/s/' ); ?>" method="get" target="_blank" data-tt-wdg="gyg">
+	<form class="tt-wdg<?php echo ! empty( $o['compact'] ) ? ' is-compact' : ''; ?>" id="<?php echo esc_attr( $uid ); ?>" action="<?php echo esc_url( $p['gyg_domain'] . '/s/' ); ?>" method="get" target="_blank" data-tt-wdg="gyg"
+		data-tt-place="<?php echo esc_attr( $place ); ?>" data-tt-acts="<?php echo esc_attr( wp_json_encode( tt_activity_suggestions( $place, $o['choices'] ?? array() ), JSON_UNESCAPED_UNICODE ) ); ?>">
 		<p class="tt-wdg__t"><?php echo esc_html( $o['title'] ); ?></p>
-		<label class="tt-f is-full">Envie de<select name="q" id="<?php echo esc_attr( $uid ); ?>-q"><?php echo $opts; // phpcs:ignore ?></select></label>
+		<div class="tt-ac is-full">
+			<label class="tt-f">Activité<input type="search" id="<?php echo esc_attr( $uid ); ?>-what" placeholder="Marché flottant, Muay Thai…" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="<?php echo esc_attr( $uid ); ?>-list"></label>
+			<div class="tt-search__sugg" id="<?php echo esc_attr( $uid ); ?>-list" role="listbox" hidden></div>
+		</div>
 		<label class="tt-f is-full">Date<input type="date" name="date_from" id="<?php echo esc_attr( $uid ); ?>-date" data-tt-date="30" data-tt-same="date_to"></label>
+		<input type="hidden" name="q" value="<?php echo esc_attr( $o['query'] ); ?>">
 		<input type="hidden" name="date_to" value="">
 		<input type="hidden" name="partner_id" value="<?php echo esc_attr( $p['gyg_partner_id'] ); ?>">
 		<input type="hidden" name="cmp" value="<?php echo esc_attr( $o['cmp'] ); ?>">
@@ -77,6 +81,32 @@ function tt_gyg_form( array $o ): string {
 	</form>
 	<?php
 	return (string) ob_get_clean();
+}
+
+/**
+ * Suggestions du formulaire activités : [libellé, requête]. Choix de la page, puis activités du catalogue à cette
+ * destination, puis idées courantes (cherchées avec la destination).
+ *
+ * @param array<string,string> $choices Libellé => requête.
+ * @return array<int,array{0:string,1:string}>
+ */
+function tt_activity_suggestions( string $place, array $choices = array() ): array {
+	$out = array();
+	foreach ( $choices as $label => $q ) {
+		if ( 'Toutes les activités' !== $label ) {
+			$out[ $label ] = $q;
+		}
+	}
+	foreach ( tt_catalog_items() as $it ) {
+		if ( '' !== $place && $it['dest'] === $place ) {
+			$out[ $it['title'] ] = $it['query'];
+		}
+	}
+	$ideas = array( 'Visite guidée', 'Temples', 'Marché flottant', 'Marché de nuit', 'Street food', 'Cours de cuisine thaï', 'Muay Thai', 'Massage thaï', 'Croisière', 'Excursion en bateau', 'Excursion dans les îles', 'Snorkeling', 'Plongée', 'Sanctuaire d\'éléphants', 'Randonnée', 'Kayak', 'Tyrolienne', 'Tour à vélo', 'Spectacle', 'Excursion à la journée', 'Transfert aéroport' );
+	foreach ( $ideas as $idea ) {
+		$out += array( $idea => $idea );
+	}
+	return array_map( null, array_keys( $out ), array_values( $out ) );
 }
 
 /**

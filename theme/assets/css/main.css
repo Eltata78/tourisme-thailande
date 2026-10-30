@@ -161,6 +161,8 @@ b, strong { font-weight: 700; }
 .tt-wdg__ages { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .tt-wdg__ages:empty { display: none; }
 .tt-wdg .tt-btn { padding: 14px 18px; font-size: 16px; }
+.tt-ac { position: relative; } /* recherche d'activités : suggestions sous le champ */
+.tt-ac .tt-search__sugg { top: calc(100% + 4px); max-height: 320px; text-transform: none; letter-spacing: 0; }
 .tt-wdg.is-compact { gap: 8px; }
 .tt-wdg.is-compact .tt-wdg__t { font-size: 18px; }
 .tt-wdg.is-compact label.tt-f:not(:has([data-tt-step])) { grid-column: 1 / -1; }
