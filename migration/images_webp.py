@@ -1,6 +1,6 @@
 """Rattrapage des images déjà en ligne : toutes les tailles régénérées en WebP, formats du thème compris.
 
-Usage : python3 -I migration/images_webp.py <fichier identifiants user:app-password> [--apply] [--site=https://…] [--limit=N] [--ids=1,2]
+Usage : python3 -I migration/images_webp.py <fichier identifiants user:app-password> [--apply] [--site=https://…] [--limit=N] [--ids=1,2] [--force]
 
 Pour chaque image JPEG ou PNG : tailles enregistrées (thumbnail, medium, large, tt-card, tt-hero…) recréées en WebP à
 partir de l'original (le thème règle le format de sortie, voir inc/images.php), puis le contenu des pages et articles
@@ -23,6 +23,7 @@ LIMIT = int(next((a[8:] for a in sys.argv if a.startswith('--limit=')), '0'))
 IDS = [int(i) for i in next((a[6:] for a in sys.argv if a.startswith('--ids=')), '').split(',') if i]
 AUTH = open(sys.argv[1]).read().strip()
 APPLY = '--apply' in sys.argv
+FORCE = '--force' in sys.argv  # tout refaire (changement de qualité) : fichiers WebP réécrits sous le même nom
 
 
 def php(code):
@@ -86,6 +87,7 @@ foreach ( $ids as $id ) {
 	$full = '/uploads/' . $meta['file'];
 	$like = '%%' . $wpdb->esc_like( $full ) . '%%';
 	if ( in_array( $mime, array( 'image/jpeg', 'image/png' ), true ) ) {
+		if ( %s && ! empty( $meta['sizes']['tt-full']['file'] ) ) { @unlink( $base . $meta['sizes']['tt-full']['file'] ); } // --force
 		$m2 = tt_webp_full( $id, wp_get_attachment_metadata( $id ) ); // fonction du thème, inc/images.php
 		if ( ! empty( $m2['sizes']['tt-full'] ) ) {
 			wp_update_attachment_metadata( $id, $m2 );
@@ -107,6 +109,8 @@ return 1;
 
 
 def main():
+    if FORCE and APPLY:
+        print('reprise complète :', php("global $wpdb; return $wpdb->query( \"DELETE FROM {$wpdb->postmeta} WHERE meta_key = '_tt_webp' AND meta_value = 'ok'\" );"))
     todo = php(TODO)
     print('images à traiter :', len(todo))
     if not APPLY or not todo:
@@ -117,7 +121,7 @@ def main():
         todo = todo[:LIMIT]
     total, errors, rewritten, t = 0, [], 0, time.time()
     while todo:
-        r = php(BATCH % json.dumps(todo[:40]))
+        r = php(BATCH % (json.dumps(todo[:40]), 'true' if FORCE else 'false'))
         done = set(r['done']) | {e[0] for e in r['errors']}
         if not done:
             print('aucun progrès sur ce lot, arrêt', r)
