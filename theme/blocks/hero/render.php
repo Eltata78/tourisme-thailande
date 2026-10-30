@@ -94,6 +94,10 @@ $tt_classes = 'tt-hero tt-hero--' . ( $tt_home ? 'home' : 'page' );
 				<?php else : ?>
 					<h1<?php echo mb_strlen( $tt_title ) > 26 ? ' class="is-long"' : ''; ?>><?php echo esc_html( $tt_title ); ?></h1>
 					<?php if ( $tt_sub ) : ?><p><?php echo esc_html( $tt_sub ); ?></p><?php endif; ?>
+					<?php $tt_rate = function_exists( 'tt_rating_page' ) && tt_rating_page( $tt_id ) ? tt_rating( $tt_id ) : null; ?>
+					<?php if ( $tt_rate ) : // note des lecteurs, dès le premier vote : mène au widget en fin de page ?>
+						<a class="tt-hero__rate" href="#tt-rating"><span aria-hidden="true">★</span> <?php echo esc_html( number_format_i18n( $tt_rate[0], 1 ) ); ?> <span>(<?php echo esc_html( sprintf( _n( '%s avis', '%s avis', $tt_rate[1], 'tt' ), number_format_i18n( $tt_rate[1] ) ) ); ?>)</span></a>
+					<?php endif; ?>
 				<?php endif; ?>
 			</div>
 			<?php if ( $tt_widget && ! $tt_home ) : ?>

@@ -172,3 +172,11 @@ Chaque article reçoit à l'affichage une carte d'activités (`tt/cta-card`, emp
 premier et le deuxième H2, y compris quand le 2e H2 est dans un encadré (`inc/article-cta.php`). Rien n'est ajouté si un
 CTA d'activités arrive déjà avant ; jamais collée à un autre CTA. Titre et requête selon la destination de l'article
 (`tt_gyg_query`), photo d'une activité du catalogue de cette destination. Le contenu des articles n'est pas modifié.
+
+## Notes des lecteurs (pages)
+
+Rate My Post sur les destinations, lieux et pages activité (`inc/ratings.php`) : widget en fin de page (« Ce guide t'a
+été utile ? »), note moyenne sous le titre dès le premier vote, données structurées du plugin (CreativeWorkSeries avec
+aggregateRating) complétées de l'adresse, de la description et du lieu décrit (`about`). Demande de note discrète au retour
+d'un clic partenaire (nouvel onglet ou bouton Retour), une fois, jamais si déjà noté (`front.js`). Scripts et police du
+plugin chargés seulement là où les étoiles s'affichent. Aucune note reprise d'un autre site, aucun vote initialisé.

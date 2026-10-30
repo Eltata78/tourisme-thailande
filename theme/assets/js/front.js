@@ -146,6 +146,7 @@
 				cta_placement: placementOf( u.searchParams.get( 'cmp' ) || u.searchParams.get( 'trip_sub1' ) ) || ( 'texte' === comp ? 'lien-texte' : '' ),
 				cta_text: labelOf( a ), cta_url: u.hostname + u.pathname, cta_position: positionOf( a ),
 			} );
+			askLater();
 		} else if ( u.hostname === location.hostname && ! ( u.pathname === location.pathname && u.hash ) && isInternalCta( a, comp ) ) {
 			dataLayer.push( { event: 'cta_click', cta_component: comp, cta_text: labelOf( a ), cta_url: u.pathname, cta_position: positionOf( a ) } );
 		}
@@ -160,6 +161,55 @@
 			cta_placement: placementOf( field && field.value ), cta_text: 'formulaire',
 			cta_url: form.action.replace( /^https?:\/\/|\?.*$/g, '' ), cta_position: positionOf( form ),
 		} );
+		askLater();
+	}
+
+	/* ---------- Note des lecteurs : demandée au retour d'un clic partenaire, sur les pages qui ont le widget de notation ---------- */
+	// Le vote passe par le widget du plugin (enregistrement, anti-doublon) ; une seule demande, jamais si déjà noté.
+	var rmp = $( '.js-rmp-rating-widget' ), rmpBox = rmp && rmp.closest( '.js-rmp-widgets-container' );
+	var rmpId = rmpBox ? ( rmpBox.className.match( /js-rmp-widgets-container--(\d+)/ ) || [] )[ 1 ] || '' : '';
+	var keep = function ( area, k, v ) {
+		try {
+			var st = window[ area ];
+			if ( undefined === v ) return st.getItem( k );
+			if ( null === v ) st.removeItem( k ); else st.setItem( k, v );
+		} catch ( err ) {}
+		return null;
+	};
+	function askLater() {
+		if ( rmpId && ! keep( 'localStorage', 'tt-rated-' + rmpId ) ) keep( 'sessionStorage', 'tt-rate-ask', rmpId );
+	}
+	function askNow() {
+		if ( ! rmpId || document.hidden || keep( 'sessionStorage', 'tt-rate-ask' ) !== rmpId || ( consentBox && ! consentBox.hidden ) ) return;
+		keep( 'sessionStorage', 'tt-rate-ask', null );
+		var box = document.createElement( 'div' );
+		box.className = 'tt-rateask';
+		box.setAttribute( 'role', 'dialog' );
+		box.setAttribute( 'aria-labelledby', 'tt-rateask-t' );
+		box.innerHTML = '<button type="button" class="tt-rateask__x" aria-label="Fermer">×</button>' +
+			'<p class="tt-rateask__t" id="tt-rateask-t">Ce guide t’a aidé à choisir ?</p><div class="tt-rateask__stars" role="group" aria-label="Ta note">' +
+			[ 1, 2, 3, 4, 5 ].map( function ( v ) { return '<button type="button" data-v="' + v + '" aria-label="' + v + ' sur 5">★</button>'; } ).join( '' ) + '</div>';
+		document.body.appendChild( box );
+		var stars = $$( '[data-v]', box ), fill = function ( n ) { stars.forEach( function ( b, i ) { b.classList.toggle( 'is-on', i < n ); } ); };
+		box.addEventListener( 'mouseover', function ( e ) { var b = e.target.closest( '[data-v]' ); if ( b ) fill( +b.getAttribute( 'data-v' ) ); } );
+		box.addEventListener( 'mouseleave', function () { fill( 0 ); } );
+		box.addEventListener( 'click', function ( e ) {
+			if ( e.target.closest( '.tt-rateask__x' ) ) { box.remove(); return; }
+			var b = e.target.closest( '[data-v]' ), icon = b && $( '[data-value="' + b.getAttribute( 'data-v' ) + '"]', rmp );
+			if ( ! icon ) return;
+			icon.click();
+			fill( +b.getAttribute( 'data-v' ) );
+			$( '.tt-rateask__t', box ).textContent = 'Merci pour ta note !';
+			$( '.tt-rateask__stars', box ).style.pointerEvents = 'none';
+			setTimeout( function () { box.remove(); }, 2200 );
+		} );
+	}
+	if ( rmpId ) {
+		rmp.addEventListener( 'click', function ( e ) { if ( e.target.closest( '[data-value]' ) ) keep( 'localStorage', 'tt-rated-' + rmpId, '1' ); } );
+		// Retour sur l'onglet (lien ouvert dans un nouvel onglet) ou sur la page (bouton Retour, même onglet).
+		document.addEventListener( 'visibilitychange', askNow );
+		window.addEventListener( 'focus', askNow );
+		window.addEventListener( 'pageshow', function () { setTimeout( askNow, 400 ); } );
 	}
 
 	/* ---------- Méga-menu : ouverture au clic (tactile, clavier) et fermeture en cliquant ailleurs ---------- */

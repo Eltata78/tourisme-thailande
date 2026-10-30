@@ -30,11 +30,11 @@ add_action(
 	100
 );
 
-// Notes des lecteurs (Rate My Post) : seulement sur les articles, où elles s'affichent, et sans bloquer le rendu.
+// Notes des lecteurs (Rate My Post) : seulement là où elles s'affichent (articles, pages notées), sans bloquer le rendu.
 add_action(
 	'wp_enqueue_scripts',
 	static function () {
-		if ( ! is_singular( 'post' ) ) {
+		if ( ! is_singular( 'post' ) && ! ( is_page() && tt_rating_page( get_queried_object() ) ) ) {
 			wp_dequeue_script( 'rate-my-post' );
 			wp_dequeue_style( 'rate-my-post' );
 		} else {
@@ -43,6 +43,9 @@ add_action(
 	},
 	100
 );
+
+// Police des étoiles préchargée seulement là où elles s'affichent (articles, pages notées, listes d'articles).
+add_filter( 'rmp_font_preload', static fn( $preload ) => $preload && ( is_singular( 'post' ) || is_home() || is_archive() || ( is_page() && tt_rating_page( get_queried_object() ) ) ) );
 
 // Page carte : connexion ouverte d'avance vers le serveur des fonds de carte.
 add_filter(

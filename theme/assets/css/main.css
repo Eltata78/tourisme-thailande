@@ -687,3 +687,17 @@ p.tt-consent__more { display: flex; justify-content: space-between; align-items:
 .tt-comments .comment-form .comment-form-cookies-consent { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
 .tt-comments .comment-form .comment-form-cookies-consent label { font-weight: 400; }
 .tt-comments .form-submit .submit, .tt-comments .wp-block-button__link { border: 0; border-radius: 8px; padding: 12px 20px; background: var(--tt-indigo); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+
+/* ---------- Notes des lecteurs (pages destination, lieux, activités) ---------- */
+.tt-hero__rate { display: inline-flex; align-items: baseline; gap: 6px; margin-top: 14px; color: #fff; font-weight: 700; font-size: 15px; text-decoration: none; }
+.tt-hero__rate span:first-child { color: var(--tt-gold); font-size: 17px; }
+.tt-hero__rate span:last-child { color: #E9E7F5; font-weight: 500; }
+.tt-hero__rate:hover span:last-child { text-decoration: underline; text-underline-offset: 3px; }
+.tt-rating { margin-top: clamp(32px, 5vw, 56px); scroll-margin-top: 90px; }
+.tt-rateask { position: fixed; left: 16px; bottom: 16px; z-index: 95; width: min(340px, calc(100% - 32px)); box-sizing: border-box; padding: 18px 20px; border: 1px solid var(--tt-line); border-radius: 16px; background: #fff; box-shadow: 0 24px 60px -20px rgba(30, 27, 54, .55); }
+.tt-rateask__t { margin: 0 28px 8px 0; font-weight: 700; color: var(--tt-indigo); }
+.tt-rateask__x { position: absolute; top: 8px; right: 10px; padding: 4px; border: 0; background: none; font-size: 22px; line-height: 1; color: var(--tt-muted); cursor: pointer; }
+.tt-rateask__stars { display: flex; gap: 2px; }
+.tt-rateask__stars button { padding: 2px; border: 0; background: none; font-size: 34px; line-height: 1; color: #D9D6E6; cursor: pointer; }
+.tt-rateask__stars button.is-on { color: var(--tt-gold); }
+@media (max-width: 900px) { .tt-rateask { bottom: 92px; } } /* au-dessus de la barre mobile */
