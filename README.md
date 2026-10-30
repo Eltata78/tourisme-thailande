@@ -165,3 +165,10 @@ Tailles générées en WebP (qualité 70), formats du thème `tt-card` (640×480
 WebP à la même taille (taille `tt-full`), servie à sa place en `src` et en `srcset` (`inc/images.php`). Tout nouvel envoi
 (médiathèque, Content Machine) passe par là. Rattrapage des images existantes : `python3 -I migration/images_webp.py
 <identifiants> [--apply]` (reprise possible, anciens fichiers gardés sur le serveur, liste dans `_tt_old_sizes`).
+
+## CTA des articles
+
+Chaque article reçoit à l'affichage une carte d'activités (`tt/cta-card`, emplacement de suivi `section-1`) entre le
+premier et le deuxième H2, y compris quand le 2e H2 est dans un encadré (`inc/article-cta.php`). Rien n'est ajouté si un
+CTA d'activités arrive déjà avant ; jamais collée à un autre CTA. Titre et requête selon la destination de l'article
+(`tt_gyg_query`), photo d'une activité du catalogue de cette destination. Le contenu des articles n'est pas modifié.
