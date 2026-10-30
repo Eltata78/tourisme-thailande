@@ -180,3 +180,10 @@ Rate My Post sur les destinations, lieux et pages activité (`inc/ratings.php`) 
 aggregateRating) complétées de l'adresse, de la description et du lieu décrit (`about`). Demande de note discrète au retour
 d'un clic partenaire (nouvel onglet ou bouton Retour), une fois, jamais si déjà noté (`front.js`). Scripts et police du
 plugin chargés seulement là où les étoiles s'affichent. Aucune note reprise d'un autre site, aucun vote initialisé.
+
+## Affiliation
+
+Identifiants dans `tt_partners()` (`inc/helpers.php`) : GetYourGuide `partner_id` (+ `cmp` = `tt-{page}-{emplacement}`),
+Trip.com `Allianceid` et `SID` (+ `trip_sub1`). Même format que les liens des générateurs des espaces partenaires.
+Filet de sécurité (`inc/affiliate.php`) : tout lien GetYourGuide ou Trip.com d'un contenu sans identifiants les reçoit à
+l'affichage (emplacement `lien-texte`). 
