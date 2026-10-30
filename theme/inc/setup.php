@@ -18,7 +18,10 @@ add_action(
 			)
 		);
 		add_image_size( 'tt-card', 640, 480, true );
+		add_image_size( 'tt-card-s', 320, 240, true ); // même cadrage, pour les cartes étroites (srcset mobile)
 		add_image_size( 'tt-hero', 1920, 1080, true );
+		add_image_size( 'tt-hero-m', 960, 540, true ); // hero sur mobile
+		remove_image_size( '2048x2048' ); // jamais affichée : le hero s'arrête à 1920 px
 	}
 );
 

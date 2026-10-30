@@ -153,3 +153,11 @@ Contexte de chaque page (`page_type`, `thematique`, `destination`, `activity_kin
 `cta_click`) poussés dans le `dataLayer` (`inc/tracking.php`, `front.js`). Conteneur GTM : identifiant dans l'option
 `tt_partners` (clé `gtm_id`), chargé après accord « mesure d'audience » ; il remplace alors la balise GA4 de Site Kit.
 Plan de taggage et conteneur à importer : `docs/plan-de-taggage.md`, `docs/gtm-conteneur.json`.
+
+## Images
+
+Tailles générées en WebP (qualité 78), formats du thème `tt-card` (640×480) et `tt-card-s` (320×240) pour les cartes,
+`tt-hero` (1920×1080) et `tt-hero-m` (960×540) pour les héros ; pas de 2048 px. Chaque original JPEG ou PNG a une copie
+WebP à la même taille (taille `tt-full`), servie à sa place en `src` et en `srcset` (`inc/images.php`). Tout nouvel envoi
+(médiathèque, Content Machine) passe par là. Rattrapage des images existantes : `python3 -I migration/images_webp.py
+<identifiants> [--apply]` (reprise possible, anciens fichiers gardés sur le serveur, liste dans `_tt_old_sizes`).
