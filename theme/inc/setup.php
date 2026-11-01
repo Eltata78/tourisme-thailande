@@ -70,23 +70,31 @@ add_action(
 );
 
 /**
- * Titre et description SEO de Yoast ouverts à l'API REST (articles), pour que Content Machine
- * les écrive à la publication comme ceux des articles écrits à la main.
+ * Titre et description SEO de Yoast ouverts à l'API REST (articles et pages), pour que Content
+ * Machine les écrive à la publication comme ceux des contenus écrits à la main. Les pages
+ * (destinations, activités) en ont besoin autant que les articles : sans ça, WordPress ignore
+ * ces champs à l'envoi et l'onglet affiche « Nom de la page - tourisme-thailande.fr ».
  */
 add_action(
 	'init',
 	static function () {
-		foreach ( array( '_yoast_wpseo_title', '_yoast_wpseo_metadesc' ) as $key ) {
-			register_post_meta(
-				'post',
-				$key,
-				array(
-					'type'          => 'string',
-					'single'        => true,
-					'show_in_rest'  => true,
-					'auth_callback' => static fn() => current_user_can( 'edit_posts' ),
-				)
-			);
+		$types = array(
+			'post' => 'edit_posts',
+			'page' => 'edit_pages',
+		);
+		foreach ( $types as $type => $cap ) {
+			foreach ( array( '_yoast_wpseo_title', '_yoast_wpseo_metadesc' ) as $key ) {
+				register_post_meta(
+					$type,
+					$key,
+					array(
+						'type'          => 'string',
+						'single'        => true,
+						'show_in_rest'  => true,
+						'auth_callback' => static fn() => current_user_can( $cap ),
+					)
+				);
+			}
 		}
 	}
 );
