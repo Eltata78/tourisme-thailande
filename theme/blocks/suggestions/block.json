@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/suggestions",
+	"title": "Suggestions (recherche vide, 404)",
+	"category": "tt-layout",
+	"description": "Destinations, catalogue d'activités et blog ; après une recherche sans résultat, les offres en ligne pour ce qui a été cherché.",
+	"supports": { "html": false },
+	"attributes": {},
+	"render": "file:./render.php"
+}

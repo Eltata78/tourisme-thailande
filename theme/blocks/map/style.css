@@ -1,0 +1,43 @@
+.tt-map { position: relative; z-index: 0; border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 9; min-height: 260px; background: #F6F5F0; border: 1px solid var(--tt-line, #E5E3EE); font: inherit; }
+.tt-map:not(.is-ready) { background-image: linear-gradient(90deg, rgba(45, 42, 74, .05) 1px, transparent 1px), linear-gradient(0deg, rgba(45, 42, 74, .05) 1px, transparent 1px); background-size: 32px 32px; }
+.tt-map .maplibregl-ctrl-group { border-radius: 8px; box-shadow: 0 4px 14px -6px rgba(30, 27, 54, .45); }
+.tt-map .maplibregl-ctrl-attrib { font-size: 10px; }
+.tt-map .maplibregl-cooperative-gesture-screen { font: inherit; font-size: 15px; font-weight: 600; }
+@media (max-width: 700px) { .tt-map { aspect-ratio: 4 / 3.6; } }
+
+/* Repères : point rouge, nom au survol ; la page en cours est marquée et nommée en permanence */
+/* Pas de « position » ici : MapLibre place chaque repère en absolu, le surcharger décale les repères au zoom. */
+.tt-map .tt-pin { width: 18px; height: 18px; padding: 0; border: 0; background: none; cursor: pointer; }
+.tt-pin__dot { display: block; width: 100%; height: 100%; border-radius: 50%; background: var(--tt-red, #A51931); border: 3px solid #fff; box-shadow: 0 2px 8px rgba(30, 27, 54, .45); transition: transform .15s ease; }
+.tt-pin:hover .tt-pin__dot, .tt-pin:focus-visible .tt-pin__dot { transform: scale(1.25); }
+.tt-map .tt-pin.is-cur { width: 26px; height: 26px; z-index: 2; }
+.tt-pin.is-cur .tt-pin__dot { background: var(--tt-indigo, #2D2A4A); box-shadow: 0 0 0 7px rgba(165, 25, 49, .22), 0 2px 8px rgba(30, 27, 54, .45); }
+/* Repère photo : la vignette de la fiche, comme une bulle */
+.tt-map .tt-pin.has-img { width: 44px; height: 44px; }
+.tt-map .tt-pin.has-img.is-cur { width: 56px; height: 56px; }
+.tt-pin__img { display: block; width: 100%; height: 100%; max-width: none; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 3px 10px rgba(30, 27, 54, .45); transition: transform .15s ease; }
+.tt-pin:hover .tt-pin__img, .tt-pin:focus-visible .tt-pin__img { transform: scale(1.12); }
+.tt-pin.is-cur .tt-pin__img { border-color: var(--tt-red, #A51931); box-shadow: 0 0 0 4px rgba(165, 25, 49, .2), 0 3px 10px rgba(30, 27, 54, .45); }
+.tt-map .tt-pin.is-grouped { display: none; }
+.tt-pin__count { position: absolute; top: -6px; right: -8px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--tt-red, #A51931); color: #fff; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center; box-shadow: 0 0 0 2px #fff; }
+.tt-pin__label { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; background: #fff; color: var(--tt-indigo, #2D2A4A); font-size: 13px; font-weight: 600; line-height: 1.2; padding: 5px 9px; border-radius: 8px; box-shadow: 0 6px 16px -8px rgba(30, 27, 54, .6); opacity: 0; pointer-events: none; transition: opacity .15s ease; }
+.tt-pin:hover .tt-pin__label, .tt-pin:focus-visible .tt-pin__label, .tt-pin.is-cur .tt-pin__label { opacity: 1; }
+
+/* Repère choisi */
+.tt-pin.is-active .tt-pin__img, .tt-pin.is-active .tt-pin__dot { transform: scale(1.18); border-color: var(--tt-red, #A51931); }
+.tt-map .tt-pin.is-active { z-index: 3; }
+
+/* Carte de l'activité choisie, en bas de la carte (fixe pendant zoom et déplacement) */
+.tt-map .tt-mapcard { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 4; max-width: 440px; margin-inline: auto; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 16px 34px -14px rgba(30, 27, 54, .6); }
+.tt-map .tt-mapcard[hidden] { display: none; }
+.tt-mapcard__in { position: relative; display: grid; grid-template-columns: 120px minmax(0, 1fr); min-height: 112px; }
+.tt-mapcard.is-plain .tt-mapcard__in { grid-template-columns: minmax(0, 1fr); }
+.tt-map .tt-mapcard__img { display: block; }
+.tt-mapcard__img img { display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.tt-mapcard__b { display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 12px 38px 12px 14px; }
+.tt-map .tt-mapcard__t { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 17px; font-weight: 800; font-stretch: 85%; line-height: 1.15; color: var(--tt-indigo, #2D2A4A); text-decoration: none; }
+.tt-mapcard__a { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.tt-map .tt-mapcard .tt-btn { padding: 9px 14px; font-size: 14px; color: var(--tt-ink, #1E1B36); }
+.tt-map .tt-mapcard__guide { font-size: 14px; font-weight: 600; color: var(--tt-red, #A51931); }
+.tt-mapcard__x { position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; background: var(--tt-mist, #F4F3F8); color: var(--tt-indigo, #2D2A4A); font-size: 20px; line-height: 30px; cursor: pointer; }
+@media (max-width: 700px) { .tt-mapcard__in { grid-template-columns: 104px minmax(0, 1fr); min-height: 104px; } }

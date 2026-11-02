@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/mobile-bar",
+	"title": "Barre de réservation mobile",
+	"category": "tt-affiliation",
+	"description": "Barre fixée en bas de l'écran sur mobile, qui apparaît une fois le hero passé. Par défaut : activités GetYourGuide de la destination de la page.",
+	"supports": { "html": false, "multiple": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"label": { "type": "string", "default": "" },
+		"sub": { "type": "string", "default": "" },
+		"button": { "type": "string", "default": "" },
+		"url": { "type": "string", "default": "" },
+		"query": { "type": "string", "default": "" }
+	},
+	"render": "file:./render.php"
+}

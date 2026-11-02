@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/gyg-search",
+	"title": "Recherche d'activités GetYourGuide",
+	"category": "tt-affiliation",
+	"description": "Formulaire « Envie de » + date qui ouvre GetYourGuide filtré avec le tag partenaire. Choix : une ligne par option, au format « Libellé | requête ».",
+	"supports": { "html": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"choices": { "type": "string", "default": "" },
+		"placement": { "type": "string", "default": "rail" },
+		"layout": { "type": "string", "enum": [ "card", "band", "compact" ], "default": "compact" }
+	},
+	"render": "file:./render.php"
+}

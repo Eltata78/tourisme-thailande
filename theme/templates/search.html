@@ -1,0 +1,23 @@
+<!-- wp:template-part {"slug":"header","area":"header","tagName":"div"} /-->
+
+<!-- wp:group {"tagName":"main","className":"tt-page tt-page--wide","layout":{"type":"default"}} -->
+<main class="wp-block-group tt-page tt-page--wide"><!-- wp:tt/page-head {"search":true} /-->
+
+<!-- wp:query {"queryId":1,"query":{"perPage":16,"inherit":true},"className":"tt-cards"} -->
+<div class="wp-block-query tt-cards"><!-- wp:post-template {"layout":{"type":"grid","columnCount":4,"minimumColumnWidth":"220px"}} -->
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/10","sizeSlug":"tt-card"} /-->
+<!-- wp:post-terms {"term":"category","className":"tt-cat"} /-->
+<!-- wp:post-title {"isLink":true,"level":2} /-->
+<!-- /wp:post-template -->
+<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"}} -->
+<!-- wp:query-pagination-previous {"label":"Précédent"} /-->
+<!-- wp:query-pagination-numbers {"midSize":99} /-->
+<!-- wp:query-pagination-next {"label":"Suivant"} /-->
+<!-- /wp:query-pagination -->
+<!-- wp:query-no-results -->
+<!-- wp:tt/suggestions /-->
+<!-- /wp:query-no-results --></div>
+<!-- /wp:query --></main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer","tagName":"div"} /-->

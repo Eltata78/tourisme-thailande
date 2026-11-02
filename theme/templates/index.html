@@ -1,0 +1,25 @@
+<!-- wp:template-part {"slug":"header","area":"header","tagName":"div"} /-->
+
+<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained","contentSize":"1240px"}} -->
+<main class="wp-block-group" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--60)"><!-- wp:query-title {"type":"archive","level":1,"style":{"typography":{"fontSize":"clamp(2.25rem, 5vw, 3.5rem)"}}} /-->
+<!-- wp:term-description /-->
+<!-- wp:query {"queryId":1,"query":{"perPage":12,"inherit":true},"className":"tt-cards"} -->
+<div class="wp-block-query tt-cards"><!-- wp:post-template {"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"260px"}} -->
+<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/10","style":{"border":{"radius":"12px"}}} /-->
+<!-- wp:post-terms {"term":"category","className":"tt-cat"} /-->
+<!-- wp:post-title {"isLink":true,"level":2,"style":{"typography":{"fontSize":"18px","lineHeight":"1.25"}}} /-->
+<!-- /wp:post-template -->
+<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"}} -->
+<!-- wp:query-pagination-previous {"label":"Précédent"} /-->
+<!-- wp:query-pagination-numbers /-->
+<!-- wp:query-pagination-next {"label":"Suivant"} /-->
+<!-- /wp:query-pagination -->
+<!-- wp:query-no-results -->
+<!-- wp:paragraph -->
+<p>Aucun article pour le moment.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:query-no-results --></div>
+<!-- /wp:query --></main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer","tagName":"div"} /-->

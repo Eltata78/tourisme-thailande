@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/brand",
+	"title": "Logo du site",
+	"category": "tt-layout",
+	"description": "Emblème et nom du site, avec lien vers l'accueil.",
+	"supports": { "html": false },
+	"attributes": {},
+	"render": "file:./render.php"
+}

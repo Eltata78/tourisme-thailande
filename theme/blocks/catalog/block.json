@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/catalog",
+	"title": "Catalogue d'activités",
+	"category": "tt-layout",
+	"description": "Toutes les pages qui ont un type d'activité, avec recherche, filtres par destination et par type, et tri. Titre et accroche : ceux de la page.",
+	"supports": { "html": false, "multiple": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"tiles": { "type": "string", "default": "" },
+		"placeholder": { "type": "string", "default": "Rechercher : Wat Pho, plongée, éléphants…" }
+	},
+	"render": "file:./render.php"
+}

@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/topics",
+	"title": "Rubriques du blog",
+	"category": "tt-layout",
+	"description": "Pastilles des catégories d'articles (les plus fournies d'abord), la rubrique en cours mise en avant.",
+	"supports": { "html": false },
+	"attributes": {},
+	"render": "file:./render.php"
+}

@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/page-head",
+	"title": "En-tête de page",
+	"category": "tt-layout",
+	"description": "Fil d'Ariane, titre H1 et accroche, centrés. Sur la recherche et la 404, titre adapté et barre de recherche.",
+	"supports": { "html": false, "multiple": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"intro": { "type": "string", "default": "" },
+		"search": { "type": "boolean", "default": false }
+	},
+	"render": "file:./render.php"
+}

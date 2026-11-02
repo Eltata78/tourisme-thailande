@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/gyg-card",
+	"title": "Carte activité GetYourGuide",
+	"category": "tt-affiliation",
+	"description": "Une activité : image, type, titre, note, durée, prix « dès » et lien GetYourGuide tagué. À placer seule ou dans une grille.",
+	"supports": { "html": false },
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"imageId": { "type": "number", "default": 0 },
+		"imageUrl": { "type": "string", "default": "" },
+		"place": { "type": "string", "default": "" },
+		"kind": { "type": "string", "default": "" },
+		"rating": { "type": "string", "default": "" },
+		"reviews": { "type": "string", "default": "" },
+		"meta": { "type": "string", "default": "" },
+		"price": { "type": "string", "default": "" },
+		"url": { "type": "string", "default": "" },
+		"query": { "type": "string", "default": "" },
+		"placement": { "type": "string", "default": "card" }
+	},
+	"render": "file:./render.php"
+}

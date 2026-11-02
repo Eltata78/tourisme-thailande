@@ -1,0 +1,62 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/cta-card",
+	"title": "Carte de réservation",
+	"category": "tt-affiliation",
+	"description": "Encart photo + titre + bouton vers une activité ou une recherche d'activités, avec le tag partenaire. Sans lien ni requête, la recherche porte sur la destination de la page.",
+	"supports": {
+		"html": false
+	},
+	"usesContext": [
+		"postId"
+	],
+	"attributes": {
+		"kicker": {
+			"type": "string",
+			"default": ""
+		},
+		"title": {
+			"type": "string",
+			"default": ""
+		},
+		"text": {
+			"type": "string",
+			"default": ""
+		},
+		"rating": {
+			"type": "string",
+			"default": ""
+		},
+		"reviews": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": "Voir les activités"
+		},
+		"imageId": {
+			"type": "number",
+			"default": 0
+		},
+		"imageUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"url": {
+			"type": "string",
+			"default": ""
+		},
+		"query": {
+			"type": "string",
+			"default": ""
+		},
+		"placement": {
+			"type": "string",
+			"default": "carte"
+		}
+	},
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

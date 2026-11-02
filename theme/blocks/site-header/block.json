@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/site-header",
+	"title": "En-tête du site",
+	"category": "tt-layout",
+	"description": "Logo, méga-menu (menu « Menu principal »), recherche et bouton de réservation contextuel.",
+	"supports": { "html": false, "multiple": false, "reusable": false },
+	"attributes": {},
+	"render": "file:./render.php"
+}
