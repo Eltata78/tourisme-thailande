@@ -86,12 +86,15 @@ Réglage à distance d'un nouveau site (mot de passe d'application d'un administ
   (`wpel-*`), Rate My Post (`rmp_*`) et LiteSpeed (`litespeed.conf.*`). Les autres noms sont ignorés.
 - Extensions : `POST /wp-json/wp/v2/plugins` `{"slug": "wordpress-seo", "status": "active"}`.
 
-Le thème lui-même se téléverse à la main (Apparence > Thèmes > Ajouter) : l'API ne permet pas d'installer un thème.
+Le thème se téléverse une première fois à la main (Apparence > Thèmes > Ajouter) : l'API ne permet pas d'installer un thème.
+Ensuite, `POST /wp-json/tt/v1/theme-update` `{"ref": "<branche>"}` le met à jour depuis ce dépôt : l'archive de la branche est
+téléchargée chez GitHub et son dossier `theme/` remplace le thème actif (réservé aux administrateurs, aucune autre source acceptée).
 
 ## Réglages partenaires
 
 Option `tt_partners` : `gyg_partner_id`, `gyg_domain`, `trip_alliance_id`, `trip_sid`, `cta_default_label`, `cta_default_url`.
-Chaque lien porte un identifiant de campagne `{site}-{slug}-{emplacement}` (`tt` sur le site thaï, `grece`, `portugal`… ailleurs : clé `cmp` de `tt_site`) (`cmp` chez GetYourGuide, `trip_sub1` chez Trip.com).
+Chaque lien porte un identifiant de campagne `{site}-{slug}-{emplacement}` (`cmp` chez GetYourGuide, `trip_sub1` chez Trip.com),
+où `{site}` vaut `tt` sur le site thaï et le slug du pays ailleurs (`grece`, `portugal`… : clé `cmp` de `tt_site`).
 Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris des liens générés dans l'espace partenaire Trip
 (`tt_trip_destinations()` dans `inc/helpers.php` ; Krabi = province, Ban Krut = lieu). Aucun nom de partenaire n'est affiché sur le site.
 
