@@ -85,7 +85,7 @@ function tt_schema_attraction( WP_Post $p, bool $full ): array {
 		if ( '' !== $intro ) {
 			$node['description'] = $intro;
 		}
-		$node['address'] = array( '@type' => 'PostalAddress', 'addressCountry' => 'TH' );
+		$node['address'] = array( '@type' => 'PostalAddress', 'addressCountry' => strtoupper( (string) tt_site()['country_code'] ) );
 	}
 	return $node;
 }
@@ -113,7 +113,8 @@ function tt_schema_destination( WP_Post $hub, bool $full = true ): array {
 		if ( $img ) {
 			$node['image'] = $img;
 		}
-		$node['containedInPlace'] = array( '@type' => 'Country', 'name' => 'Thaïlande', 'identifier' => 'TH' );
+		list( $tt_type, $tt_name, $tt_code ) = tt_site()['schema_place'];
+		$node['containedInPlace']        = array( '@type' => $tt_type, 'name' => $tt_name, 'identifier' => $tt_code );
 	}
 	return $node;
 }

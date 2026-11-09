@@ -42,7 +42,7 @@ switch ( $tt_widget_type ) {
 		$tt_widget = tt_trip_form(
 			array(
 				'uid'   => 'hero',
-				'title' => $attributes['widgetTitle'] ?: ( $tt_ctx ? 'Ton hôtel à ' . $tt_ctx['name'] : 'Ton hôtel en Thaïlande' ),
+				'title' => $attributes['widgetTitle'] ?: ( $tt_ctx ? 'Ton hôtel à ' . $tt_ctx['name'] : 'Ton hôtel ' . tt_site()['in'] ),
 				'dest'  => $tt_ctx['trip'] ?? '',
 				'cmp'   => tt_cmp( 'hero', $tt_id ),
 			)

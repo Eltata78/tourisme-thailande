@@ -59,6 +59,7 @@ add_action(
 			'tt-meta-panel',
 			'window.ttMeta = ' . wp_json_encode(
 				array(
+					'title'  => tt_site()['brand'],
 					'fields' => tt_page_meta_fields(),
 					'kinds'  => tt_activity_kinds(),
 					'trip'   => array_map( static fn( $d ) => $d[0], tt_trip_destinations() ),
@@ -75,7 +76,7 @@ add_filter(
 		array_unshift(
 			$cats,
 			array( 'slug' => 'tt-affiliation', 'title' => 'Réservation et affiliation' ),
-			array( 'slug' => 'tt-layout', 'title' => 'Tourisme Thaïlande' )
+			array( 'slug' => 'tt-layout', 'title' => tt_site()['brand'] )
 		);
 		return $cats;
 	}

@@ -69,7 +69,7 @@ function tt_gyg_form( array $o ): string {
 		data-tt-place="<?php echo esc_attr( $place ); ?>" data-tt-acts="<?php echo esc_attr( wp_json_encode( tt_activity_suggestions( $place, $o['choices'] ?? array() ), JSON_UNESCAPED_UNICODE ) ); ?>">
 		<p class="tt-wdg__t"><?php echo esc_html( $o['title'] ); ?></p>
 		<div class="tt-ac is-full">
-			<label class="tt-f">Activité<input type="search" id="<?php echo esc_attr( $uid ); ?>-what" placeholder="Marché flottant, Muay Thai…" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="<?php echo esc_attr( $uid ); ?>-list"></label>
+			<label class="tt-f">Activité<input type="search" id="<?php echo esc_attr( $uid ); ?>-what" placeholder="<?php echo esc_attr( tt_site()['activity_placeholder'] ); ?>" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="<?php echo esc_attr( $uid ); ?>-list"></label>
 			<div class="tt-search__sugg" id="<?php echo esc_attr( $uid ); ?>-list" role="listbox" hidden></div>
 		</div>
 		<label class="tt-f is-full">Date<input type="date" name="date_from" id="<?php echo esc_attr( $uid ); ?>-date" data-tt-date="30" data-tt-same="date_to"></label>
@@ -102,7 +102,7 @@ function tt_activity_suggestions( string $place, array $choices = array() ): arr
 			$out[ $it['title'] ] = $it['query'];
 		}
 	}
-	$ideas = array( 'Visite guidée', 'Temples', 'Marché flottant', 'Marché de nuit', 'Street food', 'Cours de cuisine thaï', 'Muay Thai', 'Massage thaï', 'Croisière', 'Excursion en bateau', 'Excursion dans les îles', 'Snorkeling', 'Plongée', 'Sanctuaire d\'éléphants', 'Randonnée', 'Kayak', 'Tyrolienne', 'Tour à vélo', 'Spectacle', 'Excursion à la journée', 'Transfert aéroport' );
+	$ideas = (array) tt_site()['ideas'];
 	foreach ( $ideas as $idea ) {
 		$out += array( $idea => $idea );
 	}

@@ -16,7 +16,7 @@ if ( ! $tt_post || ! $tt_items ) {
 $tt_kinds = tt_activity_kinds();
 $tt_by_k  = array_count_values( wp_list_pluck( $tt_items, 'kind' ) );
 $tt_by_d  = array_count_values( wp_list_pluck( $tt_items, 'dest' ) );
-$tt_dests = count( array_diff( array_keys( $tt_by_d ), array( 'Thaïlande' ) ) );
+$tt_dests = count( array_diff( array_keys( $tt_by_d ), array( tt_country() ) ) );
 $tt_h1    = (string) get_post_meta( $tt_post->ID, 'tt_h1', true ) ?: get_the_title( $tt_post );
 $tt_intro = (string) get_post_meta( $tt_post->ID, 'tt_intro', true )
 	?: sprintf( 'Visites, excursions, plongée, spectacles : %d activités détaillées dans %d destinations, avec nos conseils et les meilleures offres à réserver.', count( $tt_items ), $tt_dests );
@@ -34,14 +34,14 @@ foreach ( $tt_items as $tt_it ) {
 	}
 }
 
-// Filtre destination : régions dans l'ordre, puis « Partout en Thaïlande ».
+// Filtre destination : régions dans l'ordre, puis « Partout en Thaïlande » (tt_site()['everywhere']).
 $tt_groups = array();
 foreach ( $tt_items as $tt_it ) {
-	$tt_groups[ $tt_it['region'] ?: 'Partout en Thaïlande' ][ $tt_it['dslug'] ] = $tt_it['dest'];
+	$tt_groups[ $tt_it['region'] ?: tt_site()['everywhere'] ][ $tt_it['dslug'] ] = $tt_it['dest'];
 }
-$tt_order  = array_merge( array_keys( tt_regions() ), array( 'Autres destinations', 'Partout en Thaïlande' ) );
+$tt_order  = array_merge( array_keys( tt_regions() ), array( 'Autres destinations', tt_site()['everywhere'] ) );
 $tt_groups = array_merge( array_intersect_key( array_flip( $tt_order ), $tt_groups ), $tt_groups );
-$tt_label  = static fn( $d ) => 'Thaïlande' === $d ? 'Toute la Thaïlande' : $d;
+$tt_label  = static fn( $d ) => tt_country() === $d ? tt_site()['whole'] : $d;
 $tt_empty  = tt_gyg_url( '__Q__', tt_cmp( 'catalogue-vide', $tt_post->ID ) );
 ?>
 <section <?php echo get_block_wrapper_attributes( array( 'class' => 'tt-catalog' ) ); ?> data-tt-cat>
@@ -54,7 +54,7 @@ $tt_empty  = tt_gyg_url( '__Q__', tt_cmp( 'catalogue-vide', $tt_post->ID ) );
 		<label class="tt-catalog__search">
 			<span class="screen-reader-text">Rechercher une activité</span>
 			<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-			<input type="search" data-cat-q placeholder="<?php echo esc_attr( $attributes['placeholder'] ); ?>" autocomplete="off">
+			<input type="search" data-cat-q placeholder="<?php echo esc_attr( $attributes['placeholder'] ?: tt_site()['catalog_placeholder'] ); ?>" autocomplete="off">
 		</label>
 	</header>
 
@@ -126,7 +126,7 @@ $tt_empty  = tt_gyg_url( '__Q__', tt_cmp( 'catalogue-vide', $tt_post->ID ) );
 			</ul>
 			<div class="tt-catalog__empty" hidden>
 				<p><b>Aucune activité ne correspond.</b> Essaie une autre destination ou efface les filtres.</p>
-				<a class="tt-btn tt-btn--gold" data-cat-offers data-href="<?php echo esc_url( $tt_empty ); ?>" href="<?php echo esc_url( tt_gyg_url( 'Thaïlande', tt_cmp( 'catalogue-vide', $tt_post->ID ) ) ); ?>" target="_blank" rel="sponsored nofollow noopener">Voir les offres en ligne</a>
+				<a class="tt-btn tt-btn--gold" data-cat-offers data-href="<?php echo esc_url( $tt_empty ); ?>" href="<?php echo esc_url( tt_gyg_url( tt_country(), tt_cmp( 'catalogue-vide', $tt_post->ID ) ) ); ?>" target="_blank" rel="sponsored nofollow noopener">Voir les offres en ligne</a>
 			</div>
 		</div>
 	</div>

@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tt/footer-links",
+	"title": "Liens du pied de page",
+	"category": "tt-layout",
+	"description": "Colonnes de liens propres au site (réglage tt_site, clé footer), à placer dans le bloc Colonnes du pied de page.",
+	"supports": { "html": false, "inserter": false },
+	"attributes": {},
+	"render": "file:./render.php"
+}

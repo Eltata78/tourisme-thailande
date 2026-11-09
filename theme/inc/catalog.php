@@ -9,30 +9,17 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Types d'activité, dans l'ordre d'affichage : clé => libellé.
+ * Types d'activité, dans l'ordre d'affichage : clé => libellé (profil du pays, tt_site()['kinds']).
  */
 function tt_activity_kinds(): array {
-	return array(
-		'temples'     => 'Temples et culture',
-		'marches'     => 'Marchés',
-		'iles'        => 'Îles et bateau',
-		'nature'      => 'Nature et parcs',
-		'plongee'     => 'Plongée et snorkeling',
-		'sorties'     => 'Spectacles et sorties',
-		'experiences' => 'Expériences et loisirs',
-	);
+	return (array) tt_site()['kinds'];
 }
 
 /**
- * Régions du filtre « Destination », dans l'ordre d'affichage : région => destinations.
+ * Régions du filtre « Destination », dans l'ordre d'affichage : région => destinations (profil du pays).
  */
 function tt_regions(): array {
-	return array(
-		'Le Nord'              => array( 'Chiang Mai', 'Chiang Rai', 'Pai', 'Mae Hong Son' ),
-		'Bangkok et le Centre' => array( 'Bangkok', 'Ayutthaya', 'Pattaya', 'Kanchanaburi', 'Lopburi' ),
-		'Golfe de Thaïlande'   => array( 'Koh Samui', 'Koh Phangan', 'Koh Tao', 'Ban Krut', 'Hua Hin' ),
-		"Mer d'Andaman"        => array( 'Phuket', 'Krabi', 'Koh Phi Phi', 'Koh Lanta', 'Khao Lak' ),
-	);
+	return (array) tt_site()['regions'];
 }
 
 // Type d'activité et titre court valent aussi pour les articles : un guide d'activité peut entrer au catalogue.
@@ -92,13 +79,13 @@ function tt_catalog_items(): array {
 		$ctx  = 'page' === $p->post_type ? tt_destination_context( $p->ID ) : null;
 		$act  = $ctx ? null : tt_activity_context( $p->ID );
 		$q    = (string) get_post_meta( $p->ID, 'tt_gyg_query', true );
-		$dest = $ctx['name'] ?? ( $act['place'] ?? ( '' !== $q ? $q : 'Thaïlande' ) );
+		$dest = $ctx['name'] ?? ( $act['place'] ?? ( '' !== $q ? $q : tt_country() ) );
 		$title = (string) get_post_meta( $p->ID, 'tt_card_title', true );
 		if ( '' === $title ) {
 			$title = 'post' === $p->post_type ? preg_replace( '/\s*[:?].*$/u', '', get_the_title( $p ) ) : get_the_title( $p ); // article : sans sa seconde partie
 		}
 		$title   = html_entity_decode( wp_strip_all_tags( $title ), ENT_QUOTES, 'UTF-8' );
-		$region  = 'Thaïlande' === $dest ? '' : ( array_keys( $regions )[ $rank[ $dest ] ?? -1 ] ?? 'Autres destinations' );
+		$region  = tt_country() === $dest ? '' : ( array_keys( $regions )[ $rank[ $dest ] ?? -1 ] ?? 'Autres destinations' );
 		$items[] = array(
 			'id'     => $p->ID,
 			'title'  => $title,
@@ -109,10 +96,10 @@ function tt_catalog_items(): array {
 			'region' => $region,
 			'kind'   => $kind,
 			'search' => implode( ' ', array( $dest, $kinds[ $kind ], get_the_title( $p ), (string) get_post_meta( $p->ID, 'tt_synonyms', true ), $p->post_parent ? get_the_title( $p->post_parent ) : '' ) ),
-			'order'  => array( 'Thaïlande' === $dest ? 99 : ( $rank[ $dest ] ?? 50 ), $dest, remove_accents( $title ) ),
+			'order'  => array( tt_country() === $dest ? 99 : ( $rank[ $dest ] ?? 50 ), $dest, remove_accents( $title ) ),
 			'geo'    => tt_geo( $p->ID ),
 			'gyg'    => (string) get_post_meta( $p->ID, 'tt_gyg_url', true ),
-			'query'  => $act['gyg'] ?? ( 'post' === $p->post_type ? $title . ( 'Thaïlande' === $dest ? '' : ' ' . $dest ) : ( $q ?: ( $ctx['gyg'] ?? $title ) ) ),
+			'query'  => $act['gyg'] ?? ( 'post' === $p->post_type ? $title . ( tt_country() === $dest ? '' : ' ' . $dest ) : ( $q ?: ( $ctx['gyg'] ?? $title ) ) ),
 		);
 	}
 	usort( $items, static fn( $a, $b ) => $a['order'] <=> $b['order'] );

@@ -42,6 +42,7 @@ add_action(
 			'ttFront',
 			array(
 				'searchIndex' => rest_url( 'tt/v1/search-index' ),
+				'country'     => tt_country(),
 				'maplib'      => get_theme_file_uri( 'assets/vendor/maplibre/' ),
 				'gyg'         => array(
 					'domain'  => tt_partners()['gyg_domain'],
@@ -73,7 +74,7 @@ add_action(
  * Titre et description SEO de Yoast ouverts à l'API REST (articles et pages), pour que Content
  * Machine les écrive à la publication comme ceux des contenus écrits à la main. Les pages
  * (destinations, activités) en ont besoin autant que les articles : sans ça, WordPress ignore
- * ces champs à l'envoi et l'onglet affiche « Nom de la page - tourisme-thailande.fr ».
+ * ces champs à l'envoi et l'onglet affiche « Nom de la page - nom du site » (ex. tourisme-thailande.fr).
  */
 add_action(
 	'init',

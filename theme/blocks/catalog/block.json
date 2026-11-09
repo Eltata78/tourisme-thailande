@@ -9,7 +9,7 @@
 	"usesContext": [ "postId" ],
 	"attributes": {
 		"tiles": { "type": "string", "default": "" },
-		"placeholder": { "type": "string", "default": "Rechercher : Wat Pho, plongée, éléphants…" }
+		"placeholder": { "type": "string", "default": "" }
 	},
 	"render": "file:./render.php"
 }

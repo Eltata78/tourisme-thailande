@@ -1,5 +1,5 @@
 /**
- * Éditeur : panneau « Tourisme Thaïlande » dans les réglages du document, pour les métadonnées tt_*
+ * Éditeur : panneau « Tourisme {pays} » (nom du site) dans les réglages du document, pour les métadonnées tt_*
  * (titre H1, accroche, type d'activité du catalogue, requête des offres, destination hôtels…).
  */
 ( function ( wp ) {
@@ -22,7 +22,7 @@
 			if ( ! keys.length ) {
 				return null;
 			}
-			return el( Panel, { name: 'tt-meta', title: 'Tourisme Thaïlande' }, keys.map( function ( k ) {
+			return el( Panel, { name: 'tt-meta', title: cfg.title || 'Tourisme' }, keys.map( function ( k ) {
 				var f = cfg.fields[ k ];
 				var set = function ( v ) { var o = {}; o[ k ] = v; editPost( { meta: o } ); };
 				var common = { key: k, label: f.label, help: f.description, value: null == meta[ k ] ? '' : meta[ k ], onChange: set, __nextHasNoMarginBottom: true };

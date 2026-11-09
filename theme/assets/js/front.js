@@ -396,7 +396,7 @@
 			var words = fold( input.value ).split( /\s+/ ).filter( Boolean );
 			items = acts.filter( function ( a ) { var t = fold( a[ 0 ] ); return words.every( function ( w ) { return -1 !== t.indexOf( w ); } ); } ).slice( 0, 7 );
 			on = -1;
-			list.innerHTML = ( words.length ? '' : '<p class="h">' + ( place && 'Thaïlande' !== place ? 'Idées à ' + esc( place ) : 'Idées' ) + '</p>' ) +
+			list.innerHTML = ( words.length ? '' : '<p class="h">' + ( place && ( cfg.country || 'Thaïlande' ) !== place ? 'Idées à ' + esc( place ) : 'Idées' ) + '</p>' ) +
 				items.map( function ( a, i ) { return '<a href="#" role="option" data-i="' + i + '">' + esc( a[ 0 ] ) + '</a>'; } ).join( '' );
 			list.hidden = ! items.length;
 			input.setAttribute( 'aria-expanded', String( ! list.hidden ) );
@@ -863,7 +863,7 @@
 			count.textContent = plural( n );
 			apply.textContent = n ? 'Voir les ' + plural( n ) : 'Aucune activité';
 			empty.hidden = n > 0;
-			if ( ! n ) offers.href = offers.dataset.href.replace( '__Q__', encodeURIComponent( q.value.trim() || 'Thaïlande' ) );
+			if ( ! n ) offers.href = offers.dataset.href.replace( '__Q__', encodeURIComponent( q.value.trim() || cfg.country || 'Thaïlande' ) );
 			chips.innerHTML = boxes.filter( function ( b ) { return b.checked; } ).map( function ( b ) {
 				return '<button type="button" data-name="' + b.name + '" data-value="' + esc( b.value ) + '">' + esc( b.dataset.label ) + ' <span aria-hidden="true">×</span><span class="screen-reader-text">(retirer le filtre)</span></button>';
 			} ).join( '' );

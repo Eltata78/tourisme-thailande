@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 $tt_id  = (int) ( $block->context['postId'] ?? get_the_ID() );
 $tt_ctx = tt_destination_context( $tt_id );
 $tt_act = $tt_ctx ? null : tt_activity_context( $tt_id );
-$tt_q   = $tt_ctx || $tt_act ? '' : (string) get_post_meta( $tt_id, 'tt_gyg_query', true ); // article : sa destination, ou « Thaïlande »
+$tt_q   = $tt_ctx || $tt_act ? '' : (string) get_post_meta( $tt_id, 'tt_gyg_query', true ); // article : sa destination, ou le pays
 $tt_cmp = tt_cmp( 'mbar', $tt_id );
 
 if ( $attributes['url'] ) {
@@ -20,7 +20,7 @@ if ( $attributes['url'] ) {
 } else {
 	$tt_url = tt_header_cta()['url'];
 }
-$tt_label = $attributes['label'] ?: ( $tt_ctx ? 'Activités à ' . $tt_ctx['name'] : ( $tt_act ? $tt_act['label'] : ( $tt_q ? ( 'Thaïlande' === $tt_q ? 'Activités en Thaïlande' : 'Activités à ' . $tt_q ) : tt_partners()['cta_default_label'] ) ) );
+$tt_label = $attributes['label'] ?: ( $tt_ctx ? 'Activités à ' . $tt_ctx['name'] : ( $tt_act ? $tt_act['label'] : ( $tt_q ? ( tt_country() === $tt_q ? 'Activités ' . tt_site()['in'] : 'Activités à ' . $tt_q ) : tt_partners()['cta_default_label'] ) ) );
 $tt_sub   = $attributes['sub'] ?: ( $tt_ctx && $tt_ctx['price'] ? sprintf( 'Annulation gratuite · dès %s €', number_format_i18n( $tt_ctx['price'] ) ) : 'Annulation gratuite possible' );
 $tt_btn   = $attributes['button'] ?: ( $tt_act ? 'Voir les offres' : 'Voir les activités' );
 $tt_ext   = ! str_starts_with( $tt_url, home_url() );

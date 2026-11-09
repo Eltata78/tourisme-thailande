@@ -30,7 +30,7 @@ function tt_geo_target( WP_Post $p ): ?array {
 	}
 	$act  = tt_activity_context( $p->ID );
 	$name = $act ? $act['place'] : (string) get_post_meta( $p->ID, 'tt_gyg_query', true );
-	if ( '' === $name || 'Thaïlande' === $name ) {
+	if ( '' === $name || tt_country() === $name ) {
 		return null;
 	}
 	$hub = get_posts( array( 'post_type' => 'page', 'meta_key' => 'tt_destination', 'meta_value' => $name, 'numberposts' => 1, 'fields' => 'ids' ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
@@ -72,7 +72,7 @@ function tt_geocode( WP_Post $p, array $t ): ?array {
 		if ( $i ) {
 			sleep( 1 ); // règles d'usage de Nominatim : une requête par seconde au plus
 		}
-		$args = array( 'q' => $q, 'format' => 'jsonv2', 'limit' => 8, 'countrycodes' => 'th', 'accept-language' => 'fr,en' );
+		$args = array( 'q' => $q, 'format' => 'jsonv2', 'limit' => 8, 'countrycodes' => (string) tt_site()['country_code'], 'accept-language' => 'fr,en' );
 		if ( $t['near'] ) {
 			list( $lat, $lng ) = $t['near'];
 			// Large (excursions à la journée : Damnoen Saduak depuis Bangkok) ; le plus proche l'emporte.
@@ -80,7 +80,7 @@ function tt_geocode( WP_Post $p, array $t ): ?array {
 		} elseif ( ! $t['is_hub'] ) {
 			$args['q'] .= ', ' . $t['name'];
 		}
-		$res  = wp_remote_get( 'https://nominatim.openstreetmap.org/search?' . http_build_query( $args ), array( 'timeout' => 6, 'user-agent' => 'tourisme-thailande.fr (géolocalisation des pages ; ' . home_url( '/' ) . ')' ) );
+		$res  = wp_remote_get( 'https://nominatim.openstreetmap.org/search?' . http_build_query( $args ), array( 'timeout' => 6, 'user-agent' => wp_parse_url( home_url(), PHP_URL_HOST ) . ' (géolocalisation des pages ; ' . home_url( '/' ) . ')' ) );
 		$data = is_wp_error( $res ) ? array() : (array) json_decode( wp_remote_retrieve_body( $res ), true );
 		// Cours d'eau écartés : leur point est le milieu du fleuve, parfois à 50 km (Chao Phraya).
 		$data = array_values( array_filter( $data, static fn( $r ) => isset( $r['lat'], $r['lon'] ) && 'waterway' !== ( $r['category'] ?? $r['class'] ?? '' ) ) );
