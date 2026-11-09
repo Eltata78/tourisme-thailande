@@ -142,3 +142,16 @@ add_filter(
 		return $graph;
 	}
 );
+
+/**
+ * Catalogue ou carte sans aucune activité (site qui démarre) : titre de la page, phrase d'attente
+ * et lien vers toutes les offres du pays chez GetYourGuide, au lieu d'une page vide.
+ */
+function tt_catalog_empty_state( WP_Post $post, string $placement ): string {
+	$url = tt_gyg_url( tt_country(), tt_cmp( $placement, $post->ID ) );
+	return '<section ' . get_block_wrapper_attributes( array( 'class' => 'tt-catalog tt-catalog--empty' ) ) . '><header class="tt-catalog__head">'
+		. '<h1>' . esc_html( (string) get_post_meta( $post->ID, 'tt_h1', true ) ?: get_the_title( $post ) ) . '</h1>'
+		. '<p>' . esc_html( sprintf( 'Nos fiches d\'activités %s arrivent bientôt. En attendant, toutes les visites et excursions sont chez notre partenaire, avec annulation gratuite possible.', tt_site()['in'] ) ) . '</p>'
+		. '<p><a class="tt-btn tt-btn--gold" href="' . esc_url( $url ) . '" target="_blank" rel="sponsored nofollow noopener">' . esc_html( 'Voir les activités ' . tt_site()['in'] ) . '</a></p>'
+		. '</header></section>';
+}

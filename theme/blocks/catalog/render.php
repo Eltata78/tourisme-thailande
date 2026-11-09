@@ -10,7 +10,11 @@ defined( 'ABSPATH' ) || exit;
 
 $tt_post  = get_post( $block->context['postId'] ?? null );
 $tt_items = tt_catalog_items();
-if ( ! $tt_post || ! $tt_items ) {
+if ( ! $tt_post ) {
+	return;
+}
+if ( ! $tt_items ) {
+	echo tt_catalog_empty_state( $tt_post, 'catalogue-vide' ); // phpcs:ignore WordPress.Security.EscapeOutput -- échappé dans la fonction
 	return;
 }
 $tt_kinds = tt_activity_kinds();
