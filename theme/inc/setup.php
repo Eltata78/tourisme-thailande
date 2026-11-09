@@ -43,6 +43,7 @@ add_action(
 			array(
 				'searchIndex' => rest_url( 'tt/v1/search-index' ),
 				'country'     => tt_country(),
+				'cmp'         => tt_site()['cmp'],
 				'maplib'      => get_theme_file_uri( 'assets/vendor/maplibre/' ),
 				'gyg'         => array(
 					'domain'  => tt_partners()['gyg_domain'],

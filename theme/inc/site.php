@@ -102,6 +102,7 @@ function tt_site_profiles(): array {
 				array( 'Bien préparer', array( array( 'Voyager avec un bébé', '/voyager-thailande-avec-bebe/' ), array( 'Trousse à pharmacie', '/trousse-a-pharmacie-thailande/' ), array( "Numéros d'urgence", '/numeros-urgence-utiles-thailande/' ), array( "Boire l'eau du robinet ?", '/boire-eau-robinet-thailande/' ), array( 'Thaïlande ou Philippines ?', '/philippines-ou-thailande-choisir-destination/' ) ) ),
 			),
 			'gtm_id'              => 'GTM-M8XRRSXB',
+			'cmp'                 => 'tt',
 		),
 
 		'grece'     => array(
@@ -346,6 +347,8 @@ function tt_site(): array {
 				'kinds'                => $generic['kinds'],
 				'ideas'                => $generic['ideas'],
 				'trip'                 => array(),
+				// Préfixe des identifiants de campagne (cmp, trip_sub1) : distingue les sites dans les rapports partenaires.
+				'cmp'                  => $slug,
 				// Colonnes de liens du pied de page (bloc tt/footer-links) : [titre, [[libellé, adresse]…]]…
 				'footer'               => array(
 					array(

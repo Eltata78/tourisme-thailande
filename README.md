@@ -91,7 +91,7 @@ Le thème lui-même se téléverse à la main (Apparence > Thèmes > Ajouter) : 
 ## Réglages partenaires
 
 Option `tt_partners` : `gyg_partner_id`, `gyg_domain`, `trip_alliance_id`, `trip_sid`, `cta_default_label`, `cta_default_url`.
-Chaque lien porte un identifiant de campagne `tt-{slug}-{emplacement}` (`cmp` chez GetYourGuide, `trip_sub1` chez Trip.com).
+Chaque lien porte un identifiant de campagne `{site}-{slug}-{emplacement}` (`tt` sur le site thaï, `grece`, `portugal`… ailleurs : clé `cmp` de `tt_site`) (`cmp` chez GetYourGuide, `trip_sub1` chez Trip.com).
 Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris des liens générés dans l'espace partenaire Trip
 (`tt_trip_destinations()` dans `inc/helpers.php` ; Krabi = province, Ban Krut = lieu). Aucun nom de partenaire n'est affiché sur le site.
 

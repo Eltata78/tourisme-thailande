@@ -116,9 +116,11 @@
 		if ( m ) return m[ 1 ];
 		return el.closest( '.wp-block-post-content' ) ? 'texte' : 'autre';
 	}
-	// Emplacement : paramètre de campagne (cmp chez GetYourGuide, trip_sub1 chez Trip.com) sans le préfixe « tt-{page}- ».
+	// Emplacement : paramètre de campagne (cmp chez GetYourGuide, trip_sub1 chez Trip.com) sans le préfixe « {site}-{page}- » (tt- sur le site thaï).
+	var cmpPrefix = ( cfg.cmp || 'tt' ) + '-';
 	function placementOf( v ) {
-		v = ( v || '' ).replace( /^tt-/, '' );
+		v = v || '';
+		v = 0 === v.indexOf( cmpPrefix ) ? v.slice( cmpPrefix.length ) : v;
 		return pageSlug && 0 === v.indexOf( pageSlug + '-' ) ? v.slice( pageSlug.length + 1 ) : v;
 	}
 	// Hauteur du CTA dans la page, par quart : 0-25 (haut de page) à 75-100 (bas).
@@ -290,7 +292,7 @@
 			if ( places.length ) html += '<p class="h">Destinations et visites</p>' + places.map( row ).join( '' );
 			if ( guides.length ) html += '<p class="h">Guides</p>' + guides.map( row ).join( '' );
 			if ( cfg.gyg ) {
-				html += '<a class="gyg" role="option" target="_blank" rel="sponsored nofollow noopener" href="' + esc( cfg.gyg.domain + '/s/?q=' + encodeURIComponent( q ) + '&partner_id=' + cfg.gyg.partner + '&cmp=tt-search' ) + '"><span>Activités « ' + esc( q ) + ' » à réserver</span></a>';
+				html += '<a class="gyg" role="option" target="_blank" rel="sponsored nofollow noopener" href="' + esc( cfg.gyg.domain + '/s/?q=' + encodeURIComponent( q ) + '&partner_id=' + cfg.gyg.partner + '&cmp=' + cmpPrefix + 'search' ) + '"><span>Activités « ' + esc( q ) + ' » à réserver</span></a>';
 			}
 			box.innerHTML = html;
 			box.hidden = false;

@@ -124,7 +124,7 @@ function tt_trip_url( string $dest, string $sub, array $stay = array() ): string
 function tt_cmp( string $placement, ?int $post_id = null ): string {
 	$post = get_post( $post_id );
 	$slug = $post ? $post->post_name : 'site';
-	return sanitize_title( 'tt-' . $slug . '-' . $placement );
+	return sanitize_title( tt_site()['cmp'] . '-' . $slug . '-' . $placement );
 }
 
 /**
