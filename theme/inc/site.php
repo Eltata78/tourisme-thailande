@@ -112,6 +112,8 @@ function tt_site_profiles(): array {
 			'whole'                => 'Toute la Grèce',
 			'everywhere'           => 'Partout en Grèce',
 			'country_code'         => 'gr',
+			'emblem'               => 'assets/img/flags/gr.svg',
+			'colors'               => array( 'ink' => '#0E1E33', 'indigo' => '#0B4A8F', 'night' => '#0A2E57', 'gold' => '#F2B705', 'gold_soft' => '#FDF2CC', 'red' => '#B8322A', 'mist' => '#F1F5FA', 'line' => '#DDE6F0', 'muted' => '#4F6178' ),
 			'search_placeholder'   => 'Santorin, Acropole, Météores…',
 			'catalog_placeholder'  => 'Rechercher : Acropole, catamaran, Balos…',
 			'activity_placeholder' => 'Catamaran, Acropole…',
@@ -131,6 +133,8 @@ function tt_site_profiles(): array {
 			'whole'                => 'Tout le Portugal',
 			'everywhere'           => 'Partout au Portugal',
 			'country_code'         => 'pt',
+			'emblem'               => 'assets/img/flags/pt.svg',
+			'colors'               => array( 'ink' => '#10241A', 'indigo' => '#145A2E', 'night' => '#0C3A1E', 'gold' => '#FFC72C', 'gold_soft' => '#FFF4D1', 'red' => '#D52B1E', 'mist' => '#F1F6F2', 'line' => '#DCE8DF', 'muted' => '#4E6455' ),
 			'search_placeholder'   => 'Lisbonne, Sintra, grotte de Benagil…',
 			'catalog_placeholder'  => 'Rechercher : Benagil, fado, Douro…',
 			'activity_placeholder' => 'Benagil, croisière sur le Douro…',
@@ -155,6 +159,8 @@ function tt_site_profiles(): array {
 			'whole'                => 'Tout le Mexique',
 			'everywhere'           => 'Partout au Mexique',
 			'country_code'         => 'mx',
+			'emblem'               => 'assets/img/flags/mx.svg',
+			'colors'               => array( 'ink' => '#2B0F1E', 'indigo' => '#8A1650', 'night' => '#4A0D2E', 'gold' => '#F5A000', 'gold_soft' => '#FEEFD3', 'red' => '#C8102E', 'mist' => '#FAF3F6', 'line' => '#EFDFE7', 'muted' => '#6E5463' ),
 			'search_placeholder'   => 'Tulum, cenotes, Chichén Itzá…',
 			'catalog_placeholder'  => 'Rechercher : cenote, Chichén Itzá, Xcaret…',
 			'activity_placeholder' => 'Cenote, ruines mayas…',
@@ -179,6 +185,8 @@ function tt_site_profiles(): array {
 			'whole'                => 'Toute la Turquie',
 			'everywhere'           => 'Partout en Turquie',
 			'country_code'         => 'tr',
+			'emblem'               => 'assets/img/flags/tr.svg',
+			'colors'               => array( 'ink' => '#2A0C10', 'indigo' => '#8E1626', 'night' => '#4A0B14', 'gold' => '#2EC4B6', 'gold_soft' => '#DDF5F2', 'red' => '#C8102E', 'mist' => '#F8F3F3', 'line' => '#EDE0E1', 'muted' => '#6B5558' ),
 			'search_placeholder'   => 'Istanbul, Cappadoce, Pamukkale…',
 			'catalog_placeholder'  => 'Rechercher : montgolfière, Bosphore, hammam…',
 			'activity_placeholder' => 'Montgolfière, croisière sur le Bosphore…',
@@ -197,6 +205,8 @@ function tt_site_profiles(): array {
 			'whole'                => "Toute l'Albanie",
 			'everywhere'           => 'Partout en Albanie',
 			'country_code'         => 'al',
+			'emblem'               => 'assets/img/flags/al.svg',
+			'colors'               => array( 'ink' => '#1A1717', 'indigo' => '#2E2828', 'night' => '#141212', 'gold' => '#E5B53B', 'gold_soft' => '#FBF1D6', 'red' => '#C1121F', 'mist' => '#F6F4F4', 'line' => '#E8E2E2', 'muted' => '#625959' ),
 			'search_placeholder'   => 'Ksamil, Tirana, Berat…',
 			'catalog_placeholder'  => 'Rechercher : Ksamil, Butrint, Blue Eye…',
 			'activity_placeholder' => 'Bateau à Ksamil, Butrint…',
@@ -215,6 +225,8 @@ function tt_site_profiles(): array {
 			'whole'                => 'Toutes les Canaries',
 			'everywhere'           => 'Partout aux Canaries',
 			'country_code'         => 'es',
+			'emblem'               => 'assets/img/flags/cn.svg',
+			'colors'               => array( 'ink' => '#13202A', 'indigo' => '#0B5F7A', 'night' => '#1F2A31', 'gold' => '#FFCC00', 'gold_soft' => '#FFF6CC', 'red' => '#D9480F', 'mist' => '#F1F6F8', 'line' => '#DCE7EC', 'muted' => '#4F6370' ),
 			'schema_place'         => array( 'AdministrativeArea', 'Îles Canaries', 'ES-CN' ),
 			'search_placeholder'   => 'Teide, Lanzarote, Siam Park…',
 			'catalog_placeholder'  => 'Rechercher : Teide, dauphins, Timanfaya…',
@@ -241,6 +253,8 @@ function tt_site_profiles(): array {
 			'whole'                => "Toute l'Égypte",
 			'everywhere'           => 'Partout en Égypte',
 			'country_code'         => 'eg',
+			'emblem'               => 'assets/img/flags/eg.svg',
+			'colors'               => array( 'ink' => '#24180E', 'indigo' => '#7A4A1E', 'night' => '#2E1F12', 'gold' => '#E2B23A', 'gold_soft' => '#F8EDD3', 'red' => '#B23A1E', 'mist' => '#FAF5EC', 'line' => '#EEE4D2', 'muted' => '#6E6150' ),
 			'search_placeholder'   => 'Louxor, pyramides de Gizeh, Hurghada…',
 			'catalog_placeholder'  => 'Rechercher : pyramides, croisière sur le Nil, snorkeling…',
 			'activity_placeholder' => 'Pyramides, croisière sur le Nil…',
@@ -265,6 +279,8 @@ function tt_site_profiles(): array {
 			'whole'                => "Toute l'Indonésie",
 			'everywhere'           => 'Partout en Indonésie',
 			'country_code'         => 'id',
+			'emblem'               => 'assets/img/flags/id.svg',
+			'colors'               => array( 'ink' => '#0F2421', 'indigo' => '#0F5E5A', 'night' => '#0B3634', 'gold' => '#F28C28', 'gold_soft' => '#FDEBD6', 'red' => '#CE1126', 'mist' => '#F0F6F5', 'line' => '#DAE8E6', 'muted' => '#4C6461' ),
 			'search_placeholder'   => 'Ubud, Gili Air, Bromo…',
 			'catalog_placeholder'  => 'Rechercher : Nusa Penida, rizières, Komodo…',
 			'activity_placeholder' => 'Nusa Penida, volcan Bromo…',
@@ -290,6 +306,8 @@ function tt_site_profiles(): array {
 			'whole'                => 'Tout le Vietnam',
 			'everywhere'           => 'Partout au Vietnam',
 			'country_code'         => 'vn',
+			'emblem'               => 'assets/img/flags/vn.svg',
+			'colors'               => array( 'ink' => '#2A0D0B', 'indigo' => '#9B1B14', 'night' => '#6E0F0A', 'gold' => '#FFCD00', 'gold_soft' => '#FFF5CC', 'red' => '#DA251D', 'mist' => '#FBF4F2', 'line' => '#F0E1DE', 'muted' => '#6E5652' ),
 			'search_placeholder'   => "Baie d'Halong, Hoi An, Hanoi…",
 			'catalog_placeholder'  => "Rechercher : baie d'Halong, Ninh Binh, delta du Mékong…",
 			'activity_placeholder' => "Croisière dans la baie d'Halong…",
@@ -313,6 +331,8 @@ function tt_site_profiles(): array {
 			'whole'                => 'Toute la Croatie',
 			'everywhere'           => 'Partout en Croatie',
 			'country_code'         => 'hr',
+			'emblem'               => 'assets/img/flags/hr.svg',
+			'colors'               => array( 'ink' => '#101B33', 'indigo' => '#172F66', 'night' => '#A50E25', 'gold' => '#6CC4EA', 'gold_soft' => '#E3F4FB', 'red' => '#D21034', 'mist' => '#F2F5FA', 'line' => '#DEE4EF', 'muted' => '#505D78', 'night_head' => '#FFFFFF' ),
 			'search_placeholder'   => 'Dubrovnik, Plitvice, Hvar…',
 			'catalog_placeholder'  => 'Rechercher : Krka, grotte bleue, Hvar…',
 			'activity_placeholder' => 'Grotte bleue, parc de Krka…',
@@ -343,6 +363,8 @@ function tt_site(): array {
 				'slug'                 => $slug,
 				'brand'                => 'Tourisme ' . $profile['name'],
 				'emblem'               => '',
+				// Palette du pays (voir tt_site_colors) ; vide : les couleurs de theme.json, celles de la Thaïlande.
+				'colors'               => array(),
 				'schema_place'         => array( 'Country', $profile['name'], strtoupper( $profile['country_code'] ?? '' ) ),
 				'kinds'                => $generic['kinds'],
 				'ideas'                => $generic['ideas'],
@@ -415,6 +437,101 @@ function tt_site_tokens(): array {
 add_filter(
 	'render_block',
 	static fn( $html ) => is_string( $html ) && str_contains( $html, '{{' ) ? strtr( $html, tt_site_tokens() ) : $html
+);
+
+/** Mélange deux couleurs #rrggbb : 0 donne la première, 1 la seconde. */
+function tt_mix( string $a, string $b, float $t ): string {
+	$a = array_map( 'hexdec', str_split( ltrim( $a, '#' ), 2 ) );
+	$b = array_map( 'hexdec', str_split( ltrim( $b, '#' ), 2 ) );
+	$c = array_map( static fn( $x, $y ) => (int) round( $x + ( $y - $x ) * $t ), $a, $b );
+	return vsprintf( '#%02X%02X%02X', $c );
+}
+
+/** « r, g, b » d'une couleur #rrggbb, pour les rgba() de la feuille de style. */
+function tt_rgb( string $hex ): string {
+	return implode( ', ', array_map( 'hexdec', str_split( ltrim( $hex, '#' ), 2 ) ) );
+}
+
+/**
+ * Palette du pays : clé `colors` du profil (ink, indigo, night, gold, gold_soft, red, mist, line, muted,
+ * et night_head pour les titres du pied de page). Seules les couleurs #rrggbb valides sont gardées ;
+ * sans palette, le site garde les couleurs de theme.json et de main.css.
+ */
+function tt_site_colors(): array {
+	$colors = array();
+	foreach ( (array) tt_site()['colors'] as $key => $hex ) {
+		if ( is_string( $hex ) && preg_match( '/^#[0-9A-Fa-f]{6}$/', $hex ) ) {
+			$colors[ (string) $key ] = strtoupper( $hex );
+		}
+	}
+	return $colors;
+}
+
+/** Couleurs de theme.json remplacées par celles du pays (mêmes noms de palette). */
+add_filter(
+	'wp_theme_json_data_theme',
+	static function ( $theme_json ) {
+		$colors = tt_site_colors();
+		if ( ! $colors ) {
+			return $theme_json;
+		}
+		$data    = $theme_json->get_data();
+		$palette = $data['settings']['color']['palette'] ?? array();
+		$palette = isset( $palette['theme'] ) ? $palette['theme'] : $palette;
+		if ( ! is_array( $palette ) || ! $palette ) {
+			return $theme_json;
+		}
+		$slugs = array( 'contrast' => 'ink', 'indigo' => 'indigo', 'gold' => 'gold', 'gold-soft' => 'gold_soft', 'red' => 'red', 'mist' => 'mist', 'line' => 'line', 'muted' => 'muted' );
+		foreach ( $palette as $i => $entry ) {
+			$key = $slugs[ $entry['slug'] ?? '' ] ?? '';
+			if ( '' !== $key && isset( $colors[ $key ] ) ) {
+				$palette[ $i ]['color'] = $colors[ $key ];
+			}
+		}
+		return $theme_json->update_with(
+			array(
+				'version'  => (int) ( $data['version'] ?? 3 ),
+				'settings' => array( 'color' => array( 'palette' => array_values( $palette ) ) ),
+			)
+		);
+	}
+);
+
+/** Teintes de main.css que la palette ne couvre pas (header, pied de page, ombres, survols), calculées depuis le pays. */
+add_action(
+	'wp_enqueue_scripts',
+	static function () {
+		$c = tt_site_colors();
+		if ( ! $c || ! wp_style_is( 'tt-main', 'enqueued' ) ) {
+			return;
+		}
+		$c   += array( 'ink' => '#1E1B36', 'gold' => '#C9A227', 'red' => '#A51931', 'muted' => '#5F5B78', 'line' => '#E5E3EE', 'mist' => '#F4F3F8' );
+		$night = $c['night'] ?? tt_mix( $c['ink'], '#FFFFFF', .05 );
+		$vars  = array(
+			'--tt-night'       => $night,
+			'--tt-ink-rgb'     => tt_rgb( $c['ink'] ),
+			'--tt-gold-rgb'    => tt_rgb( $c['gold'] ),
+			'--tt-red-rgb'     => tt_rgb( $c['red'] ),
+			'--tt-gold-hover'  => tt_mix( $c['gold'], '#000000', .1 ),
+			'--tt-gold-ink'    => tt_mix( $c['gold'], '#000000', .55 ),
+			'--tt-text'        => tt_mix( $c['ink'], '#FFFFFF', .1 ),
+			'--tt-text-soft'   => tt_mix( $c['ink'], '#FFFFFF', .16 ),
+			'--tt-field'       => tt_mix( $c['muted'], '#FFFFFF', .75 ),
+			'--tt-tint'        => tt_mix( $c['line'], $c['muted'], .04 ),
+			'--tt-tint-2'      => tt_mix( $c['line'], $c['mist'], .3 ),
+			'--tt-line-strong' => tt_mix( $c['line'], $c['muted'], .15 ),
+			'--tt-night-text'  => tt_mix( $night, '#FFFFFF', .75 ),
+			'--tt-night-soft'  => tt_mix( $night, '#FFFFFF', .66 ),
+			'--tt-night-link'  => tt_mix( $night, '#FFFFFF', .9 ),
+			'--tt-night-head'  => $c['night_head'] ?? tt_mix( $c['gold'], '#FFFFFF', .2 ),
+		);
+		$css = '';
+		foreach ( $vars as $name => $value ) {
+			$css .= $name . ':' . $value . ';';
+		}
+		wp_add_inline_style( 'tt-main', ':root{' . $css . '}' );
+	},
+	30 // Après inc/setup.php, qui charge tt-main en priorité 20.
 );
 
 /**

@@ -30,7 +30,7 @@
 /* Ligne dépliée : photo, description courte, article et réservation */
 .tt-explorer__more { padding: 4px 16px 16px; }
 .tt-explorer__photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; }
-.tt-explorer__more p { margin: 10px 0 12px; font-size: 14px; line-height: 1.5; color: #34314F; }
+.tt-explorer__more p { margin: 10px 0 12px; font-size: 14px; line-height: 1.5; color: var(--tt-text, #34314F); }
 .tt-explorer__acts { display: flex; gap: 8px; }
 .tt-explorer__acts .tt-btn { flex: 1; padding: 10px 12px; font-size: 14px; }
 .tt-explorer__acts .tt-btn--out { background: #fff; }
@@ -50,9 +50,9 @@
 	.tt-explorer__tools { width: 100%; justify-content: space-between; margin-left: 0; }
 	.tt-explorer__body { grid-template-columns: minmax(0, 1fr); height: calc(100svh - 64px - 152px); min-height: 440px; }
 	/* La liste devient un panneau qui monte sur la carte. */
-	.tt-explorer__side { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; max-height: 72%; border-right: 0; border-radius: 16px 16px 0 0; box-shadow: 0 -16px 32px -16px rgba(30, 27, 54, .45); transform: translateY(105%); transition: transform .25s ease; }
+	.tt-explorer__side { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; max-height: 72%; border-right: 0; border-radius: 16px 16px 0 0; box-shadow: 0 -16px 32px -16px rgba(var(--tt-ink-rgb, 30, 27, 54), .45); transform: translateY(105%); transition: transform .25s ease; }
 	.tt-explorer.is-listing .tt-explorer__side { transform: none; }
-	.tt-explorer__toggle { display: inline-flex; position: absolute; left: 50%; bottom: 16px; z-index: 6; transform: translateX(-50%); border: 0; border-radius: 999px; padding: 11px 20px; background: var(--tt-indigo, #2D2A4A); color: #fff; font: inherit; font-size: 15px; font-weight: 700; box-shadow: 0 10px 24px -10px rgba(30, 27, 54, .6); cursor: pointer; }
+	.tt-explorer__toggle { display: inline-flex; position: absolute; left: 50%; bottom: 16px; z-index: 6; transform: translateX(-50%); border: 0; border-radius: 999px; padding: 11px 20px; background: var(--tt-indigo, #2D2A4A); color: #fff; font: inherit; font-size: 15px; font-weight: 700; box-shadow: 0 10px 24px -10px rgba(var(--tt-ink-rgb, 30, 27, 54), .6); cursor: pointer; }
 	.tt-explorer.is-listing .tt-explorer__toggle { bottom: calc(72% + 12px); }
 	.tt-explorer:has(.tt-mapcard:not([hidden])) .tt-explorer__toggle { display: none; }
 	.tt-explorer__photo { aspect-ratio: 16 / 9; }

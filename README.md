@@ -77,6 +77,10 @@ Albanie, Canaries, Égypte, Indonésie, Vietnam, Croatie). Ce qui change d'un pa
   `{{domaine}}`, `{{annee}}`, `{{catalogue}}`, `{{carte}}`.
 - Pied de page : colonnes de liens du bloc `tt/footer-links`, tirées de la clé `footer` (`[[titre, [[libellé, adresse]…]]…]`).
   Par défaut, une colonne « Explorer » (catalogue et carte) ; on la remplace par les vrais guides quand ils existent.
+- Couleurs et emblème : clés `colors` (palette du pays, mêmes noms que `theme.json` : `ink`, `indigo`, `night` pour le
+  header et le pied de page, `gold` pour les boutons, `gold_soft`, `red`, `mist`, `line`, `muted`) et `emblem` (drapeau rond
+  de `assets/img/flags/`). La palette remplace celle de `theme.json`, et les teintes dérivées de `main.css` (ombres,
+  survols, textes du pied de page) sont recalculées. Sans `colors`, le site garde les couleurs de la Thaïlande.
 
 Réglage à distance d'un nouveau site (mot de passe d'application d'un administrateur) :
 
