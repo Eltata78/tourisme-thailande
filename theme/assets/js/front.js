@@ -102,6 +102,15 @@
 	/* ---------- Mesure : clics sur les CTA poussés dans le dataLayer, lus par GTM (plan : docs/plan-de-taggage.md) ---------- */
 	// Rien ne part chez Google sans accord : GTM ne se charge qu'après, et reprend alors les événements en attente.
 	var dataLayer = window.dataLayer = window.dataLayer || [];
+	// Sans GTM (balise GA4 directe, inc/tracking.php) : chaque événement est aussi envoyé à GA4, seulement après accord
+	// (window.ttGa4 et gtag n'existent qu'une fois la balise réactivée par le bandeau).
+	function track( ev ) {
+		dataLayer.push( ev );
+		if ( ! window.ttGa4 || 'function' !== typeof window.gtag ) return;
+		var params = {};
+		Object.keys( ev ).forEach( function ( k ) { if ( 'event' !== k ) params[ k ] = ev[ k ]; } );
+		window.gtag( 'event', ev.event, params );
+	}
 	var pageSlug = ( dataLayer.filter( function ( e ) { return e && e.page_slug; } )[ 0 ] || {} ).page_slug || '';
 	// Partenaire d'un lien : GetYourGuide (liens courts gyg.me compris), Trip.com, sinon rien.
 	function partnerOf( u ) {
@@ -143,14 +152,14 @@
 		try { u = new URL( a.href, location.href ); } catch ( err ) { return; }
 		var partner = partnerOf( u ), comp = componentOf( a );
 		if ( partner ) {
-			dataLayer.push( {
+			track( {
 				event: 'affiliate_click', cta_partner: partner, cta_component: comp,
 				cta_placement: placementOf( u.searchParams.get( 'cmp' ) || u.searchParams.get( 'trip_sub1' ) ) || ( 'texte' === comp ? 'lien-texte' : '' ),
 				cta_text: labelOf( a ), cta_url: u.hostname + u.pathname, cta_position: positionOf( a ),
 			} );
 			askLater();
 		} else if ( u.hostname === location.hostname && ! ( u.pathname === location.pathname && u.hash ) && isInternalCta( a, comp ) ) {
-			dataLayer.push( { event: 'cta_click', cta_component: comp, cta_text: labelOf( a ), cta_url: u.pathname, cta_position: positionOf( a ) } );
+			track( { event: 'cta_click', cta_component: comp, cta_text: labelOf( a ), cta_url: u.pathname, cta_position: positionOf( a ) } );
 		}
 	}
 	document.addEventListener( 'click', trackLink, true );
@@ -158,7 +167,7 @@
 	// Formulaires partenaires (hôtels Trip.com, activités) : envoi = clic d'affiliation.
 	function trackForm( form ) {
 		var trip = 'trip' === form.getAttribute( 'data-tt-wdg' ), field = form.elements[ trip ? 'trip_sub1' : 'cmp' ];
-		dataLayer.push( {
+		track( {
 			event: 'affiliate_click', cta_partner: trip ? 'trip.com' : 'getyourguide', cta_component: componentOf( form ),
 			cta_placement: placementOf( field && field.value ), cta_text: 'formulaire',
 			cta_url: form.action.replace( /^https?:\/\/|\?.*$/g, '' ), cta_position: positionOf( form ),

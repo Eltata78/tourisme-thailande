@@ -4,6 +4,7 @@
  * réglages que l'API REST de WordPress n'ouvre pas, limités à une liste fermée.
  *
  * GET  /wp-json/tt/v1/setup                      valeurs actuelles des réglages autorisés
+ *      (dont tt_google : {"ga4_id": "G-…", "gsc_verify": "…"}, voir inc/tracking.php)
  * POST /wp-json/tt/v1/setup {"options": {...}}   écrit les réglages autorisés, ignore les autres
  *
  * Autorisés : structure des permaliens, visibilité pour les moteurs, et les réglages des extensions
@@ -23,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  * Le nom d'option fait-il partie des réglages qu'on peut écrire à distance ?
  */
 function tt_setup_allowed( string $name ): bool {
-	if ( in_array( $name, array( 'permalink_structure', 'category_base', 'tag_base', 'blog_public' ), true ) ) {
+	if ( in_array( $name, array( 'permalink_structure', 'category_base', 'tag_base', 'blog_public', 'tt_google' ), true ) ) {
 		return true;
 	}
 	return (bool) preg_match( '/^(wpseo[a-z_]*|wpel-[a-z0-9_-]+|rmp_[a-z0-9_]+|litespeed\.conf\.[a-z0-9_.-]+)$/', $name );
@@ -42,7 +43,7 @@ add_action(
 					'callback'            => static function () {
 						global $wpdb;
 						$names = $wpdb->get_col( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wpseo%' OR option_name LIKE 'wpel-%' OR option_name LIKE 'rmp\\_%' OR option_name LIKE 'litespeed.conf.%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						$names = array_merge( array( 'permalink_structure', 'category_base', 'tag_base', 'blog_public' ), $names );
+						$names = array_merge( array( 'permalink_structure', 'category_base', 'tag_base', 'blog_public', 'tt_google' ), $names );
 						$out   = array();
 						foreach ( array_filter( $names, 'tt_setup_allowed' ) as $name ) {
 							$out[ $name ] = get_option( $name );

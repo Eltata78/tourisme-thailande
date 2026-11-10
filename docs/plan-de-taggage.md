@@ -8,6 +8,11 @@ Fonctionnement :
 - **Le site** pousse le contexte de chaque page et chaque clic sur un CTA dans le `dataLayer` (`inc/tracking.php`, `assets/js/front.js`).
 - **GTM** lit le `dataLayer` et envoie à GA4. Le conteneur se charge seulement après accord « mesure d'audience » dans le bandeau cookies.
   Une fois le conteneur branché, il remplace la balise GA4 de Site Kit, coupée automatiquement pour ne pas compter deux fois.
+- **Sites sans GTM** (sites des autres pays) : balise GA4 directe, identifiant dans l'option `tt_google['ga4_id']`, posée par la
+  Content Machine. Elle aussi ne se charge qu'après accord, avec le Consent Mode v2 (signaux publicitaires refusés, mesure
+  d'audience accordée à l'accord). Le contexte de page est envoyé avec chaque événement (`gtag('set')`), et front.js relaie
+  `affiliate_click` et `cta_click` à GA4. La Content Machine crée aussi les dimensions personnalisées et marque
+  `affiliate_click` comme événement clé.
 
 ## 1. Contexte de page (poussé sur chaque page, avant GTM)
 
