@@ -22,6 +22,11 @@ add_filter(
 );
 add_filter( 'wp_editor_set_quality', static fn( $quality, $mime ) => 'image/webp' === $mime ? TT_WEBP_QUALITY : $quality, 10, 2 );
 
+// Pas de « sizes="auto" » sur les images en lazy loading (WordPress 6.7) : le navigateur choisirait la taille d'après la
+// largeur affichée, alors que les cartes recadrent la photo (4:3 en carré, en 4:5 pour les régions de l'accueil) ; il
+// chargerait la version 320 px et l'agrandirait, d'où des cartes floues. Les « sizes » de chaque image reprennent la main.
+add_filter( 'wp_img_tag_add_auto_sizes', '__return_false' );
+
 /**
  * Copie WebP de l'original (même taille) : créée si besoin, ajoutée aux métadonnées sous la taille « tt-full ».
  *
