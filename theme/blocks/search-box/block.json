@@ -7,7 +7,7 @@
 	"description": "Barre de recherche avec suggestions instantanées. Une destination reconnue ouvre directement son guide.",
 	"supports": { "html": false },
 	"attributes": {
-		"placeholder": { "type": "string", "default": "Bangkok, Wat Pho, full moon party…" }
+		"placeholder": { "type": "string", "default": "" }
 	},
 	"render": "file:./render.php"
 }

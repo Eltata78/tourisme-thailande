@@ -42,13 +42,13 @@ function tt_block_h2_count( array $block ): int {
  * Attributs de la carte : destination de l'article (requête des offres), photo d'une activité de cette destination.
  */
 function tt_article_cta_attrs( int $post_id ): array {
-	$query = (string) get_post_meta( $post_id, 'tt_gyg_query', true ) ?: 'Thaïlande';
+	$query = (string) get_post_meta( $post_id, 'tt_gyg_query', true ) ?: tt_country();
 	$items = array_values( array_filter( tt_catalog_items(), static fn( $it ) => $it['img'] ) );
-	$here  = array_values( array_filter( $items, static fn( $it ) => 'Thaïlande' !== $it['dest'] && false !== mb_stripos( $query, $it['dest'] ) ) );
+	$here  = array_values( array_filter( $items, static fn( $it ) => tt_country() !== $it['dest'] && false !== mb_stripos( $query, $it['dest'] ) ) );
 	$pool  = $here ?: $items;
 	$dest  = $here ? $here[0]['dest'] : '';
 	return array(
-		'title'     => $dest ? 'En train de préparer ton séjour à ' . $dest . ' ?' : 'En train de préparer ton séjour en Thaïlande ?',
+		'title'     => $dest ? 'En train de préparer ton séjour à ' . $dest . ' ?' : 'En train de préparer ton séjour ' . tt_site()['in'] . ' ?',
 		'text'      => 'Visites, excursions et activités à réserver en ligne, la plupart avec annulation gratuite jusqu\'à 24 h avant.',
 		'label'     => 'Voir les activités',
 		'query'     => $query,

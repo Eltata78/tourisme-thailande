@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 $tt_id    = (int) ( $block->context['postId'] ?? get_the_ID() );
 $tt_ctx   = tt_destination_context( $tt_id );
 $tt_cmp   = tt_cmp( $attributes['placement'], $tt_id );
-$tt_query = $attributes['query'] ?: ( $tt_ctx['gyg'] ?? ( (string) get_post_meta( $tt_id, 'tt_gyg_query', true ) ?: 'Thaïlande' ) );
+$tt_query = $attributes['query'] ?: ( $tt_ctx['gyg'] ?? ( (string) get_post_meta( $tt_id, 'tt_gyg_query', true ) ?: tt_country() ) );
 $tt_url   = $attributes['url'] ? tt_gyg_tag( $attributes['url'], $tt_cmp ) : tt_gyg_url( $tt_query, $tt_cmp );
 $tt_img   = (int) $attributes['imageId'] ?: ( $attributes['imageUrl'] ? 0 : (int) get_post_thumbnail_id( $tt_id ) );
 $tt_title = $attributes['title'] ?: ( $tt_ctx ? 'Les activités à faire à ' . $tt_ctx['name'] : 'Les activités à réserver' );

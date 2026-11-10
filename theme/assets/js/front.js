@@ -102,6 +102,15 @@
 	/* ---------- Mesure : clics sur les CTA poussés dans le dataLayer, lus par GTM (plan : docs/plan-de-taggage.md) ---------- */
 	// Rien ne part chez Google sans accord : GTM ne se charge qu'après, et reprend alors les événements en attente.
 	var dataLayer = window.dataLayer = window.dataLayer || [];
+	// Sans GTM (balise GA4 directe, inc/tracking.php) : chaque événement est aussi envoyé à GA4, seulement après accord
+	// (window.ttGa4 et gtag n'existent qu'une fois la balise réactivée par le bandeau).
+	function track( ev ) {
+		dataLayer.push( ev );
+		if ( ! window.ttGa4 || 'function' !== typeof window.gtag ) return;
+		var params = {};
+		Object.keys( ev ).forEach( function ( k ) { if ( 'event' !== k ) params[ k ] = ev[ k ]; } );
+		window.gtag( 'event', ev.event, params );
+	}
 	var pageSlug = ( dataLayer.filter( function ( e ) { return e && e.page_slug; } )[ 0 ] || {} ).page_slug || '';
 	// Partenaire d'un lien : GetYourGuide (liens courts gyg.me compris), Trip.com, sinon rien.
 	function partnerOf( u ) {
@@ -116,9 +125,11 @@
 		if ( m ) return m[ 1 ];
 		return el.closest( '.wp-block-post-content' ) ? 'texte' : 'autre';
 	}
-	// Emplacement : paramètre de campagne (cmp chez GetYourGuide, trip_sub1 chez Trip.com) sans le préfixe « tt-{page}- ».
+	// Emplacement : paramètre de campagne (cmp chez GetYourGuide, trip_sub1 chez Trip.com) sans le préfixe « {site}-{page}- » (tt- sur le site thaï).
+	var cmpPrefix = ( cfg.cmp || 'tt' ) + '-';
 	function placementOf( v ) {
-		v = ( v || '' ).replace( /^tt-/, '' );
+		v = v || '';
+		v = 0 === v.indexOf( cmpPrefix ) ? v.slice( cmpPrefix.length ) : v;
 		return pageSlug && 0 === v.indexOf( pageSlug + '-' ) ? v.slice( pageSlug.length + 1 ) : v;
 	}
 	// Hauteur du CTA dans la page, par quart : 0-25 (haut de page) à 75-100 (bas).
@@ -141,14 +152,14 @@
 		try { u = new URL( a.href, location.href ); } catch ( err ) { return; }
 		var partner = partnerOf( u ), comp = componentOf( a );
 		if ( partner ) {
-			dataLayer.push( {
+			track( {
 				event: 'affiliate_click', cta_partner: partner, cta_component: comp,
 				cta_placement: placementOf( u.searchParams.get( 'cmp' ) || u.searchParams.get( 'trip_sub1' ) ) || ( 'texte' === comp ? 'lien-texte' : '' ),
 				cta_text: labelOf( a ), cta_url: u.hostname + u.pathname, cta_position: positionOf( a ),
 			} );
 			askLater();
 		} else if ( u.hostname === location.hostname && ! ( u.pathname === location.pathname && u.hash ) && isInternalCta( a, comp ) ) {
-			dataLayer.push( { event: 'cta_click', cta_component: comp, cta_text: labelOf( a ), cta_url: u.pathname, cta_position: positionOf( a ) } );
+			track( { event: 'cta_click', cta_component: comp, cta_text: labelOf( a ), cta_url: u.pathname, cta_position: positionOf( a ) } );
 		}
 	}
 	document.addEventListener( 'click', trackLink, true );
@@ -156,7 +167,7 @@
 	// Formulaires partenaires (hôtels Trip.com, activités) : envoi = clic d'affiliation.
 	function trackForm( form ) {
 		var trip = 'trip' === form.getAttribute( 'data-tt-wdg' ), field = form.elements[ trip ? 'trip_sub1' : 'cmp' ];
-		dataLayer.push( {
+		track( {
 			event: 'affiliate_click', cta_partner: trip ? 'trip.com' : 'getyourguide', cta_component: componentOf( form ),
 			cta_placement: placementOf( field && field.value ), cta_text: 'formulaire',
 			cta_url: form.action.replace( /^https?:\/\/|\?.*$/g, '' ), cta_position: positionOf( form ),
@@ -290,7 +301,7 @@
 			if ( places.length ) html += '<p class="h">Destinations et visites</p>' + places.map( row ).join( '' );
 			if ( guides.length ) html += '<p class="h">Guides</p>' + guides.map( row ).join( '' );
 			if ( cfg.gyg ) {
-				html += '<a class="gyg" role="option" target="_blank" rel="sponsored nofollow noopener" href="' + esc( cfg.gyg.domain + '/s/?q=' + encodeURIComponent( q ) + '&partner_id=' + cfg.gyg.partner + '&cmp=tt-search' ) + '"><span>Activités « ' + esc( q ) + ' » à réserver</span></a>';
+				html += '<a class="gyg" role="option" target="_blank" rel="sponsored nofollow noopener" href="' + esc( cfg.gyg.domain + '/s/?q=' + encodeURIComponent( q ) + '&partner_id=' + cfg.gyg.partner + '&cmp=' + cmpPrefix + 'search' ) + '"><span>Activités « ' + esc( q ) + ' » à réserver</span></a>';
 			}
 			box.innerHTML = html;
 			box.hidden = false;
@@ -396,7 +407,7 @@
 			var words = fold( input.value ).split( /\s+/ ).filter( Boolean );
 			items = acts.filter( function ( a ) { var t = fold( a[ 0 ] ); return words.every( function ( w ) { return -1 !== t.indexOf( w ); } ); } ).slice( 0, 7 );
 			on = -1;
-			list.innerHTML = ( words.length ? '' : '<p class="h">' + ( place && 'Thaïlande' !== place ? 'Idées à ' + esc( place ) : 'Idées' ) + '</p>' ) +
+			list.innerHTML = ( words.length ? '' : '<p class="h">' + ( place && ( cfg.country || 'Thaïlande' ) !== place ? 'Idées à ' + esc( place ) : 'Idées' ) + '</p>' ) +
 				items.map( function ( a, i ) { return '<a href="#" role="option" data-i="' + i + '">' + esc( a[ 0 ] ) + '</a>'; } ).join( '' );
 			list.hidden = ! items.length;
 			input.setAttribute( 'aria-expanded', String( ! list.hidden ) );
@@ -863,7 +874,7 @@
 			count.textContent = plural( n );
 			apply.textContent = n ? 'Voir les ' + plural( n ) : 'Aucune activité';
 			empty.hidden = n > 0;
-			if ( ! n ) offers.href = offers.dataset.href.replace( '__Q__', encodeURIComponent( q.value.trim() || 'Thaïlande' ) );
+			if ( ! n ) offers.href = offers.dataset.href.replace( '__Q__', encodeURIComponent( q.value.trim() || cfg.country || 'Thaïlande' ) );
 			chips.innerHTML = boxes.filter( function ( b ) { return b.checked; } ).map( function ( b ) {
 				return '<button type="button" data-name="' + b.name + '" data-value="' + esc( b.value ) + '">' + esc( b.dataset.label ) + ' <span aria-hidden="true">×</span><span class="screen-reader-text">(retirer le filtre)</span></button>';
 			} ).join( '' );

@@ -101,7 +101,7 @@ function tt_activity_context( ?int $post_id = null ): ?array {
 		'label' => $label,
 		'gyg'   => (string) get_post_meta( $post->ID, 'tt_gyg_query', true ) ?: $label,
 		'trip'  => $trip,
-		'place' => $trip ? tt_trip_destinations()[ $trip ][0] : 'Thaïlande',
+		'place' => $trip ? tt_trip_destinations()[ $trip ][0] : tt_country(),
 	);
 }
 
@@ -120,11 +120,11 @@ function tt_place_of( int $post_id ): string {
 	}
 	$q = (string) get_post_meta( $post_id, 'tt_gyg_query', true );
 	foreach ( array_unique( wp_list_pluck( tt_catalog_items(), 'dest' ) ) as $dest ) {
-		if ( 'Thaïlande' !== $dest && false !== mb_stripos( $q, $dest ) ) {
+		if ( tt_country() !== $dest && false !== mb_stripos( $q, $dest ) ) {
 			return $dest;
 		}
 	}
-	return 'Thaïlande';
+	return tt_country();
 }
 
 /**
@@ -171,12 +171,12 @@ function tt_header_cta(): array {
 	if ( is_page_template( 'page-catalogue' ) ) {
 		return array(
 			'label' => tt_partners()['cta_default_label'],
-			'url'   => tt_gyg_url( 'Thaïlande', tt_cmp( 'header' ) ),
+			'url'   => tt_gyg_url( tt_country(), tt_cmp( 'header' ) ),
 		);
 	}
 	// Article qui parle d'une destination : ses activités ; sinon le lien par défaut des réglages.
 	$q = is_singular( 'post' ) ? (string) get_post_meta( get_queried_object_id(), 'tt_gyg_query', true ) : '';
-	if ( '' !== $q && 'Thaïlande' !== $q ) {
+	if ( '' !== $q && tt_country() !== $q ) {
 		return array(
 			'label' => sprintf( 'Activités à %s', $q ),
 			'url'   => tt_gyg_url( $q, tt_cmp( 'header' ) ),

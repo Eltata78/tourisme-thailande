@@ -15,7 +15,7 @@ $tt_hubs = get_pages(
 	)
 );
 $tt_q    = is_search() ? trim( get_search_query( false ) ) : '';
-$tt_cat  = get_page_by_path( 'activites-thailande' );
+$tt_cat  = get_page_by_path( tt_catalog_slug() );
 $tt_blog = (int) get_option( 'page_for_posts' );
 ?>
 <section <?php echo get_block_wrapper_attributes( array( 'class' => 'tt-suggest' ) ); ?>>

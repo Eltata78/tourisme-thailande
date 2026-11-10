@@ -1,6 +1,7 @@
 # Tourisme Thaïlande : thème et migration
 
-- `theme/` : thème enfant de Twenty Twenty-Five, déployé dans `wp-content/themes/tourisme-thailande`.
+- `theme/` : thème enfant de Twenty Twenty-Five, déployé dans `wp-content/themes/tourisme-thailande`
+  (et dans `wp-content/themes/tourisme-destinations` sur les sites des autres pays).
 - `migration/` : scripts de conversion Elementor -> blocs Gutenberg et de mise en place du contenu.
 
 ## Thème
@@ -8,7 +9,7 @@
 - Couleurs, typographie (Archivo variable auto-hébergée) et espacements dans `theme/theme.json`.
 - Header : bloc `tt/site-header`, alimenté par le menu WordPress affecté à l'emplacement « Menu principal ».
   Niveau 1 = barre, niveau 2 = colonnes du méga-menu (classe CSS `tt-feat` = carte image), niveau 3 = liens.
-- Footer : template part `footer`, entièrement en blocs natifs, modifiable dans l'éditeur de site.
+- Footer : template part `footer`, en blocs natifs, modifiable dans l'éditeur de site ; colonnes de liens propres au site via `tt/footer-links`.
 - Templates : `front-page`, `page`, `page-destination`, `page-activite`, `page-catalogue`, `single`, `single-guide`, `home` (blog), `archive` (catégories), `author`, `search`, `404`.
 - Listes d'articles : grilles de 4 colonnes, 16 par page (page 1 : dernier article en grand + 12), rubriques en pastilles (`tt/topics`), présentation de l'auteur (`tt/author-card`).
 
@@ -62,10 +63,42 @@ Filtres dans l'adresse : `?d=bangkok,phuket&k=temples&q=wat`. Données structur�
 
 Style de paragraphe « Astuce » (`is-style-tt-tip`).
 
+## Un thème pour plusieurs pays
+
+Le même thème sert tourisme-thailande.fr et les sites des autres destinations (Grèce, Portugal, Mexique, Turquie,
+Albanie, Canaries, Égypte, Indonésie, Vietnam, Croatie). Ce qui change d'un pays à l'autre est dans `theme/inc/site.php` :
+
+- `tt_site_profiles()` : un profil par pays (nom, « en Grèce », « Toute la Grèce », code pays OpenStreetMap, régions
+  et destinations du catalogue, saisons et mois, idées d'activités, types d'activité, textes d'exemple des champs).
+- Option `tt_site` : `{"profile": "grece"}` choisit le profil ; toute autre clé le surcharge (`brand`, `footer`, `gtm_id`…).
+  Sans option, le profil est celui de la Thaïlande : le site thaï s'affiche exactement comme avant.
+- Adresses déduites du nom du pays : catalogue `/activites-grece/`, carte `/carte-grece/`, guides mensuels `grece-janvier`…
+- Modèles (`templates/`, `parts/`) : jetons remplacés au rendu, `{{pays}}`, `{{le_pays}}`, `{{en_pays}}`, `{{marque}}`,
+  `{{domaine}}`, `{{annee}}`, `{{catalogue}}`, `{{carte}}`.
+- Pied de page : colonnes de liens du bloc `tt/footer-links`, tirées de la clé `footer` (`[[titre, [[libellé, adresse]…]]…]`).
+  Par défaut, une colonne « Explorer » (catalogue et carte) ; on la remplace par les vrais guides quand ils existent.
+- Couleurs et emblème : clés `colors` (palette du pays, mêmes noms que `theme.json` : `ink`, `indigo`, `night` pour le
+  header et le pied de page, `gold` pour les boutons, `gold_soft`, `red`, `mist`, `line`, `muted`) et `emblem` (drapeau rond
+  de `assets/img/flags/`). La palette remplace celle de `theme.json`, et les teintes dérivées de `main.css` (ombres,
+  survols, textes du pied de page) sont recalculées. Sans `colors`, le site garde les couleurs de la Thaïlande.
+
+Réglage à distance d'un nouveau site (mot de passe d'application d'un administrateur) :
+
+- `POST /wp-json/wp/v2/settings` `{"tt_site": {"profile": "grece"}, "tt_partners": {...}}`.
+- `GET|POST /wp-json/tt/v1/setup` `{"options": {...}}` : réglages que l'API de WordPress n'ouvre pas, limités à
+  la structure des permaliens, la visibilité pour les moteurs et les options de Yoast (`wpseo*`), WP External Links
+  (`wpel-*`), Rate My Post (`rmp_*`) et LiteSpeed (`litespeed.conf.*`). Les autres noms sont ignorés.
+- Extensions : `POST /wp-json/wp/v2/plugins` `{"slug": "wordpress-seo", "status": "active"}`.
+
+Le thème se téléverse une première fois à la main (Apparence > Thèmes > Ajouter) : l'API ne permet pas d'installer un thème.
+Ensuite, `POST /wp-json/tt/v1/theme-update` `{"ref": "<branche>"}` le met à jour depuis ce dépôt : l'archive de la branche est
+téléchargée chez GitHub et son dossier `theme/` remplace le thème actif (réservé aux administrateurs, aucune autre source acceptée).
+
 ## Réglages partenaires
 
 Option `tt_partners` : `gyg_partner_id`, `gyg_domain`, `trip_alliance_id`, `trip_sid`, `cta_default_label`, `cta_default_url`.
-Chaque lien porte un identifiant de campagne `tt-{slug}-{emplacement}` (`cmp` chez GetYourGuide, `trip_sub1` chez Trip.com).
+Chaque lien porte un identifiant de campagne `{site}-{slug}-{emplacement}` (`cmp` chez GetYourGuide, `trip_sub1` chez Trip.com),
+où `{site}` vaut `tt` sur le site thaï et le slug du pays ailleurs (`grece`, `portugal`… : clé `cmp` de `tt_site`).
 Hôtels : fr.trip.com en euros, paramètres de recherche par destination repris des liens générés dans l'espace partenaire Trip
 (`tt_trip_destinations()` dans `inc/helpers.php` ; Krabi = province, Ban Krut = lieu). Aucun nom de partenaire n'est affiché sur le site.
 

@@ -45,7 +45,7 @@ add_filter(
  */
 $tt_profile_fields = static function ( WP_User $user ) {
 	?>
-	<h2>Tourisme Thaïlande</h2>
+	<h2><?php echo esc_html( tt_site()['brand'] ); ?></h2>
 	<table class="form-table">
 		<tr><th><label for="tt_avatar_id">Photo (ID de l'image dans la médiathèque)</label></th>
 			<td><input type="number" name="tt_avatar_id" id="tt_avatar_id" value="<?php echo esc_attr( get_user_meta( $user->ID, 'tt_avatar_id', true ) ); ?>" class="small-text"></td></tr>

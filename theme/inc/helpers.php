@@ -21,9 +21,9 @@ function tt_partners(): array {
 				'trip_alliance_id'  => '7320286',
 				'trip_sid'          => '274143472',
 				'cta_default_label' => 'Réserver une activité',
-				'cta_default_url'   => '/activites-thailande/',
-				'map_url'           => '/carte-thailande/',
-				'gtm_id'            => '', // conteneur Google Tag Manager (GTM-XXXXXXX), voir inc/tracking.php
+				'cta_default_url'   => '/' . tt_catalog_slug() . '/',
+				'map_url'           => '/carte-' . tt_country_slug() . '/',
+				'gtm_id'            => (string) tt_site()['gtm_id'], // conteneur Google Tag Manager (GTM-XXXXXXX), voir inc/tracking.php
 			)
 		);
 	}
@@ -64,28 +64,14 @@ function tt_gyg_tag( string $url, string $cmp ): string {
 }
 
 /**
- * Destinations hôtels Trip.com : paramètres de recherche repris des liens générés dans l'espace partenaire.
- * Krabi se cherche à l'échelle de la province, Ban Krut comme un lieu (plage) rattaché à Bang Saphan.
+ * Destinations hôtels Trip.com : paramètres de recherche repris des liens générés dans l'espace partenaire,
+ * propres à chaque pays (clé `trip` de tt_site()). En Thaïlande, Krabi se cherche à l'échelle de la province,
+ * Ban Krut comme un lieu (plage) rattaché à Bang Saphan.
  *
  * @return array<string,array{0:string,1:array<string,scalar>}> clé => [libellé, paramètres]
  */
 function tt_trip_destinations(): array {
-	return apply_filters(
-		'tt_trip_destinations',
-		array(
-			'bangkok'     => array( 'Bangkok', array( 'city' => 359 ) ),
-			'ayutthaya'   => array( 'Ayutthaya', array( 'city' => 36030 ) ),
-			'pattaya'     => array( 'Pattaya', array( 'city' => 622 ) ),
-			'chiang-mai'  => array( 'Chiang Mai', array( 'city' => 623 ) ),
-			'chiang-rai'  => array( 'Chiang Rai', array( 'city' => 647 ) ),
-			'phuket'      => array( 'Phuket', array( 'city' => 725 ) ),
-			'krabi'       => array( 'Krabi', array( 'city' => -1, 'provinceId' => 10129, 'countryId' => 4, 'searchType' => 'P', 'searchWord' => 'Krabi', 'searchValue' => '39|10129*39*10129*1' ) ),
-			'koh-phi-phi' => array( 'Koh Phi Phi', array( 'city' => 1228 ) ),
-			'koh-samui'   => array( 'Koh Samui', array( 'city' => 1229 ) ),
-			'koh-tao'     => array( 'Koh Tao', array( 'city' => 19957 ) ),
-			'ban-krut'    => array( 'Ban Krut', array( 'cityId' => 62158, 'provinceId' => 11042, 'countryId' => 4, 'searchType' => 'LM', 'optionId' => 8248394, 'searchValue' => '13|8248394*13*11.3451418|99.5644769|Ban Krut Beach|8248394|1', 'old' => 1 ) ),
-		)
-	);
+	return apply_filters( 'tt_trip_destinations', (array) tt_site()['trip'] );
 }
 
 /**
@@ -138,18 +124,23 @@ function tt_trip_url( string $dest, string $sub, array $stay = array() ): string
 function tt_cmp( string $placement, ?int $post_id = null ): string {
 	$post = get_post( $post_id );
 	$slug = $post ? $post->post_name : 'site';
-	return sanitize_title( 'tt-' . $slug . '-' . $placement );
+	return sanitize_title( tt_site()['cmp'] . '-' . $slug . '-' . $placement );
 }
 
 /**
- * Logo du site : emblème (drapeau et temple) et nom en texte, lisible à la hauteur d'un header.
+ * Logo du site : emblème et nom en texte, lisible à la hauteur d'un header.
+ * Emblème : clé `emblem` de tt_site() (chemin dans le thème ou adresse complète), sinon le nom seul.
  * Le nom se change avec le filtre tt_brand_name.
  */
 function tt_brand(): string {
+	$emblem = (string) tt_site()['emblem'];
+	if ( '' !== $emblem && ! preg_match( '#^https?://#', $emblem ) ) {
+		$emblem = TT_URI . '/' . ltrim( $emblem, '/' );
+	}
 	return sprintf(
-		'<span class="tt-brand"><img class="tt-brand__mark" src="%s" width="41" height="40" alt="" decoding="async"><span class="tt-brand__name">%s</span></span>',
-		esc_url( TT_URI . '/assets/img/emblem.webp' ),
-		esc_html( apply_filters( 'tt_brand_name', 'Tourisme Thaïlande' ) )
+		'<span class="tt-brand">%s<span class="tt-brand__name">%s</span></span>',
+		'' === $emblem ? '' : sprintf( '<img class="tt-brand__mark" src="%s" width="41" height="40" alt="" decoding="async">', esc_url( $emblem ) ),
+		esc_html( apply_filters( 'tt_brand_name', (string) tt_site()['brand'] ) )
 	);
 }
 
@@ -167,8 +158,9 @@ function tt_img( int $id, string $size = 'large', array $attr = array() ): strin
  * Formulaire de recherche : fonctionne sans JS (page de résultats ou redirection directe),
  * enrichi de suggestions instantanées par assets/js/front.js.
  */
-function tt_search_form( string $uid, string $placeholder = 'Bangkok, Wat Pho, full moon party…' ): string {
-	$id = 'tt-q-' . sanitize_key( $uid );
+function tt_search_form( string $uid, string $placeholder = '' ): string {
+	$placeholder = '' !== $placeholder ? $placeholder : (string) tt_site()['search_placeholder'];
+	$id          = 'tt-q-' . sanitize_key( $uid );
 	return sprintf(
 		'<form class="tt-search" role="search" method="get" action="%1$s" data-tt-search>
 			<label class="screen-reader-text" for="%2$s">Rechercher une destination, une visite ou un guide</label>
